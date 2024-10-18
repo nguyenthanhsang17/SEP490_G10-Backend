@@ -8,5 +8,11 @@ namespace VJN.Services
         public Task<IEnumerable<UserDTO>> getAllUser();
         public Task<UserDTO> findById(int id);
         public Task<UserDTO> Login(string Username, string Password);
+        public Task<int> ChangePassword(string OldPassword, string NewPassword, string ConfirmPassword, int userid);
+        public Task<int> UpdateOtpUser(string email, string otp);
+
+        public Task<bool> CheckEmailExits(string Email);
+
+        public Task<bool> Verifycode(string Email, string Otp);
     }
 }

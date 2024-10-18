@@ -9,6 +9,7 @@ using VJN.Authenticate;
 using VJN.Repositories;
 using VJN.Services;
 using VJN.ModelsDTO.Imagekit;
+using VJN.ModelsDTO.EmailDTOs;
 
 namespace VJN
 {
@@ -50,7 +51,10 @@ namespace VJN
                     }
                 });
             });
+            //add authentication
             builder.Services.AddScoped<JwtTokenGenerator>();
+            builder.Services.AddScoped<OTPGenerator>();
+            //add authentication
             var jwtSettings = new JwtSetting();
             builder.Configuration.GetSection("JwtSettings").Bind(jwtSettings);
             builder.Services.AddSingleton(jwtSettings);
@@ -94,8 +98,11 @@ namespace VJN
 
             builder.Services.AddAutoMapper(typeof(Program));
             // Register services and repositories
+            builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings")); //add email
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IEmailService, EmailService>();
+            
             // Register services and repositories
 
             var app = builder.Build();
