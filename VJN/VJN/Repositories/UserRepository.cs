@@ -125,5 +125,51 @@ namespace VJN.Repositories
                 throw new Exception(ex.Message);
             }
         }
+
+        public async Task<int> CreateUser(User user)
+        {
+            if(user == null)
+            {
+                return 0;
+            }
+            else
+            {
+                try
+                {
+                    _context.Users.Add(user);
+                    await _context.SaveChangesAsync();
+                    return 1;
+                }catch (Exception ex) {
+                    throw new Exception(ex.Message);
+                }
+
+            }
+        }
+
+        public async Task<int> UpdateStatus(int uid, int status)
+        {
+            User user = null;
+            try
+            {
+                user = await _context.Users.Where(u=>u.UserId==uid).SingleOrDefaultAsync();
+                if(user == null)
+                {
+                    return 0;
+                }
+                user.Status = status;
+                _context.Entry(user).State = EntityState.Modified;
+                int i= await _context.SaveChangesAsync();
+                return i>=1?1:0;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<bool> CheckEmailExits(string Email)
+        {
+            return await _context.Users.AnyAsync(u => u.Email.Equals(Email));
+        }
     }
 }

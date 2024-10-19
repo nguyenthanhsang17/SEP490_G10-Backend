@@ -23,11 +23,15 @@ namespace VJN.Controllers
     {
         private readonly IUserService _userService;
         private readonly JwtTokenGenerator _jwtTokenGenerator;
+        private readonly IEmailService _emailService;
+        private OTPGenerator _generator;
 
-        public UsersController(IUserService userService, JwtTokenGenerator jwtTokenGenerator)
+        public UsersController(IUserService userService, JwtTokenGenerator jwtTokenGenerator, IEmailService emailService, OTPGenerator generator)
         {
             _userService = userService;
             _jwtTokenGenerator = jwtTokenGenerator;
+            _emailService = emailService;
+            _generator = generator;
         }
 
         [HttpPost("Login")]
@@ -87,6 +91,10 @@ namespace VJN.Controllers
             {
                 return BadRequest(new { Message = "Không được để trống, người dùng cần nhập đầy đủ" });
             }
+            if (model == null)
+            {
+                return BadRequest(new { Message = "null object" });
+            }
             try
             {
                 var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
@@ -126,6 +134,10 @@ namespace VJN.Controllers
             {
                 return BadRequest(new { Message = "Không được để trống, người dùng cần nhập đầy đủ" });
             }
+            if (model == null)
+            {
+                return BadRequest(new { Message = "null object" });
+            }
             var check  = await _userService.Verifycode(model.ToEmail, model.Opt);
             if (check)
             {
@@ -137,5 +149,51 @@ namespace VJN.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> ResgisterUser([FromBody] UserCreateDTO model)
+        {
+            if (model == null || string.IsNullOrEmpty(model.Email) || string.IsNullOrEmpty(model.UserName)||string.IsNullOrEmpty(model.FullName)||string.IsNullOrEmpty(model.Password)||string.IsNullOrEmpty(model.ConfirmPassword))
+            {
+                return BadRequest(new { Message = "Không được để trống, người dùng cần nhập đầy đủ" });
+            }
+            var i = await _userService.CreateUser(model);
+            if (i == 0)
+            {
+                return BadRequest(new { Message = "null object" });
+            }
+            if(i==1)
+            {
+                return BadRequest(new { Message = "Mật khẩu xác nhận và mật khẩu không giống nhau"});
+            }
+            if (i == 2)
+            {
+                return BadRequest(new { Message = "Email Đã đăng ký tài khoản có tài khoản"});
+            }
+            else
+            {
+                var otp = _generator.GenerateOTP();
+                await _emailService.SendEmailAsync(model.Email, "Mã OTP của bạn để hoàn tất đăng ký", $"Cảm ơn bạn đã đăng ký tài khoản tại [Tên công ty/dịch vụ]. Để hoàn tất quá trình xác thực, vui lòng sử dụng mã OTP (One-Time Password) dưới đây:\r\n\r\nMã OTP của bạn: {otp}\r\n\r\nMã OTP này có hiệu lực trong 5 phút.\r\n\r\nNếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này. Để đảm bảo an toàn cho tài khoản của bạn, đừng chia sẻ mã OTP này với bất kỳ ai.\r\n\r\nNếu bạn cần hỗ trợ, đừng ngần ngại liên hệ với chúng tôi tại [email hỗ trợ] hoặc [số điện thoại hỗ trợ].\r\n\r\nCảm ơn bạn!");
+                return Ok(new { Message = "Succesfully" });
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> VerifyCodeRegister([FromBody] EmailRegister model)
+        {
+            if(model == null || string.IsNullOrEmpty(model.ToEmail)||string.IsNullOrEmpty(model.Opt))
+            {
+                return BadRequest(new { Message = "mã OTP trống" });
+            }
+            var check = await _userService.Verifycode(model.ToEmail, model.Opt);
+            if (check)
+            {
+                await _userService.UpdateStatusByEmail(model.ToEmail, 1);
+                return Ok(new { Message = "" });
+            }
+            else
+            {
+                return BadRequest(new { Message = "Mã xác thức không chính xác" });
+            }
+
+        }
     }
 }

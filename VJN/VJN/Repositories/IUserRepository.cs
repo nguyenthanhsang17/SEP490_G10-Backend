@@ -18,5 +18,11 @@ namespace VJN.Repositories
         public Task<int> GetUserIdEmailExits(string Email);
 
         public Task<User> GetUserByEmail(string email);
+
+        public Task<int> CreateUser(User user);
+
+        public Task<int> UpdateStatus(int uid, int status);
+
+        public Task<bool> CheckEmailExits(string Email);
     }
 }
