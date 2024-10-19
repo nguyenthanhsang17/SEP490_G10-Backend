@@ -102,7 +102,10 @@ namespace VJN
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IEmailService, EmailService>();
-            
+
+            builder.Services.AddScoped<IBlogRepository, BlogRepository>();
+            builder.Services.AddScoped<IBlogService, BlogService>();
+
             // Register services and repositories
 
             var app = builder.Build();
