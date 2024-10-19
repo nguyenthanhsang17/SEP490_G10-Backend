@@ -44,7 +44,6 @@ namespace VJN.Controllers
             {
                 return BadRequest("Email không tồn tại");
             }
-
         }
     }
 }

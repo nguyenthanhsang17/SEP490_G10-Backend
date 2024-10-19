@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using VJN.Authenticate;
+using VJN.Models;
 using VJN.ModelsDTO.UserDTOs;
 using VJN.Repositories;
+using static System.Net.WebRequestMethods;
 
 namespace VJN.Services
 {
@@ -46,6 +48,29 @@ namespace VJN.Services
             }
         }
 
+        public async Task<int> CreateUser(UserCreateDTO userdto)
+        {
+            if(userdto == null)
+            {
+                return 0;
+            }
+            if (userdto.Password.Equals(userdto.ConfirmPassword))
+            {
+                return 1;
+            }
+            var check = await _userRepository.CheckEmailExits(userdto.Email);
+            if (check)
+            {
+                return 2;
+            }
+            else
+            {
+                var user = _mapper.Map<User>(userdto);
+                var i = await _userRepository.CreateUser(user);
+                return 3;
+            }
+        }
+
         public async Task<UserDTO> findById(int id)
         {
             var user = await _userRepository.findById(id);
@@ -77,6 +102,23 @@ namespace VJN.Services
             var resuklt = await _userRepository.UpdateOtpUser(id, otp);
             return resuklt==1?1:0;
 
+        }
+
+        public async Task<int> UpdateStatusByEmail(string email, int status)
+        {
+            var id = await _userRepository.GetUserIdEmailExits(email);
+            if (id == 0)
+            {
+                return 0;
+            }
+            var resuklt = await _userRepository.UpdateStatus(id, status);
+            return resuklt == 1 ? 1 : 0;
+        }
+
+        public async Task<int> UpdateStatusByUid(int uid, int status)
+        {
+            var i = await _userRepository.UpdateStatus(uid, status);
+            return i;
         }
 
         public async Task<bool> Verifycode(string Email, string Otp)
