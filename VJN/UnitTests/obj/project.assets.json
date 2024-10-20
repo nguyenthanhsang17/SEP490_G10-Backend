@@ -11448,19 +11448,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\SANG\\.nuget\\packages\\": {}
+    "C:\\Users\\yetvv.piacom\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "S:\\FULearning\\Fall2024\\SEP490\\SEP490_G10-Backend\\VJN\\UnitTests\\UnitTests.csproj",
+      "projectUniqueName": "E:\\FPT\\SEP490\\BackEnd\\SEP490_G10-Backend\\VJN\\UnitTests\\UnitTests.csproj",
       "projectName": "UnitTests",
-      "projectPath": "S:\\FULearning\\Fall2024\\SEP490\\SEP490_G10-Backend\\VJN\\UnitTests\\UnitTests.csproj",
-      "packagesPath": "C:\\Users\\SANG\\.nuget\\packages\\",
-      "outputPath": "S:\\FULearning\\Fall2024\\SEP490\\SEP490_G10-Backend\\VJN\\UnitTests\\obj\\",
+      "projectPath": "E:\\FPT\\SEP490\\BackEnd\\SEP490_G10-Backend\\VJN\\UnitTests\\UnitTests.csproj",
+      "packagesPath": "C:\\Users\\yetvv.piacom\\.nuget\\packages\\",
+      "outputPath": "E:\\FPT\\SEP490\\BackEnd\\SEP490_G10-Backend\\VJN\\UnitTests\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\SANG\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\yetvv.piacom\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -11474,8 +11474,8 @@
         "net6.0": {
           "targetAlias": "net6.0",
           "projectReferences": {
-            "S:\\FULearning\\Fall2024\\SEP490\\SEP490_G10-Backend\\VJN\\VJN\\VJN.csproj": {
-              "projectPath": "S:\\FULearning\\Fall2024\\SEP490\\SEP490_G10-Backend\\VJN\\VJN\\VJN.csproj"
+            "E:\\FPT\\SEP490\\BackEnd\\SEP490_G10-Backend\\VJN\\VJN\\VJN.csproj": {
+              "projectPath": "E:\\FPT\\SEP490\\BackEnd\\SEP490_G10-Backend\\VJN\\VJN\\VJN.csproj"
             }
           }
         }
