@@ -125,6 +125,10 @@
               "target": "Package",
               "version": "[13.0.1, )"
             },
+            "Google.Apis.Auth": {
+              "target": "Package",
+              "version": "[1.68.0, )"
+            },
             "Imagekit": {
               "target": "Package",
               "version": "[5.0.0, )"
@@ -132,6 +136,10 @@
             "MailKit": {
               "target": "Package",
               "version": "[4.8.0, )"
+            },
+            "Microsoft.AspNetCore.Authentication.Google": {
+              "target": "Package",
+              "version": "[6.0.35, )"
             },
             "Microsoft.AspNetCore.Authentication.JwtBearer": {
               "target": "Package",

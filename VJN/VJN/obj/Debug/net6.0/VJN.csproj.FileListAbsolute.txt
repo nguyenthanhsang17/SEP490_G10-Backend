@@ -284,3 +284,10 @@ S:\FULearning\Fall2024\SEP490\SEP490_G10-Backend\VJN\VJN\bin\Debug\net6.0\runtim
 S:\FULearning\Fall2024\SEP490\SEP490_G10-Backend\VJN\VJN\bin\Debug\net6.0\BouncyCastle.Cryptography.dll
 S:\FULearning\Fall2024\SEP490\SEP490_G10-Backend\VJN\VJN\bin\Debug\net6.0\MailKit.dll
 S:\FULearning\Fall2024\SEP490\SEP490_G10-Backend\VJN\VJN\bin\Debug\net6.0\MimeKit.dll
+S:\FULearning\Fall2024\SEP490\SEP490_G10-Backend\VJN\VJN\bin\Debug\net6.0\Google.Apis.dll
+S:\FULearning\Fall2024\SEP490\SEP490_G10-Backend\VJN\VJN\bin\Debug\net6.0\Google.Apis.Auth.dll
+S:\FULearning\Fall2024\SEP490\SEP490_G10-Backend\VJN\VJN\bin\Debug\net6.0\Google.Apis.Core.dll
+S:\FULearning\Fall2024\SEP490\SEP490_G10-Backend\VJN\VJN\bin\Debug\net6.0\Microsoft.AspNetCore.Authentication.Google.dll
+S:\FULearning\Fall2024\SEP490\SEP490_G10-Backend\VJN\VJN\bin\Debug\net6.0\System.CodeDom.dll
+S:\FULearning\Fall2024\SEP490\SEP490_G10-Backend\VJN\VJN\bin\Debug\net6.0\System.Management.dll
+S:\FULearning\Fall2024\SEP490\SEP490_G10-Backend\VJN\VJN\bin\Debug\net6.0\runtimes\win\lib\net6.0\System.Management.dll
