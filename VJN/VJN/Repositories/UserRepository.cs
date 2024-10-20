@@ -58,7 +58,7 @@ namespace VJN.Repositories
             User user = null;
             try
             {
-                user = await _context.Users.Include(u => u.Role).Where(u=>u.UserId==id).SingleOrDefaultAsync();
+                user = await _context.Users.Include(u => u.Role).Include(u=>u.AvatarNavigation).Include(u=>u.CurrentJobNavigation).Where(u=>u.UserId==id).SingleOrDefaultAsync();
             }catch (Exception ex)
             {
                 throw new Exception(ex.Message);
@@ -170,6 +170,92 @@ namespace VJN.Repositories
         public async Task<bool> CheckEmailExits(string Email)
         {
             return await _context.Users.AnyAsync(u => u.Email.Equals(Email));
+        }
+
+        public async Task<bool> UpdateProfile(int v, User model)
+        {
+            User u = null;
+            try
+            {
+                u = await _context.Users.FindAsync(v);
+                if (model.Avatar.HasValue)
+                {
+                    u.Avatar = model.Avatar.Value;
+                }
+
+                if (!string.IsNullOrEmpty(model.FullName))
+                {
+                    u.FullName = model.FullName;
+                }
+
+                if (model.Age.HasValue)
+                {
+                    u.Age = model.Age.Value;
+                }
+
+                if (!string.IsNullOrEmpty(model.Phonenumber))
+                {
+                    u.Phonenumber = model.Phonenumber;
+                }
+
+                if (model.CurrentJob.HasValue)
+                {
+                    u.CurrentJob = model.CurrentJob.Value;
+                }
+
+                if (!string.IsNullOrEmpty(model.Description))
+                {
+                    u.Description = model.Description;
+                }
+
+                if (!string.IsNullOrEmpty(model.Address))
+                {
+                    u.Address = model.Address;
+                }
+
+                if (model.Latitude.HasValue)
+                {
+                    u.Latitude = model.Latitude.Value;
+                }
+
+                if (model.Longitude.HasValue)
+                {
+                    u.Longitude = model.Longitude.Value;
+                }
+
+                if (model.Gender.HasValue)
+                {
+                    u.Gender = model.Gender.Value;
+                }
+                _context.Entry(u).State = EntityState.Modified;
+                int i = await _context.SaveChangesAsync();
+                return i >= 1;
+            }
+            catch (Exception ex) {
+
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<bool> UpdatePassword(int userid, string password)
+        {
+            User user = await _context.Users.Where(u=>u.UserId==userid).SingleOrDefaultAsync();
+            if (user != null)
+            {
+                var diffTime = DateTime.Now - user.SendCodeTime;
+                if (diffTime.HasValue && Math.Abs(diffTime.Value.TotalMinutes) >= 5)
+                {
+                    return false;
+                }
+                user.Password = password;
+                _context.Entry(user).State = EntityState.Modified;
+                int i = await _context.SaveChangesAsync();
+                return i >= 1;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

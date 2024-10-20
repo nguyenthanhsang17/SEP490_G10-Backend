@@ -75,6 +75,12 @@ namespace VJN
                     ValidAudience = jwtSettings.Audience,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret))
                 };
+            }).AddGoogle(options =>
+            {
+                var googleAuthNSection = builder.Configuration.GetSection("Authentication:Google");
+                options.ClientId = googleAuthNSection["ClientId"];
+                options.ClientSecret = googleAuthNSection["ClientSecret"];
+                options.CallbackPath = "/auth/callback";
             });
 
             var imagekitSettings = new ImagekitSettings();
@@ -105,6 +111,11 @@ namespace VJN
 
             builder.Services.AddScoped<IBlogRepository, BlogRepository>();
             builder.Services.AddScoped<IBlogService, BlogService>();
+
+            builder.Services.AddScoped<IGoogleService, GoogleService>();
+
+            builder.Services.AddScoped<IMediaItemRepository, MediaItemRepository>();
+            builder.Services.AddScoped<IMediaItemService, MediaItemService>();
 
             // Register services and repositories
 

@@ -48,13 +48,13 @@ namespace VJN.Services
             }
         }
 
-        public async Task<int> CreateUser(UserCreateDTO userdto)
+        public async Task<int> CreateUser(UserCreateDTO userdto, string otp)
         {
             if(userdto == null)
             {
                 return 0;
             }
-            if (userdto.Password.Equals(userdto.ConfirmPassword))
+            if (!userdto.Password.Equals(userdto.ConfirmPassword))
             {
                 return 1;
             }
@@ -66,6 +66,8 @@ namespace VJN.Services
             else
             {
                 var user = _mapper.Map<User>(userdto);
+                user.VerifyCode = otp;
+                user.SendCodeTime = DateTime.Now;
                 var i = await _userRepository.CreateUser(user);
                 return 3;
             }
@@ -82,6 +84,13 @@ namespace VJN.Services
         {
             var users = await _userRepository.getAllUser();
             var userdto = _mapper.Map<IEnumerable<UserDTO>>(users);
+            return userdto;
+        }
+
+        public async Task<UserDTO> GetUserByEmail(string Email)
+        {
+            var user = await _userRepository.GetUserByEmail(Email);
+            var userdto = _mapper.Map<UserDTO>(user);
             return userdto;
         }
 
@@ -102,6 +111,19 @@ namespace VJN.Services
             var resuklt = await _userRepository.UpdateOtpUser(id, otp);
             return resuklt==1?1:0;
 
+        }
+
+        public async Task<bool> UpdatePassword(int userid, string password)
+        {
+            var check = await _userRepository.UpdatePassword(userid, password);
+            return check;
+        }
+
+        public async Task<bool> UpdateProfile(int v, UserUpdateDTO model)
+        {
+            var user = _mapper.Map<User>(model);
+            var check = await _userRepository.UpdateProfile(v, user);
+            return check;
         }
 
         public async Task<int> UpdateStatusByEmail(string email, int status)

@@ -6,10 +6,10 @@ namespace VJN.Services
 {
     public class BlogService : IBlogService
     {
-        private readonly BlogRepository _blogRepository;
+        private readonly IBlogRepository _blogRepository;
         private IMapper _mapper;
 
-        public BlogService(BlogRepository blogRepository, IMapper mapper)
+        public BlogService(IBlogRepository blogRepository, IMapper mapper)
         {
             _blogRepository = blogRepository;
             _mapper = mapper;
