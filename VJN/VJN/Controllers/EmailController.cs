@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using VJN.Authenticate;
@@ -24,25 +25,25 @@ namespace VJN.Controllers
         }
 
         [HttpPost("SendMailToForgotPassword")]
-        public async Task<IActionResult> SendMailToForgotPassword([FromBody] string email)
+        public async Task<IActionResult> SendMailToForgotPassword([FromBody] SendMailToForgotPassword model)
         {
-            if (string.IsNullOrEmpty(email))
+            if (string.IsNullOrEmpty(model.email))
             {
                 return BadRequest(new { Message = "Không được để trống, người dùng cần nhập đầy đủ" });
             }
-            var check = await _userService.CheckEmailExits(email);
+            var check = await _userService.CheckEmailExits(model.email);
             if(check)
             {
                 var opt = _generator.GenerateOTP();
-                _userService.UpdateOtpUser(email, opt);
-                await _emailService.SendEmailAsync(email, "Mã xác nhận OTP cho yêu cầu đặt lại mật khẩu", $"Chúng tôi đã nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn. Vui lòng sử dụng mã OTP dưới đây để xác thực yêu cầu của bạn:\r\n\r\n**Mã OTP: {opt} \r\n\r\nMã OTP này sẽ hết hạn sau 5 phút. Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này.");
+                _userService.UpdateOtpUser(model.email, opt);
+                await _emailService.SendEmailAsync(model.email, "Mã xác nhận OTP cho yêu cầu đặt lại mật khẩu", $"Chúng tôi đã nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn. Vui lòng sử dụng mã OTP dưới đây để xác thực yêu cầu của bạn:\r\n\r\n**Mã OTP: {opt} \r\n\r\nMã OTP này sẽ hết hạn sau 5 phút. Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này.");
 
-                return Ok("Mã đã được gửi tới Email của bạn vui lòng kiểm tra !!!");
+                return Ok(new { Message = "Mã đã được gửi tới Email của bạn vui lòng kiểm tra !!!" });
 
             }
             else
             {
-                return BadRequest("Email không tồn tại");
+                return BadRequest(new { Message = "Mã đã được gửi tới Email của bạn vui lòng kiểm tra !!!" });
             }
         }
     }

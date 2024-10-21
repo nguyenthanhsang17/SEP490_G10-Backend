@@ -71,7 +71,7 @@ namespace VJN.Controllers
                 Message = "Đăng nhập thành công",
                 token,
                 st.UserId,
-                st.UserName,
+                st.FullName,
                 st.RoleId,
                 st.Status
             });
@@ -90,11 +90,14 @@ namespace VJN.Controllers
 
         // GET: api/Users/5
         [Authorize]
-        [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int id)
+        [HttpGet("detail")]
+        public async Task<ActionResult<UserDTO>> GetUser()
         {
-            var userdto = _userService.findById(id);
-            return Ok(userdto);
+            string id_str = GetUserIdFromToken();
+            int id = int.Parse(id_str);
+
+            var user = _userService.findById(id);
+            return Ok(user);
         }
         [Authorize]
         [HttpPut("ChangePassword")]
@@ -139,14 +142,30 @@ namespace VJN.Controllers
         [HttpPost("VerifycodeForgotPassword")]
         public async Task<IActionResult> VerifyCodeForgotPassword([FromBody] EmailForgotPassword model)
         {
-            if (model == null || string.IsNullOrEmpty(model.ToEmail) || string.IsNullOrEmpty(model.Opt))
+            if (model == null || string.IsNullOrEmpty(model.ToEmail) || string.IsNullOrEmpty(model.Opt)||string.IsNullOrEmpty(model.Password)||string.IsNullOrEmpty(model.ConfirmPassword))
             {
                 return BadRequest(new { Message = "Không được để trống, người dùng cần nhập đầy đủ" });
             }
             var check = await _userService.Verifycode(model.ToEmail, model.Opt);
             if (check)
             {
-                return Ok(new { Message = "Verify Successfuly", Email= $"{model.ToEmail}" });
+
+                if (!model.Password.Equals(model.ConfirmPassword))
+                {
+                    return BadRequest(new { Message = "mật khẩu mới và mật khẩu xác nhận không giống nhau" });
+                }
+                var user = await _userService.GetUserByEmail(model.ToEmail);
+                var c = await _userService.UpdatePassword(user.UserId, model.Password);
+
+                if (c)
+                {
+                    return Ok(new { Message = "Thay đổi mật khẩu thành công" });
+                }
+                else
+                {
+                    return BadRequest(new { Message = "Thay đổi mật khẩu thất bại" });
+                }
+
             }
             else
             {
@@ -154,34 +173,10 @@ namespace VJN.Controllers
             }
         }
 
-        [HttpPut("ChangePasswordForgotPassword")]
-        public async Task<IActionResult> ChangePasswordForgotPassword([FromBody] EmailForgotPasswordChange model)
-        {
-            if (model == null || string.IsNullOrEmpty(model.ToEmail) || string.IsNullOrEmpty(model.Password)||string.IsNullOrEmpty(model.ConfirmPassword))
-            {
-                return BadRequest(new { Message = "Không được để trống, người dùng cần nhập đầy đủ" });
-            }
-            if (!model.Password.Equals(model.ConfirmPassword))
-            {
-                return BadRequest(new { Message = "mật khẩu mới và mật khẩu xác nhận không giống nhau" });
-            }
-            var user = await _userService.GetUserByEmail(model.ToEmail);
-            var c = await _userService.UpdatePassword(user.UserId, model.Password);
-
-            if (c)
-            {
-                return Ok(new { Message = "Thay đổi mật khẩu thành công" });
-            }
-            else
-            {
-                return BadRequest(new { Message = "Thay đổi mật khẩu thất bại" });
-            }
-        }
-
         [HttpPost("ResgisterUser")]
         public async Task<IActionResult> ResgisterUser([FromBody] UserCreateDTO model)
         {
-            if (model == null || string.IsNullOrEmpty(model.Email) || string.IsNullOrEmpty(model.UserName) || string.IsNullOrEmpty(model.FullName) || string.IsNullOrEmpty(model.Password) || string.IsNullOrEmpty(model.ConfirmPassword))
+            if (model == null || string.IsNullOrEmpty(model.Email) || string.IsNullOrEmpty(model.FullName) || string.IsNullOrEmpty(model.Password) || string.IsNullOrEmpty(model.ConfirmPassword))
             {
                 return BadRequest(new { Message = "Không được để trống, người dùng cần nhập đầy đủ" });
             }
@@ -274,7 +269,6 @@ namespace VJN.Controllers
                 {
                     Email = Email,
                     FullName = payload.GivenName + " " + payload.FamilyName,
-                    UserName = payload.GivenName,
                     Password = "123123",
                     ConfirmPassword = "123123"
                 };

@@ -74,7 +74,7 @@ namespace VJN.Repositories
 
         public async Task<User> Login(string Username, string Password)
         {
-            var user =await _context.Users.Where(u=>u.UserName.Equals(Username)&&u.Password.Equals(Password)).Include(u=>u.Role).SingleOrDefaultAsync();
+            var user =await _context.Users.Where(u=>u.Email.Equals(Username)&&u.Password.Equals(Password)).Include(u=>u.Role).SingleOrDefaultAsync();
             return user;
         }
 
