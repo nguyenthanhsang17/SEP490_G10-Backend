@@ -3,6 +3,7 @@ using VJN.ModelsDTO.UserDTOs;
 using AutoMapper;
 using VJN.ModelsDTO.BlogDTOs;
 using VJN.ModelsDTO.MediaItemDTOs;
+using VJN.ModelsDTO.PostJobDTOs;
 
 namespace VJN.Map
 {
@@ -26,6 +27,10 @@ namespace VJN.Map
             //Maper for Media
             CreateMap<MediaItemDTO, MediaItem>();
             //Maper for Media
+
+            CreateMap<PostJob, PostJobDTOForHomepage>().ForMember(dest => dest.AuthorName, opt => opt.MapFrom(src => src.Author.FullName))
+                                            .ForMember(dest => dest.JobCategoryName, opt => opt.MapFrom(src => src.JobCategory.JobCategoryName))
+                                            .ForMember(dest => dest.SalaryTypeName, opt => opt.MapFrom(src => src.SalaryTypes.TypeName));
         }
     }
 }

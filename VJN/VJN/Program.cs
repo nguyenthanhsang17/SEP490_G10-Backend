@@ -117,6 +117,9 @@ namespace VJN
             builder.Services.AddScoped<IMediaItemRepository, MediaItemRepository>();
             builder.Services.AddScoped<IMediaItemService, MediaItemService>();
 
+            builder.Services.AddScoped<IPostJobRepository, PostJobRepository>();
+            builder.Services.AddScoped<IPostJobService, PostJobService>();
+
             // Register services and repositories
 
             var app = builder.Build();
