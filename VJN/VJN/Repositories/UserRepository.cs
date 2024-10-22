@@ -257,5 +257,32 @@ namespace VJN.Repositories
                 return false;
             }
         }
+
+        public async Task<bool> RemoveUserVerifycode(User user)
+        {
+            user.VerifyCode = null;
+            user.SendCodeTime = null;
+            _context.Entry(user).State = EntityState.Modified;
+            var i = await _context.SaveChangesAsync();
+            return i >= 1;
+        }
+
+        public async Task<bool> CheckOtpExits(string otp)
+        {
+            return await _context.Users.AnyAsync(u => u.VerifyCode.Equals(otp));
+        }
+
+        public async Task<User> GetUserByOtp(string otp)
+        {
+            User u = null;
+            try
+            {
+                u = await _context.Users.Where(u=>u.VerifyCode.Equals(otp)).SingleOrDefaultAsync();
+                return u;
+            }catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }
