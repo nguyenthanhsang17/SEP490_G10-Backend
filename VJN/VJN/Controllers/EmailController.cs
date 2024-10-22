@@ -34,7 +34,16 @@ namespace VJN.Controllers
             var check = await _userService.CheckEmailExits(model.email);
             if(check)
             {
-                var opt = _generator.GenerateOTP();
+                var opt = "";
+                do
+                {
+                    opt = _generator.GenerateOTP();
+                    bool c = await _userService.CheckOtpExits(opt);
+                    if (c == false)
+                    {
+                        break;
+                    }
+                } while (true);
                 _userService.UpdateOtpUser(model.email, opt);
                 await _emailService.SendEmailAsync(model.email, "Mã xác nhận OTP cho yêu cầu đặt lại mật khẩu", $"Chúng tôi đã nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn. Vui lòng sử dụng mã OTP dưới đây để xác thực yêu cầu của bạn:\r\n\r\n**Mã OTP: {opt} \r\n\r\nMã OTP này sẽ hết hạn sau 5 phút. Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này.");
 

@@ -48,6 +48,11 @@ namespace VJN.Services
             }
         }
 
+        public async Task<bool> CheckOtpExits(string otp)
+        {
+            return await _userRepository.CheckOtpExits(otp);
+        }
+
         public async Task<int> CreateUser(UserCreateDTO userdto, string otp)
         {
             if(userdto == null)
@@ -157,7 +162,30 @@ namespace VJN.Services
             }
             else
             {
+                await _userRepository.RemoveUserVerifycode(user);
                 return true;
+            }
+        }
+
+        public async Task<bool> VerifycodeRegister(string Otp)
+        {
+            var u = await _userRepository.GetUserByOtp(Otp);
+            if (u == null)
+            {
+                return false;
+            }
+            else
+            {
+                int i = await _userRepository.UpdateStatus(u.UserId, 1);
+                if (i == 1)
+                {
+                    await _userRepository.RemoveUserVerifycode(u);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
         }
     }
