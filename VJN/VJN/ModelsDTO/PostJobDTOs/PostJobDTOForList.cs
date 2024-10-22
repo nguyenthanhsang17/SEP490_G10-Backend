@@ -13,5 +13,7 @@
         public DateTime? CreateDate { get; set; }
         public DateTime? ExpirationDate { get; set; }
         public int? JobCategoryId { get; set; }
+
+        public int? Status { get; set; }
     }
 }

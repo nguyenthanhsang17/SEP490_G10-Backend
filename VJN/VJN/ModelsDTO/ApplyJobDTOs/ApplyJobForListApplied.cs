@@ -13,7 +13,8 @@
         public string? Authorname { get; set; }
         public DateTime? CreateDate { get; set; }
         public DateTime? ExpirationDate { get; set; }
-        public int Status { get; set; }
+        public int StatusApplyJob { get; set; }
+        public int StatusJob { get; set; }
         public string JobCategory { get; set; }
     }
 }
