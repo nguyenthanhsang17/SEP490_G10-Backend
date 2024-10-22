@@ -62,7 +62,8 @@ namespace VJN.Controllers
                         Authorname = authorName,
                         CreateDate = postJobDTOForList?.CreateDate,
                         ExpirationDate = postJobDTOForList?.ExpirationDate,
-                        Status = (int)appliedJob.Status,
+                        StatusApplyJob = (int)appliedJob.Status,
+                        StatusJob= (int)postJobDTOForList.Status,
                         JobCategory = jobcategoryname
                     });
                 }

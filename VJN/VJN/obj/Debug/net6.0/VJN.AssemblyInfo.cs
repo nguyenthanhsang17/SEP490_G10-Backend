@@ -15,10 +15,14 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
 <<<<<<< HEAD
+<<<<<<< HEAD
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ef6d45523c9ff95ba0fcc9ee8f456d2820104598")]
 =======
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+28e6aaa5e2da97563c91b32cbf2727538b96d40a")]
 >>>>>>> 6ffb2ae (Inter 1)
+=======
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6ffb2aed187ba15292219505d5ed68325362ca4f")]
+>>>>>>> 0a69dbe (Update dto view apply job, change status apply job, view all job seeker, view detail jobseeker)
 [assembly: System.Reflection.AssemblyProductAttribute("VJN")]
 [assembly: System.Reflection.AssemblyTitleAttribute("VJN")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

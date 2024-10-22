@@ -10,6 +10,7 @@ using VJN.Repositories;
 using VJN.Services;
 using VJN.ModelsDTO.Imagekit;
 using VJN.ModelsDTO.EmailDTOs;
+using System.Text.Json.Serialization;
 
 namespace VJN
 {
@@ -21,7 +22,11 @@ namespace VJN
 
             // Add services to the container.
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+                });
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>

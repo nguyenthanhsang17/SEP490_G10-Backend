@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using VJN.Models;
 using VJN.ModelsDTO.ApplyJobDTOs;
+using VJN.ModelsDTO.CvDTOs;
 using VJN.ModelsDTO.UserDTOs;
 using VJN.Services;
 
@@ -54,6 +56,12 @@ namespace VJN.Controllers
             try
             {
                 var jobseeker = await _userService.GetUserDetail(JobSeekerApply_ID);
+                var cvs = await _context.Cvs
+                .Include(c => c.ItemOfCvs) 
+                .Where(c => c.UserId == jobseeker.UserId)
+                .ToListAsync();
+                jobseeker.Cvs = _mapper.Map<List<CvDTODetail>>(cvs);
+                
                 return jobseeker;
             }
             catch (Exception ex)

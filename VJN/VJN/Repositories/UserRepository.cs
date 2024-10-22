@@ -58,7 +58,7 @@ namespace VJN.Repositories
             User user = null;
             try
             {
-                user = await _context.Users.Include(u => u.Role).Include(u=>u.AvatarNavigation).Include(u=>u.Cvs).Include(u=>u.CurrentJobNavigation).Where(u=>u.UserId==id).SingleOrDefaultAsync();
+                user = await _context.Users.Include(u => u.Role).Include(u=>u.AvatarNavigation).Include(u=>u.CurrentJobNavigation).Where(u=>u.UserId==id).SingleOrDefaultAsync();
             }catch (Exception ex)
             {
                 throw new Exception(ex.Message);

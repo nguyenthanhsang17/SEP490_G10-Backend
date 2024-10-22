@@ -4,6 +4,8 @@ using AutoMapper;
 using VJN.ModelsDTO.BlogDTOs;
 using VJN.ModelsDTO.MediaItemDTOs;
 using VJN.ModelsDTO.PostJobDTOs;
+using VJN.ModelsDTO.CvDTOs;
+using VJN.ModelsDTO.ItemOfCvDTOs;
 
 namespace VJN.Map
 {
@@ -23,8 +25,12 @@ namespace VJN.Map
 
 =======
             CreateMap<UserDTO, UserDTOforList>();
+<<<<<<< HEAD
             CreateMap<User, UserDTOdetail>();
 >>>>>>> 6ffb2ae (Inter 1)
+=======
+            CreateMap<User, UserDTOdetail>().ForMember(dest => dest.AvatarURL, opt => opt.MapFrom(src => src.AvatarNavigation.Url));
+>>>>>>> 0a69dbe (Update dto view apply job, change status apply job, view all job seeker, view detail jobseeker)
             //Mapper for user
             //Mapper for Blog
             CreateMap<Blog, BlogDTO>();
@@ -38,6 +44,8 @@ namespace VJN.Map
                                             .ForMember(dest => dest.JobCategoryName, opt => opt.MapFrom(src => src.JobCategory.JobCategoryName))
                                             .ForMember(dest => dest.SalaryTypeName, opt => opt.MapFrom(src => src.SalaryTypes.TypeName));
             CreateMap<PostJob, PostJobDTOForList>();
+            CreateMap<Cv, CvDTODetail>();
+            CreateMap<ItemOfCv, ItemOfcvDTOforView>();
         }
     }
 }
