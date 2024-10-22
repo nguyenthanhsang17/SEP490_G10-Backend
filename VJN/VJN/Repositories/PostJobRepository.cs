@@ -39,5 +39,21 @@ namespace VJN.Repositories
             var image = await _context.MediaItems.Where(mi=>mi.Id==id).SingleOrDefaultAsync();
             return image.Url;
         }
+
+        public async Task<PostJob> GetPostJobById(int id)
+        {
+            PostJob postJob = null;
+            try
+            {
+                postJob = await _context.PostJobs.FindAsync(id);
+            }
+            catch (Exception ex) 
+            {
+                throw new Exception(ex.Message);
+            }
+            
+            return postJob;
+        }
+
     }
 }

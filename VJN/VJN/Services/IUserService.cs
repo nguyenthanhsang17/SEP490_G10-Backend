@@ -18,5 +18,7 @@ namespace VJN.Services
         public Task<bool> UpdateProfile(int v, UserUpdateDTO model);
         public Task<UserDTO> GetUserByEmail(string Email);
         public Task<bool> UpdatePassword(int userid, string password);
+
+        public Task<UserDTOdetail> GetUserDetail(int id);
     }
 }

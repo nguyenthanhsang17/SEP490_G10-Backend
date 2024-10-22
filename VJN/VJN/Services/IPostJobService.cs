@@ -6,5 +6,7 @@ namespace VJN.Services
     {
         public Task<IEnumerable<PostJobDTOForHomepage>> getPorpularJob();
 
+        public Task<PostJobDTOForList> GetPostJobById(int id);
+
     }
 }

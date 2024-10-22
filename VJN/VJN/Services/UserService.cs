@@ -80,6 +80,13 @@ namespace VJN.Services
             return userdto;
         }
 
+        public async Task<UserDTOdetail> GetUserDetail(int id)
+        {
+            var user = await _userRepository.findById(id);
+            var userdtodetail = _mapper.Map<UserDTOdetail>(user);
+            return userdtodetail;
+        }
+
         public async Task<IEnumerable<UserDTO>> getAllUser()
         {
             var users = await _userRepository.getAllUser();
