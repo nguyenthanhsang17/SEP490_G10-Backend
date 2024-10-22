@@ -21,16 +21,16 @@ namespace VJN.Map
                                             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => 0))
                                             .ForMember(dest => dest.Avatar, opt => opt.MapFrom(src => 4));
             CreateMap<UserUpdateDTO, User>();
-<<<<<<< HEAD
 
-=======
+
+
             CreateMap<UserDTO, UserDTOforList>();
-<<<<<<< HEAD
+
             CreateMap<User, UserDTOdetail>();
->>>>>>> 6ffb2ae (Inter 1)
-=======
+
+
             CreateMap<User, UserDTOdetail>().ForMember(dest => dest.AvatarURL, opt => opt.MapFrom(src => src.AvatarNavigation.Url));
->>>>>>> 0a69dbe (Update dto view apply job, change status apply job, view all job seeker, view detail jobseeker)
+
             //Mapper for user
             //Mapper for Blog
             CreateMap<Blog, BlogDTO>();

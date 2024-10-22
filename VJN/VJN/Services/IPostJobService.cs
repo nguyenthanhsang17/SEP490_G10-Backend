@@ -9,11 +9,10 @@ namespace VJN.Services
     {
         public Task<IEnumerable<PostJobDTOForHomepage>> getPorpularJob();
 
-<<<<<<< HEAD
         public Task<PagedResult<JobSearchResult>> SearchJobPopular(PostJobSearch postJobSearch, int pageNumber);
-=======
+
         public Task<PostJobDTOForList> GetPostJobById(int id);
->>>>>>> 6ffb2ae (Inter 1)
+
 
     }
 }

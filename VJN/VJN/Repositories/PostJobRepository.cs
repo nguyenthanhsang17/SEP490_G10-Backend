@@ -90,7 +90,7 @@ namespace VJN.Repositories
             return image.Url;
         }
 
-<<<<<<< HEAD
+
         public async Task<IEnumerable<PostJob>> jobSearchResults(IEnumerable<int> jobIds)
         {
             var jobs = await _context.PostJobs.Include(j => j.Author).Include(j => j.JobCategory).Include(j => j.SalaryTypes).Where(u => jobIds.Contains(u.PostId)).ToListAsync();
@@ -101,7 +101,7 @@ namespace VJN.Repositories
         {
             return await _context.ApplyJobs.CountAsync(a => a.PostId == jobId);
         }
-=======
+
         public async Task<PostJob> GetPostJobById(int id)
         {
             PostJob postJob = null;
@@ -117,6 +117,5 @@ namespace VJN.Repositories
             return postJob;
         }
 
->>>>>>> 6ffb2ae (Inter 1)
     }
 }

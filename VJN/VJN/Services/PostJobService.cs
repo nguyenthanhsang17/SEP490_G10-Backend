@@ -29,7 +29,7 @@ namespace VJN.Services
             return pdto;
         }
 
-<<<<<<< HEAD
+
         public double Haversine(decimal lat1, decimal lon1, decimal lat2, decimal lon2)
         {
             double dLat = DegreesToRadians((double)(lat2 - lat1));
@@ -55,7 +55,7 @@ namespace VJN.Services
 
             var jobs = await _postJobRepository.jobSearchResults(pageIds.Items);
 
-            var jobSearchResultTasks =  jobs.Select(async j=> new JobSearchResult
+            var jobSearchResultTasks = jobs.Select(async j => new JobSearchResult
             {
                 PostId = j.PostId,
                 thumbnail = await _postJobRepository.getThumnailJob(j.PostId),
@@ -67,7 +67,7 @@ namespace VJN.Services
                 Address = j.Address,
                 Latitude = j.Latitude,
                 Longitude = j.Longitude,
-                distance =  Math.Abs(Haversine(postJobSearch.Latitude.Value, postJobSearch.Longitude.Value, j.Latitude.Value, j.Longitude.Value)) , 
+                distance = Math.Abs(Haversine(postJobSearch.Latitude.Value, postJobSearch.Longitude.Value, j.Latitude.Value, j.Longitude.Value)),
                 AuthorName = j.Author.FullName,
                 SalaryTypeName = j.SalaryTypes.TypeName,
                 JobCategoryName = j.JobCategory.JobCategoryName,
@@ -80,14 +80,15 @@ namespace VJN.Services
             var jobSearchResult = await Task.WhenAll(jobSearchResultTasks);
             var page = new PagedResult<JobSearchResult>(jobSearchResult, jobsIds.Count(), pageNumber, PageSize);
             return page;
-
-=======
-        public async Task<PostJobDTOForList>  GetPostJobById(int id) 
-        {
-            PostJob postJob = await _postJobRepository.GetPostJobById(id);
-            PostJobDTOForList postJobDTO = _mapper.Map<PostJobDTOForList>(postJob);
-            return postJobDTO;
->>>>>>> 6ffb2ae (Inter 1)
         }
-    }
+
+            public async Task<PostJobDTOForList> GetPostJobById(int id)
+            {
+                PostJob postJob = await _postJobRepository.GetPostJobById(id);
+                PostJobDTOForList postJobDTO = _mapper.Map<PostJobDTOForList>(postJob);
+                return postJobDTO;
+
+            }
+        }
+    
 }

@@ -19,11 +19,8 @@ namespace VJN.Services
         public Task<bool> UpdateProfile(int v, UserUpdateDTO model);
         public Task<UserDTO> GetUserByEmail(string Email);
         public Task<bool> UpdatePassword(int userid, string password);
-<<<<<<< HEAD
         public Task<bool> CheckOtpExits(string otp);
-=======
+       public Task<UserDTOdetail> GetUserDetail(int id);
 
-        public Task<UserDTOdetail> GetUserDetail(int id);
->>>>>>> 6ffb2ae (Inter 1)
     }
 }
