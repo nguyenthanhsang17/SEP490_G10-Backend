@@ -30,7 +30,7 @@ namespace VJN
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
-                    Name = "Authorization",
+                   Name = "Authorization",
                     In = ParameterLocation.Header,
                     Type = SecuritySchemeType.Http,
                     Scheme = "bearer",
@@ -40,14 +40,14 @@ namespace VJN
                 {
                     {
                         new OpenApiSecurityScheme
-                        {
-                            Reference = new OpenApiReference
-                            {
-                                Type = ReferenceType.SecurityScheme,
-                                Id = "Bearer"
-                            },
-                        },
-                        Array.Empty<string>()
+                      {
+                           Reference = new OpenApiReference
+                          {
+                               Type = ReferenceType.SecurityScheme,
+                              Id = "Bearer"
+                          },
+                   },
+                      Array.Empty<string>()
                     }
                 });
             });
@@ -71,7 +71,7 @@ namespace VJN
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = jwtSettings.Issuer,
+                   ValidIssuer = jwtSettings.Issuer,
                     ValidAudience = jwtSettings.Audience,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret))
                 };
@@ -120,6 +120,11 @@ namespace VJN
             builder.Services.AddScoped<IPostJobRepository, PostJobRepository>();
             builder.Services.AddScoped<IPostJobService, PostJobService>();
 
+            builder.Services.AddScoped<IApplyJobRepository, ApplyJobRepository>();
+            builder.Services.AddScoped<IApplyJobService, ApplyJobService>();
+
+
+
             // Register services and repositories
 
             var app = builder.Build();
@@ -141,7 +146,7 @@ namespace VJN
 
             app.UseHttpsRedirection();
             app.UseCors("CORSPolicy");
-            app.UseAuthentication();
+            //app.UseAuthentication();
             app.UseAuthorization();
             app.Use(async (context, next) =>
             {

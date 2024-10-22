@@ -29,6 +29,7 @@ namespace VJN.Services
             return pdto;
         }
 
+<<<<<<< HEAD
         public double Haversine(decimal lat1, decimal lon1, decimal lat2, decimal lon2)
         {
             double dLat = DegreesToRadians((double)(lat2 - lat1));
@@ -80,6 +81,13 @@ namespace VJN.Services
             var page = new PagedResult<JobSearchResult>(jobSearchResult, jobsIds.Count(), pageNumber, PageSize);
             return page;
 
+=======
+        public async Task<PostJobDTOForList>  GetPostJobById(int id) 
+        {
+            PostJob postJob = await _postJobRepository.GetPostJobById(id);
+            PostJobDTOForList postJobDTO = _mapper.Map<PostJobDTOForList>(postJob);
+            return postJobDTO;
+>>>>>>> 6ffb2ae (Inter 1)
         }
     }
 }
