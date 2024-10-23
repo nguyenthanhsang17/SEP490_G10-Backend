@@ -128,6 +128,10 @@ namespace VJN
             builder.Services.AddScoped<IApplyJobRepository, ApplyJobRepository>();
             builder.Services.AddScoped<IApplyJobService, ApplyJobService>();
 
+            builder.Services.AddScoped<ISlotRepository, SlotRepository>();
+            builder.Services.AddScoped<ISlotService, SlotService>();
+
+
 
 
             // Register services and repositories

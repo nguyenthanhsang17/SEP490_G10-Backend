@@ -6,6 +6,7 @@ using VJN.ModelsDTO.MediaItemDTOs;
 using VJN.ModelsDTO.PostJobDTOs;
 using VJN.ModelsDTO.CvDTOs;
 using VJN.ModelsDTO.ItemOfCvDTOs;
+using VJN.ModelsDTO.SlotDTOs;
 
 namespace VJN.Map
 {
@@ -44,8 +45,17 @@ namespace VJN.Map
                                             .ForMember(dest => dest.JobCategoryName, opt => opt.MapFrom(src => src.JobCategory.JobCategoryName))
                                             .ForMember(dest => dest.SalaryTypeName, opt => opt.MapFrom(src => src.SalaryTypes.TypeName));
             CreateMap<PostJob, PostJobDTOForList>();
+            CreateMap<PostJob, PostJobDetailDTO>().ForMember(dest => dest.AuthorName, opt => opt.MapFrom(src => src.Author.FullName))
+                                            .ForMember(dest => dest.JobCategoryName, opt => opt.MapFrom(src => src.JobCategory.JobCategoryName))
+                                            .ForMember(dest => dest.SalaryTypeName, opt => opt.MapFrom(src => src.SalaryTypes.TypeName));
+
             CreateMap<Cv, CvDTODetail>();
             CreateMap<ItemOfCv, ItemOfcvDTOforView>();
+
+
+            CreateMap<Slot, SlotDTO>();
+            CreateMap<JobSchedule, JobScheduleDTO>();
+            CreateMap<WorkingHour, WorkingHourDTO>();
         }
     }
 }

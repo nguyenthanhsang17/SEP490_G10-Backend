@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using VJN.Models;
 using VJN.ModelsDTO.PostJobDTOs;
 using VJN.Paging;
@@ -49,10 +50,10 @@ namespace VJN.Services
             return degrees * (Math.PI / 180);
         }
 
-        public async Task<PagedResult<JobSearchResult>> SearchJobPopular(PostJobSearch postJobSearch, int pageNumber)
+        public async Task<PagedResult<JobSearchResult>> SearchJobPopular(PostJobSearch postJobSearch)
         {
             var jobsIds = await _postJobRepository.SearchJobPopular(postJobSearch);
-            var pageIds = PaginationHelper.GetPaged<int>(jobsIds, pageNumber, PageSize);
+            var pageIds = PaginationHelper.GetPaged<int>(jobsIds, postJobSearch.pageNumber, PageSize);
 
             var jobs = await _postJobRepository.jobSearchResults(pageIds.Items);
 
@@ -61,9 +62,7 @@ namespace VJN.Services
                 PostId = j.PostId,
                 thumbnail = "sang",
                 JobTitle = j.JobTitle,
-                RangeSalaryMax = j.RangeSalaryMax,
-                RangeSalaryMin = j.RangeSalaryMin,
-                FixSalary = j.FixSalary,
+                Salary = j.Salary,
                 NumberPeople = j.NumberPeople,
                 Address = j.Address,
                 Latitude = j.Latitude,
@@ -79,7 +78,7 @@ namespace VJN.Services
             }).ToList();
 
             var jobSearchResult = await Task.WhenAll(jobSearchResultTasks);
-            var page = new PagedResult<JobSearchResult>(jobSearchResult, jobsIds.Count(), pageNumber, PageSize);
+            var page = new PagedResult<JobSearchResult>(jobSearchResult, jobsIds.Count(), postJobSearch.pageNumber, PageSize);
             return page;
         }
         private double CalculateDistance(decimal? lat1, decimal? lon1, decimal? lat2, decimal? lon2)
@@ -91,10 +90,7 @@ namespace VJN.Services
             return Math.Abs(Haversine(lat1.Value, lon1.Value, lat2.Value, lon2.Value));
         }
 
-        public async Task<PostJob> getJostJobByID(int id)
-        {
-            return null;
-        }
+        
 
 
         public async Task<PostJobDTOForList> GetPostJobById(int id)
@@ -103,6 +99,27 @@ namespace VJN.Services
             PostJobDTOForList postJobDTO = _mapper.Map<PostJobDTOForList>(postJob);
             return postJobDTO;
 
+        }
+
+        public async Task<PostJobDetailDTO> getJostJobByID(int id, int? userid)
+        {
+            var post = await _postJobRepository.getJostJobByID(id);
+            var postdto = _mapper.Map<PostJobDetailDTO>(post);
+
+            postdto.ImagePostJobs = await _postJobRepository.getAllImageJobByJobId(postdto.PostId);
+            if(userid.HasValue)
+            {
+                postdto.isAppliedJob = await _postJobRepository.GetisAppliedJob(postdto.PostId, userid.Value);
+                postdto.isWishJob = await _postJobRepository.GetisWishJob(postdto.PostId, userid.Value);
+            }
+            else
+            {
+                postdto.isAppliedJob = false;
+                postdto.isWishJob = false;
+            }
+            postdto .NumberAppliedUser = await _postJobRepository.CountApplyJob(postdto.PostId);
+           
+            return postdto;
         }
     }
 }
