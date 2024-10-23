@@ -33,7 +33,6 @@ namespace VJN.ModelsDTO.PostJobDTOs
         public IEnumerable<SlotDTO> slotDTOs { get; set; }
         public bool isAppliedJob { get; set; }
         public bool isWishJob { get; set; }
-        public double? percentTime { get; set; }
         public int NumberAppliedUser { get; set;}
     }
 }

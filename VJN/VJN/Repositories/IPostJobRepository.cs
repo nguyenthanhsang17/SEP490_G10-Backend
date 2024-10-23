@@ -12,5 +12,9 @@ namespace VJN.Repositories
         public Task<PostJob> getJostJobByID(int id);
         public Task<int> CountApplyJob(int jobId);
         public Task<PostJob> GetPostJobById(int id);
+
+        public Task<IEnumerable<string>> getAllImageJobByJobId(int jid);
+        public Task<bool> GetisAppliedJob(int jid, int userid);
+        public Task<bool> GetisWishJob(int jid, int userid);
     }
 }

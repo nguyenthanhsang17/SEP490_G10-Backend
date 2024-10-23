@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using VJN.Models;
 using VJN.ModelsDTO.PostJobDTOs;
 using VJN.Paging;
+using VJN.Repositories;
 using VJN.Services;
 
 namespace VJN.Controllers
@@ -17,19 +18,21 @@ namespace VJN.Controllers
     public class PostJobsController : ControllerBase
     {
         private readonly IPostJobService _postJobService;
+        private readonly ISlotService _slotService;
 
-        public PostJobsController(IPostJobService postJobService)
+        public PostJobsController(IPostJobService postJobService, ISlotService slotService)
         {
             _postJobService = postJobService;
+            _slotService = slotService;
         }
 
         [HttpGet]
-        public async Task<ActionResult<PagedResult<JobSearchResult>>> GetPostJobsPopular([FromQuery] PostJobSearch model, [FromQuery] int pageNumber)
+        public async Task<ActionResult<PagedResult<JobSearchResult>>> GetPostJobsPopular([FromQuery] PostJobSearch model)
         {
             model.JobCategoryId = 0;
-            pageNumber = 2;
+            model.pageNumber = 2;
             model.SalaryTypesId = 0;
-            var jobs = await _postJobService.SearchJobPopular(model, pageNumber);
+            var jobs = await _postJobService.SearchJobPopular(model);
             if(jobs == null || jobs.Items.Count() == 0)
             {
                 return BadRequest(new { Message = "không tìm thấy công việc !!!" });
@@ -40,12 +43,19 @@ namespace VJN.Controllers
         [HttpGet("jobDetails/{id}")]
         public async Task<ActionResult<PostJob>> getJobDetails(int id)
         {
-            string iduser_str = GetUserIdFromToken();
-            int iduser = int.Parse(iduser_str);
+            string? iduser_str = GetUserIdFromToken();
+            int? iduser = null;
+            if (!string.IsNullOrEmpty(iduser_str))
+            {
+                iduser = int.Parse(iduser_str);
+            }
 
+            var postdto = await _postJobService.getJostJobByID(id, iduser);
 
+            var slotDTO = await _slotService.GetSlotByPostjobId(id);
 
-            return null;
+            postdto.slotDTOs = slotDTO;
+            return Ok(postdto);
         }
 
         private string GetUserIdFromToken()
@@ -54,7 +64,7 @@ namespace VJN.Controllers
 
             if (string.IsNullOrEmpty(token))
             {
-                throw new Exception("Missing token in Authorization header.");
+                return null;
             }
 
             var handler = new JwtSecurityTokenHandler();
@@ -64,7 +74,7 @@ namespace VJN.Controllers
 
             if (userIdClaim == null)
             {
-                throw new Exception("User ID not found in token.");
+                return null;
             }
 
             return userIdClaim.Value;

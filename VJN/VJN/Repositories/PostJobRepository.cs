@@ -67,15 +67,9 @@ namespace VJN.Repositories
             if (s.RangeSalaryMin.HasValue || s.RangeSalaryMax.HasValue)
             {
                 query = query.Where(j =>
-                    // Trường hợp có khoảng lương
-                    (j.RangeSalaryMin.HasValue && j.RangeSalaryMax.HasValue &&
-                     (!s.RangeSalaryMin.HasValue || j.RangeSalaryMax >= s.RangeSalaryMin) &&
-                     (!s.RangeSalaryMax.HasValue || j.RangeSalaryMin <= s.RangeSalaryMax))
-                    ||
-                    // Trường hợp có lương cố định
-                    (j.FixSalary.HasValue &&
-                     (!s.RangeSalaryMin.HasValue || j.FixSalary >= s.RangeSalaryMin) &&
-                     (!s.RangeSalaryMax.HasValue || j.FixSalary <= s.RangeSalaryMax))
+                    (j.Salary.HasValue &&
+                     (!s.RangeSalaryMin.HasValue || j.Salary >= s.RangeSalaryMin) &&
+                     (!s.RangeSalaryMax.HasValue || j.Salary <= s.RangeSalaryMax))
                 );
             }
 
@@ -100,10 +94,21 @@ namespace VJN.Repositories
 
             if (s.JobCategoryId!=0)
                 query = query.Where(j => j.JobCategoryId == s.JobCategoryId.Value);
+            if (s.SortNumberApplied != 0)
+            {
+                if(s.SortNumberApplied == -1)
+                {
+                    query = query.OrderByDescending(j => j.ApplyJobs.Count());
+                }
+                else
+                {
+                    query = query.OrderBy(j => j.ApplyJobs.Count());
+                }
+            }
+
 
             // Sắp xếp theo số lượng người đã apply và chỉ lấy Post_Id
             var result = await query
-                .OrderByDescending(j => j.ApplyJobs.Count())
                 .Select(j => j.PostId)
                 .ToListAsync();
 
@@ -131,7 +136,7 @@ namespace VJN.Repositories
 
         public async Task<PostJob> getJostJobByID(int id)
         {
-            var job = await _context.PostJobs.FindAsync(id);
+            var job = await _context.PostJobs.Include(j=>j.Author).Include(j=>j.JobCategory).Include(j=>j.SalaryTypes).Where(j=>j.PostId==id).SingleOrDefaultAsync();
             return job;
         }
 
@@ -155,6 +160,20 @@ namespace VJN.Repositories
             return postJob;
         }
 
-        
+        public async Task<IEnumerable<string>> getAllImageJobByJobId(int jid)
+        {
+            var imgs = await _context.ImagePostJobs.Include(imj=>imj.Image).Where(imj=>imj.PostId==jid).Select(imj=>imj.Image.Url).ToListAsync();
+            return imgs;
+        }
+
+        public async Task<bool> GetisAppliedJob(int jid, int userid)
+        {
+            return await _context.ApplyJobs.Where(aj=>aj.JobSeekerId==userid&&aj.PostId==jid).AnyAsync();
+        }
+
+        public async Task<bool> GetisWishJob(int jid, int userid)
+        {
+            return await _context.WishJobs.Where(aj => aj.JobSeekerId == userid && aj.PostJobId == jid).AnyAsync();
+        }
     }
 }

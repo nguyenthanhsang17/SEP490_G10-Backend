@@ -9,7 +9,6 @@ namespace VJN.ModelsDTO.UserDTOs
         public string? Email { get; set; }
         public string? AvatarURL { get; set; }
         public string? FullName { get; set; }
-        public string? UserName { get; set; }
         public int? Age { get; set; }
         public string? Phonenumber { get; set; }
         public int? CurrentJob { get; set; }

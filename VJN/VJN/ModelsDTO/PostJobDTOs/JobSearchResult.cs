@@ -5,9 +5,7 @@
         public int PostId { get; set; }
         public string? thumbnail { get; set; }
         public string JobTitle { get; set; }
-        public decimal? RangeSalaryMin { get; set; }
-        public decimal? RangeSalaryMax { get; set; }
-        public decimal? FixSalary { get; set; }
+        public decimal? Salary { get; set; }
         public int? NumberPeople { get; set; }
         public string Address { get; set; }
         public decimal? Latitude { get; set; }
