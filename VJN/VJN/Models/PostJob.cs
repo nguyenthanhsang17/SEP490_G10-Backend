@@ -20,9 +20,7 @@ namespace VJN.Models
         public string? JobTitle { get; set; }
         public string? JobDescription { get; set; }
         public int? SalaryTypesId { get; set; }
-        public decimal? RangeSalaryMin { get; set; }
-        public decimal? RangeSalaryMax { get; set; }
-        public decimal? FixSalary { get; set; }
+        public decimal? Salary { get; set; }
         public int? NumberPeople { get; set; }
         public string? Address { get; set; }
         public decimal? Latitude { get; set; }
