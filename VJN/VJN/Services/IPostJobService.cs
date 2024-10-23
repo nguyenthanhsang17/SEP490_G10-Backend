@@ -11,5 +11,8 @@ namespace VJN.Services
         public Task<PagedResult<JobSearchResult>> SearchJobPopular(PostJobSearch postJobSearch, int pageNumber);
         public Task<PostJob> getJostJobByID(int id);
 
+        public Task<PostJobDTOForList> GetPostJobById(int id);
+
+
     }
 }

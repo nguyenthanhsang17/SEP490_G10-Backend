@@ -4,6 +4,8 @@ using AutoMapper;
 using VJN.ModelsDTO.BlogDTOs;
 using VJN.ModelsDTO.MediaItemDTOs;
 using VJN.ModelsDTO.PostJobDTOs;
+using VJN.ModelsDTO.CvDTOs;
+using VJN.ModelsDTO.ItemOfCvDTOs;
 
 namespace VJN.Map
 {
@@ -20,6 +22,15 @@ namespace VJN.Map
                                             .ForMember(dest => dest.Avatar, opt => opt.MapFrom(src => 4));
             CreateMap<UserUpdateDTO, User>();
 
+
+
+            CreateMap<UserDTO, UserDTOforList>();
+
+            CreateMap<User, UserDTOdetail>();
+
+
+            CreateMap<User, UserDTOdetail>().ForMember(dest => dest.AvatarURL, opt => opt.MapFrom(src => src.AvatarNavigation.Url));
+
             //Mapper for user
             //Mapper for Blog
             CreateMap<Blog, BlogDTO>();
@@ -32,6 +43,9 @@ namespace VJN.Map
             CreateMap<PostJob, PostJobDTOForHomepage>().ForMember(dest => dest.AuthorName, opt => opt.MapFrom(src => src.Author.FullName))
                                             .ForMember(dest => dest.JobCategoryName, opt => opt.MapFrom(src => src.JobCategory.JobCategoryName))
                                             .ForMember(dest => dest.SalaryTypeName, opt => opt.MapFrom(src => src.SalaryTypes.TypeName));
+            CreateMap<PostJob, PostJobDTOForList>();
+            CreateMap<Cv, CvDTODetail>();
+            CreateMap<ItemOfCv, ItemOfcvDTOforView>();
         }
     }
 }

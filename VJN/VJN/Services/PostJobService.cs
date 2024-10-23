@@ -14,7 +14,8 @@ namespace VJN.Services
 
         private readonly IPostJobRepository _postJobRepository;
         private readonly IMapper _mapper;
-        public PostJobService(IPostJobRepository postJobRepository, IMapper mapper) {
+        public PostJobService(IPostJobRepository postJobRepository, IMapper mapper)
+        {
             _postJobRepository = postJobRepository;
             _mapper = mapper;
         }
@@ -28,6 +29,7 @@ namespace VJN.Services
             }
             return pdto;
         }
+
 
         public double Haversine(decimal lat1, decimal lon1, decimal lat2, decimal lon2)
         {
@@ -54,10 +56,10 @@ namespace VJN.Services
 
             var jobs = await _postJobRepository.jobSearchResults(pageIds.Items);
 
-            var jobSearchResultTasks =  jobs.Select(async j=> new JobSearchResult
+            var jobSearchResultTasks = jobs.Select(async j => new JobSearchResult
             {
                 PostId = j.PostId,
-                thumbnail ="sang",
+                thumbnail = "sang",
                 JobTitle = j.JobTitle,
                 RangeSalaryMax = j.RangeSalaryMax,
                 RangeSalaryMin = j.RangeSalaryMin,
@@ -79,7 +81,6 @@ namespace VJN.Services
             var jobSearchResult = await Task.WhenAll(jobSearchResultTasks);
             var page = new PagedResult<JobSearchResult>(jobSearchResult, jobsIds.Count(), pageNumber, PageSize);
             return page;
-
         }
         private double CalculateDistance(decimal? lat1, decimal? lon1, decimal? lat2, decimal? lon2)
         {
@@ -93,6 +94,15 @@ namespace VJN.Services
         public async Task<PostJob> getJostJobByID(int id)
         {
             return null;
+        }
+
+
+        public async Task<PostJobDTOForList> GetPostJobById(int id)
+        {
+            PostJob postJob = await _postJobRepository.GetPostJobById(id);
+            PostJobDTOForList postJobDTO = _mapper.Map<PostJobDTOForList>(postJob);
+            return postJobDTO;
+
         }
     }
 }
