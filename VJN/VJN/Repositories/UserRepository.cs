@@ -212,17 +212,6 @@ namespace VJN.Repositories
                 {
                     u.Address = model.Address;
                 }
-
-                if (model.Latitude.HasValue)
-                {
-                    u.Latitude = model.Latitude.Value;
-                }
-
-                if (model.Longitude.HasValue)
-                {
-                    u.Longitude = model.Longitude.Value;
-                }
-
                 if (model.Gender.HasValue)
                 {
                     u.Gender = model.Gender.Value;
