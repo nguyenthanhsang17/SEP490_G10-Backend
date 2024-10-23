@@ -21,8 +21,16 @@ namespace VJN.Map
                                             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => 0))
                                             .ForMember(dest => dest.Avatar, opt => opt.MapFrom(src => 4));
             CreateMap<UserUpdateDTO, User>();
+
+
+
             CreateMap<UserDTO, UserDTOforList>();
+
+            CreateMap<User, UserDTOdetail>();
+
+
             CreateMap<User, UserDTOdetail>().ForMember(dest => dest.AvatarURL, opt => opt.MapFrom(src => src.AvatarNavigation.Url));
+
             //Mapper for user
             //Mapper for Blog
             CreateMap<Blog, BlogDTO>();

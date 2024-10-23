@@ -16,7 +16,10 @@ namespace VJN.Repositories
         public Task<int> UpdateStatus(int uid, int status);
         public Task<bool> CheckEmailExits(string Email);
         public Task<bool> UpdateProfile(int v, User model);
-
         public Task<bool> UpdatePassword(int userid, string password);
+        public Task<bool> RemoveUserVerifycode(User user);
+        public Task<bool> CheckOtpExits(string otp);
+        public Task<User> GetUserByOtp(string otp);
+
     }
 }

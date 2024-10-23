@@ -24,8 +24,8 @@ namespace VJN.Authenticate
                 Subject = new ClaimsIdentity(new Claim[]
               {
         new Claim(ClaimTypes.NameIdentifier, ac.UserId.ToString()),
-        new Claim(ClaimTypes.Name, ac.UserName),
-        new Claim(ClaimTypes.Role, ac.RoleName),
+        new Claim(ClaimTypes.Name, ac.Email),
+        new Claim(ClaimTypes.Role, ac.RoleId+""),
                   // Add custom claims as needed
               }),
                 Expires = DateTime.UtcNow.AddHours(_jwtSettings.ExpiryHours),

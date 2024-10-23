@@ -70,7 +70,6 @@ namespace VJN.Controllers
             {
                 Message = "Đăng nhập thành công",
                 token,
-                st.UserId,
                 st.FullName,
                 st.RoleId,
                 st.Status
@@ -90,15 +89,15 @@ namespace VJN.Controllers
 
         // GET: api/Users/5
         [Authorize]
-        [HttpGet("detail")]
+        [HttpGet("Detail")]
         public async Task<ActionResult<UserDTO>> GetUser()
         {
             string id_str = GetUserIdFromToken();
             int id = int.Parse(id_str);
-
-            var user = _userService.findById(id);
+            var user = await _userService.findById(id);
             return Ok(user);
         }
+
         [Authorize]
         [HttpPut("ChangePassword")]
         public async Task<IActionResult> ChangePassword([FromBody] UserChangePasswordDTO model)
@@ -199,15 +198,14 @@ namespace VJN.Controllers
         [HttpPut("VerifyCodeRegister")]
         public async Task<IActionResult> VerifyCodeRegister([FromBody] EmailRegister model)
         {
-            if (model == null || string.IsNullOrEmpty(model.ToEmail) || string.IsNullOrEmpty(model.Opt))
+            if (model == null || string.IsNullOrEmpty(model.Opt))
             {
                 return BadRequest(new { Message = "mã OTP trống" });
             }
-            var check = await _userService.Verifycode(model.ToEmail, model.Opt);
+            var check = await _userService.VerifycodeRegister(model.Opt);
             if (check)
             {
-                await _userService.UpdateStatusByEmail(model.ToEmail, 1);
-                return Ok(new { Message = "" });
+                return Ok(new { Message = "Xác thực thành công tài khoản" });
             }
             else
             {
@@ -249,9 +247,8 @@ namespace VJN.Controllers
                 return Ok(new
                 {
                     Message = "Đăng nhập thành công",
-                    token_1,
-                    st.UserId,
-                    st.UserName,
+                    token,
+                    st.FullName,
                     st.RoleId,
                     st.Status
                 });
