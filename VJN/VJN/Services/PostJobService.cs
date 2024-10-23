@@ -14,7 +14,8 @@ namespace VJN.Services
 
         private readonly IPostJobRepository _postJobRepository;
         private readonly IMapper _mapper;
-        public PostJobService(IPostJobRepository postJobRepository, IMapper mapper) {
+        public PostJobService(IPostJobRepository postJobRepository, IMapper mapper)
+        {
             _postJobRepository = postJobRepository;
             _mapper = mapper;
         }
@@ -58,7 +59,7 @@ namespace VJN.Services
             var jobSearchResultTasks = jobs.Select(async j => new JobSearchResult
             {
                 PostId = j.PostId,
-                thumbnail = await _postJobRepository.getThumnailJob(j.PostId),
+                thumbnail = "sang",
                 JobTitle = j.JobTitle,
                 RangeSalaryMax = j.RangeSalaryMax,
                 RangeSalaryMin = j.RangeSalaryMin,
@@ -67,13 +68,13 @@ namespace VJN.Services
                 Address = j.Address,
                 Latitude = j.Latitude,
                 Longitude = j.Longitude,
-                distance = Math.Abs(Haversine(postJobSearch.Latitude.Value, postJobSearch.Longitude.Value, j.Latitude.Value, j.Longitude.Value)),
+                distance = CalculateDistance(postJobSearch.Latitude, postJobSearch.Longitude, j.Latitude, j.Longitude),
                 AuthorName = j.Author.FullName,
                 SalaryTypeName = j.SalaryTypes.TypeName,
                 JobCategoryName = j.JobCategory.JobCategoryName,
                 ExpirationDate = j.ExpirationDate,
                 IsUrgentRecruitment = j.IsUrgentRecruitment,
-                NumberOfApplicants = await _postJobRepository.CountApplyJob(j.PostId)
+                NumberOfApplicants = 3
 
             }).ToList();
 
@@ -81,14 +82,27 @@ namespace VJN.Services
             var page = new PagedResult<JobSearchResult>(jobSearchResult, jobsIds.Count(), pageNumber, PageSize);
             return page;
         }
-
-            public async Task<PostJobDTOForList> GetPostJobById(int id)
+        private double CalculateDistance(decimal? lat1, decimal? lon1, decimal? lat2, decimal? lon2)
+        {
+            if (!lat1.HasValue || !lon1.HasValue || !lat2.HasValue || !lon2.HasValue)
             {
-                PostJob postJob = await _postJobRepository.GetPostJobById(id);
-                PostJobDTOForList postJobDTO = _mapper.Map<PostJobDTOForList>(postJob);
-                return postJobDTO;
-
+                return 0; // Or any default value you prefer
             }
+            return Math.Abs(Haversine(lat1.Value, lon1.Value, lat2.Value, lon2.Value));
         }
-    
+
+        public async Task<PostJob> getJostJobByID(int id)
+        {
+            return null;
+        }
+
+
+        public async Task<PostJobDTOForList> GetPostJobById(int id)
+        {
+            PostJob postJob = await _postJobRepository.GetPostJobById(id);
+            PostJobDTOForList postJobDTO = _mapper.Map<PostJobDTOForList>(postJob);
+            return postJobDTO;
+
+        }
+    }
 }

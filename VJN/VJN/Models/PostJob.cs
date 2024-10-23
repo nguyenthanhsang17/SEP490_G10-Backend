@@ -35,7 +35,6 @@ namespace VJN.Models
         public DateTime? CensorDate { get; set; }
         public bool? IsUrgentRecruitment { get; set; }
         public int? JobCategoryId { get; set; }
-
         public virtual User? Author { get; set; }
         public virtual User? Censor { get; set; }
         public virtual JobCategory? JobCategory { get; set; }

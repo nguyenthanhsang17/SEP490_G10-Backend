@@ -17,7 +17,7 @@ namespace UnitTests
         [Test]
         public async Task TestLogin()
         {
-            var user = await repository.Login("SangMO17", "17102002");
+            var user = await repository.Login("sangnthe160447@fpt.edu.vn", "17102002");
             Assert.IsNotNull(user);
         }
     }
