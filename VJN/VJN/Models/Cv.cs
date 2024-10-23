@@ -7,6 +7,7 @@ namespace VJN.Models
     {
         public Cv()
         {
+            ApplyJobs = new HashSet<ApplyJob>();
             ItemOfCvs = new HashSet<ItemOfCv>();
         }
 
@@ -14,6 +15,7 @@ namespace VJN.Models
         public int? UserId { get; set; }
 
         public virtual User? User { get; set; }
+        public virtual ICollection<ApplyJob> ApplyJobs { get; set; }
         public virtual ICollection<ItemOfCv> ItemOfCvs { get; set; }
     }
 }
