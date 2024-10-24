@@ -81,8 +81,6 @@ namespace VJN.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
-            var user = GetUserIdFromToken();
-            Console.WriteLine(user);
             var userdto = await _userService.getAllUser();
             return Ok(userdto);
         }
@@ -90,10 +88,11 @@ namespace VJN.Controllers
         // GET: api/Users/5
         [Authorize]
         [HttpGet("Detail")]
-        public async Task<ActionResult<UserDTO>> GetUser()
+        public async Task<ActionResult<UserDTO>> GetUserdetails()
         {
             string id_str = GetUserIdFromToken();
             int id = int.Parse(id_str);
+            Console.WriteLine(id);
             var user = await _userService.findById(id);
             return Ok(user);
         }
@@ -308,7 +307,7 @@ namespace VJN.Controllers
         private string GetUserIdFromToken()
         {
             var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-
+            Console.WriteLine(token);
             if (string.IsNullOrEmpty(token))
             {
                 throw new Exception("Missing token in Authorization header.");
