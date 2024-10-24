@@ -155,7 +155,7 @@ namespace VJN
 
             app.UseHttpsRedirection();
             app.UseCors("CORSPolicy");
-            //app.UseAuthentication();
+            app.UseAuthentication();
             app.UseAuthorization();
             app.Use(async (context, next) =>
             {
