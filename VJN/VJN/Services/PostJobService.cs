@@ -73,7 +73,7 @@ namespace VJN.Services
                 JobCategoryName = j.JobCategory.JobCategoryName,
                 ExpirationDate = j.ExpirationDate,
                 IsUrgentRecruitment = j.IsUrgentRecruitment,
-                NumberOfApplicants = 3
+                NumberOfApplicants = j.ApplyJobs.Count(),
 
             }).ToList();
 
@@ -128,11 +128,41 @@ namespace VJN.Services
             return check;
         }
 
-        public async Task<int> CreatePostJob(PostJobCreateDTO postJob)
+        public async Task<int> CreatePostJob(PostJobCreateDTO postJob, int u)
         {
             var postjob = _mapper.Map<PostJob>(postJob);
+            postjob.AuthorId = u;
             int id = await _postJobRepository.CreatePostJob(postjob);
             return id;
+        }
+
+        public async Task<PagedResult<JobSearchResultEmployer>> GetJobListByEmployerID(int employerID, PostJobSearchEmployer s)
+        {
+            var id = await _postJobRepository.GetPostJobCreatedByEmployerID(employerID, s);
+            var pageIds = PaginationHelper.GetPaged<int>(id, s.pageNumber, PageSize);
+
+            var jobs = await _postJobRepository.jobSearchResults(pageIds.Items);
+            var jobSearchResultTasks = jobs.Select(async j => new JobSearchResultEmployer
+            {
+                PostId = j.PostId,
+                thumbnail = j.ImagePostJobs.Count() == 0 || j.ImagePostJobs == null ? "" : j.ImagePostJobs.ElementAt(0).Image.Url,
+                JobTitle = j.JobTitle,
+                Salary = j.Salary,
+                NumberPeople = j.NumberPeople,
+                Address = j.Address,
+                Status = j.Status,
+                Latitude = j.Latitude,
+                Longitude = j.Longitude,
+                CreateDate = j.CreateDate,
+                SalaryTypeName = j.SalaryTypes.TypeName,
+                JobCategoryName = j.JobCategory.JobCategoryName,
+                ExpirationDate = j.ExpirationDate,
+                IsUrgentRecruitment = j.IsUrgentRecruitment,
+                NumberOfApplicants = j.ApplyJobs.Count(),
+            }).ToList();
+            var jobSearchResult = await Task.WhenAll(jobSearchResultTasks);
+            var page = new PagedResult<JobSearchResultEmployer>(jobSearchResult, id.Count(), s.pageNumber, PageSize);
+            return page;
         }
     }
 }

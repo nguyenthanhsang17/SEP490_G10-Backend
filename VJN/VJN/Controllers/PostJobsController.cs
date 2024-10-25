@@ -87,8 +87,21 @@ namespace VJN.Controllers
         [HttpPost("CreatePost")]
         public async Task<IActionResult> CreatePostJob([FromBody] PostJobCreateDTO postJobCreateDTO )
         {
-            var id = await _postJobService.CreatePostJob(postJobCreateDTO);
+            string userid_str = GetUserIdFromToken();
+            int uid = int.Parse(userid_str);
+
+            var id = await _postJobService.CreatePostJob(postJobCreateDTO, uid);
             return Ok(id);
+        }
+
+        [Authorize]
+        [HttpGet("GetListJobsCreated")]
+        public async Task<ActionResult<PagedResult<JobSearchResultEmployer>>> GetListJobsCreated([FromQuery]PostJobSearchEmployer s)
+        {
+            string userid = GetUserIdFromToken();
+            int id = int.Parse(userid);
+            var page = await _postJobService.GetJobListByEmployerID(id, s);
+            return Ok(page);
         }
 
         private string GetUserIdFromToken()

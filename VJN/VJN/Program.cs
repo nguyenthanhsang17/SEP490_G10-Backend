@@ -139,6 +139,8 @@ namespace VJN
             builder.Services.AddScoped<IImagePostJobRepository, ImagePostJobRepository>();
             builder.Services.AddScoped<IImagePostJobService, ImagePostJobService>();
 
+            builder.Services.AddScoped<ICvRepository, CvRepository>();
+            builder.Services.AddScoped<ICvService, CvService>();
             // Register services and repositories
 
             var app = builder.Build();

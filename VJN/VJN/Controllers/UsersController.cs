@@ -72,7 +72,8 @@ namespace VJN.Controllers
                 token,
                 st.FullName,
                 st.RoleId,
-                st.Status
+                st.Status,
+                st.AvatarURL
             });
         }
 

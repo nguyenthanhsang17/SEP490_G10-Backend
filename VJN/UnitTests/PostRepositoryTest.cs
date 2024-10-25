@@ -24,8 +24,7 @@ namespace UnitTests
         {
             var c = new PostJobSearch
             {
-                JobTitle="tân",
-                JobDescription=null,
+                JobKeyWord="tân",
                 SalaryTypesId=0,
                 RangeSalaryMin=null,
                 RangeSalaryMax=null,
