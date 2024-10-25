@@ -12,7 +12,8 @@ namespace VJN.Services
         public Task<PostJobDetailDTO> getJostJobByID(int id, int? userid);
 
         public Task<PostJobDTOForList> GetPostJobById(int id);
-
+        public Task<bool> ChangeStatusPostJob(int jobID, int status);
+        public Task<int> CreatePostJob(PostJobCreateDTO postJob);
 
     }
 }

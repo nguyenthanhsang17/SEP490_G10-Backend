@@ -49,6 +49,8 @@ namespace VJN.Map
                                             .ForMember(dest => dest.JobCategoryName, opt => opt.MapFrom(src => src.JobCategory.JobCategoryName))
                                             .ForMember(dest => dest.SalaryTypeName, opt => opt.MapFrom(src => src.SalaryTypes.TypeName));
 
+            CreateMap<PostJobCreateDTO, PostJob>();
+
             CreateMap<Cv, CvDTODetail>();
             CreateMap<ItemOfCv, ItemOfcvDTOforView>();
 

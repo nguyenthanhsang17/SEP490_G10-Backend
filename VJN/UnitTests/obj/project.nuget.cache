@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "tbuKKTmXOT5u9gboof/3XfYo67VBW2BGrkJrqACxzVIL3KdkzinK6kN4wx3WaSSaH/9OGaB950wR2CxtbodS+g==",
+  "dgSpecHash": "gDTLr5BADmiknyIL/Tbol139X8R4J6871POBMidZrejYRxel9Nf7KumA0GGnxM+ly3geLVQgWgA6Gfau0zR6oQ==",
   "success": true,
   "projectFilePath": "S:\\FULearning\\Fall2024\\SEP490\\SEP490_G10-Backend\\VJN\\UnitTests\\UnitTests.csproj",
   "expectedPackageFiles": [
@@ -67,6 +67,8 @@
     "C:\\Users\\SANG\\.nuget\\packages\\messagepackanalyzer\\2.1.152\\messagepackanalyzer.2.1.152.nupkg.sha512",
     "C:\\Users\\SANG\\.nuget\\packages\\microsoft.aspnetcore.authentication.google\\6.0.35\\microsoft.aspnetcore.authentication.google.6.0.35.nupkg.sha512",
     "C:\\Users\\SANG\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\6.0.35\\microsoft.aspnetcore.authentication.jwtbearer.6.0.35.nupkg.sha512",
+    "C:\\Users\\SANG\\.nuget\\packages\\microsoft.aspnetcore.jsonpatch\\6.0.35\\microsoft.aspnetcore.jsonpatch.6.0.35.nupkg.sha512",
+    "C:\\Users\\SANG\\.nuget\\packages\\microsoft.aspnetcore.mvc.newtonsoftjson\\6.0.35\\microsoft.aspnetcore.mvc.newtonsoftjson.6.0.35.nupkg.sha512",
     "C:\\Users\\SANG\\.nuget\\packages\\microsoft.aspnetcore.razor.language\\6.0.0\\microsoft.aspnetcore.razor.language.6.0.0.nupkg.sha512",
     "C:\\Users\\SANG\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\6.0.0\\microsoft.bcl.asyncinterfaces.6.0.0.nupkg.sha512",
     "C:\\Users\\SANG\\.nuget\\packages\\microsoft.codeanalysis.analyzers\\3.3.2\\microsoft.codeanalysis.analyzers.3.3.2.nupkg.sha512",
@@ -136,6 +138,7 @@
     "C:\\Users\\SANG\\.nuget\\packages\\mimekit\\4.8.0\\mimekit.4.8.0.nupkg.sha512",
     "C:\\Users\\SANG\\.nuget\\packages\\netstandard.library\\2.0.0\\netstandard.library.2.0.0.nupkg.sha512",
     "C:\\Users\\SANG\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512",
+    "C:\\Users\\SANG\\.nuget\\packages\\newtonsoft.json.bson\\1.0.2\\newtonsoft.json.bson.1.0.2.nupkg.sha512",
     "C:\\Users\\SANG\\.nuget\\packages\\nuget.common\\6.9.1\\nuget.common.6.9.1.nupkg.sha512",
     "C:\\Users\\SANG\\.nuget\\packages\\nuget.configuration\\6.9.1\\nuget.configuration.6.9.1.nupkg.sha512",
     "C:\\Users\\SANG\\.nuget\\packages\\nuget.dependencyresolver.core\\6.9.1\\nuget.dependencyresolver.core.6.9.1.nupkg.sha512",

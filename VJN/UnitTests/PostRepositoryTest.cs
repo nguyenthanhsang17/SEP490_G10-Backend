@@ -20,11 +20,11 @@ namespace UnitTests
         }
 
         [Test]
-        public async Task TestLogin()
+        public async Task TestSearchJob()
         {
             var c = new PostJobSearch
             {
-                JobTitle=null,
+                JobTitle="tân",
                 JobDescription=null,
                 SalaryTypesId=0,
                 RangeSalaryMin=null,
@@ -35,9 +35,11 @@ namespace UnitTests
                 distance=null,
                 IsUrgentRecruitment=null,
                 JobCategoryId=0,
+                SortNumberApplied=0,
+                pageNumber = 1
             };
             var user = await repository.SearchJobPopular(c);
-            Assert.AreEqual(user.Count(), 5);
+            Assert.AreEqual(user.Count(), 1);
         }
     }
 }

@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NuGet.Protocol.Plugins;
 using VJN.Models;
 using VJN.ModelsDTO.PostJobDTOs;
 using VJN.Paging;
@@ -29,9 +31,6 @@ namespace VJN.Controllers
         [HttpGet]
         public async Task<ActionResult<PagedResult<JobSearchResult>>> GetPostJobsPopular([FromQuery] PostJobSearch model)
         {
-            model.JobCategoryId = 0;
-            model.pageNumber = 2;
-            model.SalaryTypesId = 0;
             var jobs = await _postJobService.SearchJobPopular(model);
             if(jobs == null || jobs.Items.Count() == 0)
             {
@@ -56,6 +55,40 @@ namespace VJN.Controllers
 
             postdto.slotDTOs = slotDTO;
             return Ok(postdto);
+        }
+        [HttpPut("ShowPostJob/{id}")]
+        public async Task<IActionResult> ShowPostJob(int id)
+        {
+            var c = await _postJobService.ChangeStatusPostJob(id, 2);
+            if (c)
+            {
+                return Ok(c);
+            }
+            else
+            {
+                return BadRequest(new { Message = "Hiện bài post thất bại" });
+            }
+        }
+
+        [HttpPut("HidePostJob/{id}")]
+        public async Task<IActionResult> HidePostJob(int id)
+        {
+            var c = await _postJobService.ChangeStatusPostJob(id, 5);
+            if (c)
+            {
+                return Ok(c);
+            }
+            else
+            {
+                return BadRequest(new { Message = "Ẩn bài post thất bại" });
+            }
+        }
+        [Authorize]
+        [HttpPost("CreatePost")]
+        public async Task<IActionResult> CreatePostJob([FromBody] PostJobCreateDTO postJobCreateDTO )
+        {
+            var id = await _postJobService.CreatePostJob(postJobCreateDTO);
+            return Ok(id);
         }
 
         private string GetUserIdFromToken()

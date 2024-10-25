@@ -60,7 +60,7 @@ namespace VJN.Services
             var jobSearchResultTasks = jobs.Select(async j => new JobSearchResult
             {
                 PostId = j.PostId,
-                thumbnail = "sang",
+                thumbnail =  j.ImagePostJobs.Count()==0 || j.ImagePostJobs==null?"": j.ImagePostJobs.ElementAt(0).Image.Url,
                 JobTitle = j.JobTitle,
                 Salary = j.Salary,
                 NumberPeople = j.NumberPeople,
@@ -120,6 +120,19 @@ namespace VJN.Services
             postdto .NumberAppliedUser = await _postJobRepository.CountApplyJob(postdto.PostId);
            
             return postdto;
+        }
+
+        public async Task<bool> ChangeStatusPostJob(int jobID, int status)
+        {
+            var check = await _postJobRepository.ChangeStatusPostJob(jobID, status);
+            return check;
+        }
+
+        public async Task<int> CreatePostJob(PostJobCreateDTO postJob)
+        {
+            var postjob = _mapper.Map<PostJob>(postJob);
+            int id = await _postJobRepository.CreatePostJob(postjob);
+            return id;
         }
     }
 }

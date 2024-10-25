@@ -16,16 +16,21 @@ namespace VJN.Services
             _mapper = mapper;
         }
 
+        public async Task<IEnumerable<int>> CreateSlotsWithSchedules(IEnumerable<SlotCreateDTO> slotDTOs)
+        {
+            return await _slotRepository.CreateSlotsWithSchedules(slotDTOs);
+        }
+
         public async Task<IEnumerable<SlotDTO>> GetSlotByPostjobId(int id)
         {
             var slot = await _slotRepository.GetSlotByPostjobId(id);
             var slotDTO = _mapper.Map<IEnumerable<SlotDTO>>(slot);
 
-            foreach(SlotDTO dTO in slotDTO)
+            foreach (SlotDTO dTO in slotDTO)
             {
                 var Js = await _slotRepository.GetJobScheduleBySlotID(dTO.SlotId);
                 var jsdto = _mapper.Map<IEnumerable<JobScheduleDTO>>(Js);
-                foreach(JobScheduleDTO dTO1 in jsdto)
+                foreach (JobScheduleDTO dTO1 in jsdto)
                 {
                     var wh = await _slotRepository.GetWorkingHoursByJobSchedule(dTO1.ScheduleId);
                     var whDTO = _mapper.Map<IEnumerable<WorkingHourDTO>>(wh);

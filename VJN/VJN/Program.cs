@@ -23,9 +23,11 @@ namespace VJN
             // Add services to the container.
 
             builder.Services.AddControllers()
-                .AddJsonOptions(options =>
+                .AddNewtonsoftJson(options =>
                 {
-                    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+                    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                    options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter()); // Nếu bạn dùng Enum
+                    options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.TimeSpanConverter()); // Để xử lý TimeSpan
                 });
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -105,7 +107,7 @@ namespace VJN
 
             var configuration = builder.Configuration;
             builder.Services.AddDbContext<VJNDBContext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Scoped);
 
             builder.Services.AddAutoMapper(typeof(Program));
             // Register services and repositories
@@ -131,8 +133,11 @@ namespace VJN
             builder.Services.AddScoped<ISlotRepository, SlotRepository>();
             builder.Services.AddScoped<ISlotService, SlotService>();
 
+            builder.Services.AddScoped<IJobPostDateRepository, JobPostDateRepository>();
+            builder.Services.AddScoped<IJobPostDateService, JobPostDateService>();
 
-
+            builder.Services.AddScoped<IImagePostJobRepository, ImagePostJobRepository>();
+            builder.Services.AddScoped<IImagePostJobService, ImagePostJobService>();
 
             // Register services and repositories
 
