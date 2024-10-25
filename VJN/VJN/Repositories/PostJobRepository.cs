@@ -59,12 +59,10 @@ namespace VJN.Repositories
         {
             string sql = "SELECT * FROM PostJob p WHERE 1=1 AND p.ExpirationDate > GETDATE() ";
 
-            if (!string.IsNullOrEmpty(s.JobTitle))
+            if (!string.IsNullOrEmpty(s.JobKeyWord))
             {
-                sql = sql + $" and dbo.RemoveDiacritics(p.JobTitle)  LIKE '%'+ dbo.RemoveDiacritics(N'{s.JobTitle}')+'%'";
-            }
-            if(!string.IsNullOrEmpty(s.JobDescription)){
-                sql = sql + $" and dbo.RemoveDiacritics(JobDescription) like '%'+ dbo.RemoveDiacritics(N'{s.JobDescription}%')+'%' ";
+                sql = sql + $" and dbo.RemoveDiacritics(p.JobTitle)  LIKE '%'+ dbo.RemoveDiacritics(N'{s.JobKeyWord}')+'%'";
+                sql = sql + $" and dbo.RemoveDiacritics(JobDescription) like '%'+ dbo.RemoveDiacritics(N'{s.JobKeyWord}%')+'%' ";
             }
             if(s.SalaryTypesId != 0)
             {
@@ -82,8 +80,7 @@ namespace VJN.Repositories
             {
                 sql = sql + $" and Salary <= {s.RangeSalaryMax} ";
             }
-            if(!string.IsNullOrEmpty(s.Address)) { sql = sql + $"and dbo.RemoveDiacritics(p.Address) like '%'+ dbo.RemoveDiacritics(N'{s.Address}')+'%'"; }
-            if (s.IsUrgentRecruitment.HasValue)
+            if (s.IsUrgentRecruitment!=-1)
             {
                 sql = sql + $" and p.IsUrgentRecruitment = {s.IsUrgentRecruitment}";
             }
@@ -134,7 +131,7 @@ namespace VJN.Repositories
 
         public async Task<IEnumerable<PostJob>> jobSearchResults(IEnumerable<int> jobIds)
         {
-            var jobs = await _context.PostJobs.Include(j => j.Author).Include(j => j.JobCategory).Include(j => j.SalaryTypes).Include(j => j.ImagePostJobs).ThenInclude(img => img.Image).Where(u => jobIds.Contains(u.PostId)).ToListAsync();
+            var jobs = await _context.PostJobs.Include(j => j.Author).Include(j => j.JobCategory).Include(j => j.SalaryTypes).Include(j => j.ImagePostJobs).ThenInclude(img => img.Image).Where(u => jobIds.Contains(u.PostId)).Include(j=>j.ApplyJobs).ToListAsync();
             return jobs;
         }
 
@@ -198,7 +195,8 @@ namespace VJN.Repositories
             try
             {
                 _context.PostJobs.Add(postJob);
-                return await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
+                return postJob.PostId;
             }
             catch (Exception ex)
             {
@@ -206,5 +204,60 @@ namespace VJN.Repositories
             }
         }
 
+        public async Task<IEnumerable<int>> GetPostJobCreatedByEmployerID(int employerID, PostJobSearchEmployer s)
+        {
+            string sql = $"SELECT * FROM PostJob p WHERE 1=1 and AuthorId = {employerID} ";
+
+            if (!string.IsNullOrEmpty(s.JobKeyWord))
+            {
+                sql = sql + $" and dbo.RemoveDiacritics(p.JobTitle)  LIKE '%'+ dbo.RemoveDiacritics(N'{s.JobKeyWord}')+'%'";
+                sql = sql + $" and dbo.RemoveDiacritics(JobDescription) like '%'+ dbo.RemoveDiacritics(N'{s.JobKeyWord}%')+'%' ";
+            }
+            if (s.SalaryTypesId != 0)
+            {
+                sql = sql + $" and salary_types_id = {s.SalaryTypesId} ";
+            }
+            if (s.RangeSalaryMin.HasValue)
+            {
+                sql = sql + $" and Salary >= {s.RangeSalaryMin} ";
+            }
+            if (s.RangeSalaryMax.HasValue)
+            {
+                sql = sql + $" and Salary <= {s.RangeSalaryMax} ";
+            }
+            if (s.IsUrgentRecruitment!=-1)
+            {
+                sql = sql + $" and p.IsUrgentRecruitment = {s.IsUrgentRecruitment} ";
+            }
+
+            if (s.Status != -1)
+            {
+                sql = sql + $" and p.Status = {s.Status} "; 
+            }
+
+            if (s.JobCategoryId != 0)
+            {
+                sql = sql + $" and p.JobCategory_Id = {s.JobCategoryId} ";
+            }
+            if (s.SortNumberApplied != 0)
+            {
+                sql = sql + " GROUP BY p.Post_Id, p.JobTitle, p.JobDescription, p.salary_types_id, p.Salary, p.NumberPeople, p.Address, p.latitude, p.longitude, p.AuthorId, p.CreateDate, p.ExpirationDate, p.Status, p.censor_Id, p.censor_Date, p.IsUrgentRecruitment, p.JobCategory_Id";
+                if (s.SortNumberApplied > 0)
+                {
+                    sql = sql + " order by COUNT(p.Post_Id) ";
+                }
+                else
+                {
+                    sql = sql + " order by COUNT(p.Post_Id) desc ";
+                }
+            }
+            Console.WriteLine(sql);
+
+
+            var query = _context.PostJobs.FromSqlRaw(sql);
+            var results = await query.ToListAsync();
+            var id = results.Select(u => u.PostId);
+            return id;
+        }
     }
 }

@@ -19,5 +19,7 @@ namespace VJN.Repositories
         public Task<bool> ChangeStatusPostJob(int jobID, int status);
 
         public Task<int> CreatePostJob(PostJob postJob);
+
+        public Task<IEnumerable<int>> GetPostJobCreatedByEmployerID(int employerID, PostJobSearchEmployer search);
     }
 }

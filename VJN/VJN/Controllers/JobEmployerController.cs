@@ -61,7 +61,6 @@ namespace VJN.Controllers
                 .Where(c => c.UserId == jobseeker.UserId)
                 .ToListAsync();
                 jobseeker.Cvs = _mapper.Map<List<CvDTODetail>>(cvs);
-                
                 return jobseeker;
             }
             catch (Exception ex)

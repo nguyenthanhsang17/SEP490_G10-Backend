@@ -67,40 +67,44 @@ namespace VJN.Controllers
 
             var mediaIds = new List<int>();
 
-            foreach (var file in files)
+            var uploadTasks = files.Select(async file =>
             {
                 if (file.Length == 0)
-                    return BadRequest("One or more files are empty.");
+                    throw new ArgumentException("One or more files are empty.");
 
                 using (var memoryStream = new System.IO.MemoryStream())
                 {
                     await file.CopyToAsync(memoryStream);
                     byte[] fileBytes = memoryStream.ToArray();
 
-                    try
+                    FileCreateRequest uploadRequest = new FileCreateRequest
                     {
-                        FileCreateRequest uploadRequest = new FileCreateRequest
-                        {
-                            file = fileBytes,
-                            fileName = file.FileName
-                        };
-                        Result result = _imagekitClient.Upload(uploadRequest);
-                        var media = new MediaItemDTO
-                        {
-                            Url = result.url,
-                            Status = true
-                        };
-                        var mediaID = await _mediaItemService.CreateMediaItem(media);
-                        mediaIds.Add(mediaID);
-                    }
-                    catch (Exception ex)
+                        file = fileBytes,
+                        fileName = file.FileName
+                    };
+
+                    Result result = _imagekitClient.Upload(uploadRequest);
+                    var media = new MediaItemDTO
                     {
-                        return StatusCode((int)HttpStatusCode.InternalServerError, $"Upload failed: {ex.Message}");
-                    }
+                        Url = result.url,
+                        Status = true
+                    };
+                    return await _mediaItemService.CreateMediaItem(media);
                 }
+            });
+
+            try
+            {
+                mediaIds = (await Task.WhenAll(uploadTasks)).ToList();
             }
-            var c = await _imagepostJobService.createImagePostJob(postid, mediaIds);
-            return Ok(c);
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, $"Upload failed: {ex.Message}");
+            }
+
+            var result = await _imagepostJobService.createImagePostJob(postid, mediaIds);
+            return Ok(result);
         }
+
     }
 }
