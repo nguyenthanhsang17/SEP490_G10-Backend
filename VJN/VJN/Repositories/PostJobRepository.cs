@@ -1,6 +1,9 @@
 ﻿using MailKit.Search;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
+using System.Linq;
+using System.Text;
 using VJN.Models;
 using VJN.ModelsDTO.PostJobDTOs;
 
@@ -51,92 +54,93 @@ namespace VJN.Repositories
         {
             return degrees * (Math.PI / 180);
         }
+
         public async Task<IEnumerable<int>> SearchJobPopular(PostJobSearch s)
         {
-            var query = _context.PostJobs.AsQueryable();
-            if (!string.IsNullOrWhiteSpace(s.JobTitle))
-                query = query.Where(j => j.JobTitle.Contains(s.JobTitle));
+            string sql = "SELECT * FROM PostJob p WHERE 1=1 AND p.ExpirationDate > GETDATE() ";
 
-            if (!string.IsNullOrWhiteSpace(s.JobDescription))
-                query = query.Where(j => j.JobDescription.Contains(s.JobDescription));
-
-            if (s.SalaryTypesId!=0)
-                query = query.Where(j => j.SalaryTypesId == s.SalaryTypesId.Value);
-
-            // Xử lý tìm kiếm lương
-            if (s.RangeSalaryMin.HasValue || s.RangeSalaryMax.HasValue)
+            if (!string.IsNullOrEmpty(s.JobTitle))
             {
-                query = query.Where(j =>
-                    (j.Salary.HasValue &&
-                     (!s.RangeSalaryMin.HasValue || j.Salary >= s.RangeSalaryMin) &&
-                     (!s.RangeSalaryMax.HasValue || j.Salary <= s.RangeSalaryMax))
-                );
+                sql = sql + $" and dbo.RemoveDiacritics(p.JobTitle)  LIKE '%'+ dbo.RemoveDiacritics(N'{s.JobTitle}')+'%'";
+            }
+            if(!string.IsNullOrEmpty(s.JobDescription)){
+                sql = sql + $" and dbo.RemoveDiacritics(JobDescription) like '%'+ dbo.RemoveDiacritics(N'{s.JobDescription}%')+'%' ";
+            }
+            if(s.SalaryTypesId != 0)
+            {
+                sql = sql + $" and salary_types_id = {s.SalaryTypesId}";
+            }
+            if (!string.IsNullOrEmpty(s.Address))
+            {
+                sql = sql + $" and dbo.RemoveDiacritics(p.Address) like '%'+ dbo.RemoveDiacritics(N'{s.Address}')+'%'";
+            }
+            if(s.RangeSalaryMin.HasValue)
+            {
+                sql = sql + $" and Salary >= {s.RangeSalaryMin}";
+            }
+            if (s.RangeSalaryMax.HasValue)
+            {
+                sql = sql + $" and Salary <= {s.RangeSalaryMax} ";
+            }
+            if(!string.IsNullOrEmpty(s.Address)) { sql = sql + $"and dbo.RemoveDiacritics(p.Address) like '%'+ dbo.RemoveDiacritics(N'{s.Address}')+'%'"; }
+            if (s.IsUrgentRecruitment.HasValue)
+            {
+                sql = sql + $" and p.IsUrgentRecruitment = {s.IsUrgentRecruitment}";
             }
 
-            if (!string.IsNullOrWhiteSpace(s.Address))
-                query = query.Where(j => j.Address.Contains(s.Address));
-
+            if(s.JobCategoryId!=0)
+            {
+                sql = sql + $" and p.JobCategory_Id = {s.JobCategoryId}";
+            }
             if (s.distance.HasValue && s.Latitude.HasValue && s.Longitude.HasValue)
             {
-                query = query.Where(j =>
-                    (
-                        Math.Acos(Math.Sin((double)s.Latitude.Value * Math.PI / 180) *
-                                  Math.Sin((double)j.Latitude * Math.PI / 180) +
-                                  Math.Cos((double)s.Latitude.Value * Math.PI / 180) *
-                                  Math.Cos((double)j.Latitude * Math.PI / 180) *
-                                  Math.Cos(((double)s.Longitude.Value - (double)j.Longitude) * Math.PI / 180)) * 6371
-                    ) <= s.distance.Value
-                );
+                sql = sql + $" and (6371 * ACOS(COS(RADIANS({s.Latitude})) * COS(RADIANS(p.latitude)) * COS(RADIANS(p.longitude) - RADIANS({s.Longitude})) +SIN(RADIANS({s.Latitude})) * SIN(RADIANS(p.latitude)))) <= {s.distance}";
             }
-
-            if (s.IsUrgentRecruitment.HasValue)
-                query = query.Where(j => j.IsUrgentRecruitment == s.IsUrgentRecruitment.Value);
-
-            if (s.JobCategoryId!=0)
-                query = query.Where(j => j.JobCategoryId == s.JobCategoryId.Value);
             if (s.SortNumberApplied != 0)
             {
-                if(s.SortNumberApplied == -1)
+                sql = sql + " GROUP BY p.Post_Id, p.JobTitle, p.JobDescription, p.salary_types_id, p.Salary, p.NumberPeople, p.Address, p.latitude, p.longitude, p.AuthorId, p.CreateDate, p.ExpirationDate, p.Status, p.censor_Id, p.censor_Date, p.IsUrgentRecruitment, p.JobCategory_Id";
+                if(s.SortNumberApplied > 0)
                 {
-                    query = query.OrderByDescending(j => j.ApplyJobs.Count());
+                    sql = sql + " order by COUNT(p.Post_Id) ";
                 }
                 else
                 {
-                    query = query.OrderBy(j => j.ApplyJobs.Count());
+                    sql = sql + " order by COUNT(p.Post_Id) desc";
                 }
             }
-
-
-            // Sắp xếp theo số lượng người đã apply và chỉ lấy Post_Id
-            var result = await query
-                .Select(j => j.PostId)
-                .ToListAsync();
-
-            var sql = query.ToQueryString(); // Bạn có thể cần thêm extension method này
-            Console.WriteLine("sang: "+sql);
             Console.WriteLine(sql);
-            return result;
+            
+
+            var query = _context.PostJobs.FromSqlRaw(sql);
+            var results = await query.ToListAsync();
+            var id = results.Select(u => u.PostId);
+            return id;
         }
 
         public async Task<string> getThumnailJob(int id)
         {
             var urls = await _context.ImagePostJobs.Where(im => im.PostId == id).ToListAsync();
+            if (urls.Count == 0)
+            {
+                return "";
+            }
             var idurl = urls.FirstOrDefault().ImageId;
 
             var image = await _context.MediaItems.Where(mi => mi.Id == id).SingleOrDefaultAsync();
+
             return image.Url;
         }
 
 
         public async Task<IEnumerable<PostJob>> jobSearchResults(IEnumerable<int> jobIds)
         {
-            var jobs = await _context.PostJobs.Include(j => j.Author).Include(j => j.JobCategory).Include(j => j.SalaryTypes).Where(u => jobIds.Contains(u.PostId)).ToListAsync();
+            var jobs = await _context.PostJobs.Include(j => j.Author).Include(j => j.JobCategory).Include(j => j.SalaryTypes).Include(j => j.ImagePostJobs).ThenInclude(img => img.Image).Where(u => jobIds.Contains(u.PostId)).ToListAsync();
             return jobs;
         }
 
         public async Task<PostJob> getJostJobByID(int id)
         {
-            var job = await _context.PostJobs.Include(j=>j.Author).Include(j=>j.JobCategory).Include(j=>j.SalaryTypes).Where(j=>j.PostId==id).SingleOrDefaultAsync();
+            var job = await _context.PostJobs.Include(j => j.Author).Include(j => j.JobCategory).Include(j => j.SalaryTypes).Include(j => j.ImagePostJobs).ThenInclude(img => img.Image).Where(j => j.PostId == id).SingleOrDefaultAsync();
             return job;
         }
 
@@ -152,28 +156,55 @@ namespace VJN.Repositories
             {
                 postJob = await _context.PostJobs.FindAsync(id);
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
-            
+
             return postJob;
         }
 
         public async Task<IEnumerable<string>> getAllImageJobByJobId(int jid)
         {
-            var imgs = await _context.ImagePostJobs.Include(imj=>imj.Image).Where(imj=>imj.PostId==jid).Select(imj=>imj.Image.Url).ToListAsync();
+            var imgs = await _context.ImagePostJobs.Include(imj => imj.Image).Where(imj => imj.PostId == jid).Select(imj => imj.Image.Url).ToListAsync();
             return imgs;
         }
 
         public async Task<bool> GetisAppliedJob(int jid, int userid)
         {
-            return await _context.ApplyJobs.Where(aj=>aj.JobSeekerId==userid&&aj.PostId==jid).AnyAsync();
+            return await _context.ApplyJobs.Where(aj => aj.JobSeekerId == userid && aj.PostId == jid).AnyAsync();
         }
 
         public async Task<bool> GetisWishJob(int jid, int userid)
         {
             return await _context.WishJobs.Where(aj => aj.JobSeekerId == userid && aj.PostJobId == jid).AnyAsync();
         }
+
+        public async Task<bool> ChangeStatusPostJob(int jobID, int status)
+        {
+            var job = await _context.PostJobs.Where(j => j.PostId == jobID).SingleOrDefaultAsync();
+            if (job == null)
+            {
+                return false;
+            }
+            job.Status = status;
+            _context.Entry(job).State = EntityState.Modified;
+            int i = await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<int> CreatePostJob(PostJob postJob)
+        {
+            try
+            {
+                _context.PostJobs.Add(postJob);
+                return await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
     }
 }

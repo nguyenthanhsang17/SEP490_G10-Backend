@@ -1,4 +1,7 @@
-﻿namespace VJN.ModelsDTO.PostJobDTOs
+﻿using VJN.ModelsDTO.JobPostDateDTOs;
+using VJN.ModelsDTO.SlotDTOs;
+
+namespace VJN.ModelsDTO.PostJobDTOs
 {
     public class PostJobCreateDTO
     {
@@ -11,11 +14,8 @@
         public decimal? Latitude { get; set; }
         public decimal? Longitude { get; set; }
         public int? AuthorId { get; set; }
-        public DateTime? CreateDate { get; set; }
         public DateTime? ExpirationDate { get; set; }
         public int? Status { get; set; }
-        public int? CensorId { get; set; }
-        public DateTime? CensorDate { get; set; }
         public bool? IsUrgentRecruitment { get; set; }
         public int? JobCategoryId { get; set; }
     }

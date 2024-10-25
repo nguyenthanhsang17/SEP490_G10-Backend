@@ -14,11 +14,13 @@ namespace VJN.Controllers
     {
         private readonly ImagekitClient _imagekitClient;
         private readonly IMediaItemService _mediaItemService;
+        private readonly IImagePostJobService _imagepostJobService;
 
-        public UploadController(IMediaItemService mediaItemService)
+        public UploadController(IMediaItemService mediaItemService, IImagePostJobService imagepostJobService)
         {
             _imagekitClient = new ImagekitClient("public_Q+yi7A0O9A+joyXIoqM4TpVqOrQ=", "private_e2V3fNLKwK0pGwSrEmFH+iKQtks=", "https://ik.imagekit.io/ryf3sqxfn");
             _mediaItemService = mediaItemService;
+            _imagepostJobService = imagepostJobService;
         }
 
         [HttpPost]
@@ -47,13 +49,58 @@ namespace VJN.Controllers
                         Status = true
                     };
                     var mediaID = await _mediaItemService.CreateMediaItem(media);
-                    return Ok(new { mediaid=mediaID });
+                    return Ok(new { mediaid = mediaID });
                 }
                 catch (Exception ex)
                 {
                     return StatusCode((int)HttpStatusCode.InternalServerError, $"Upload failed: {ex.Message}");
                 }
             }
+        }
+
+        [HttpPost]
+        [Route("UploadMultipleFilesForJob")]
+        public async Task<ActionResult<int>> UploadImage([FromForm] List<IFormFile> files, int postid)
+        {
+            if (files == null || !files.Any())
+                return BadRequest("No files provided.");
+
+            var mediaIds = new List<int>();
+
+            foreach (var file in files)
+            {
+                if (file.Length == 0)
+                    return BadRequest("One or more files are empty.");
+
+                using (var memoryStream = new System.IO.MemoryStream())
+                {
+                    await file.CopyToAsync(memoryStream);
+                    byte[] fileBytes = memoryStream.ToArray();
+
+                    try
+                    {
+                        FileCreateRequest uploadRequest = new FileCreateRequest
+                        {
+                            file = fileBytes,
+                            fileName = file.FileName
+                        };
+                        Result result = _imagekitClient.Upload(uploadRequest);
+                        var media = new MediaItemDTO
+                        {
+                            Url = result.url,
+                            Status = true
+                        };
+                        var mediaID = await _mediaItemService.CreateMediaItem(media);
+                        mediaIds.Add(mediaID);
+                    }
+                    catch (Exception ex)
+                    {
+                        return StatusCode((int)HttpStatusCode.InternalServerError, $"Upload failed: {ex.Message}");
+                    }
+                }
+            }
+            var c = await _imagepostJobService.createImagePostJob(postid, mediaIds);
+            return Ok(c);
         }
     }
 }

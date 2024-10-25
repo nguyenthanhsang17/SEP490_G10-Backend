@@ -584,3 +584,6 @@ C:\Users\vieta\OneDrive\Máy tính\Đồ án\SEP490_G10-Backend\VJN\VJN\obj\Debu
 C:\Users\vieta\OneDrive\Máy tính\Đồ án\SEP490_G10-Backend\VJN\VJN\obj\Debug\net6.0\VJN.pdb
 C:\Users\vieta\OneDrive\Máy tính\Đồ án\SEP490_G10-Backend\VJN\VJN\obj\Debug\net6.0\VJN.genruntimeconfig.cache
 C:\Users\vieta\OneDrive\Máy tính\Đồ án\SEP490_G10-Backend\VJN\VJN\obj\Debug\net6.0\ref\VJN.dll
+S:\FULearning\Fall2024\SEP490\SEP490_G10-Backend\VJN\VJN\bin\Debug\net6.0\Microsoft.AspNetCore.JsonPatch.dll
+S:\FULearning\Fall2024\SEP490\SEP490_G10-Backend\VJN\VJN\bin\Debug\net6.0\Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
+S:\FULearning\Fall2024\SEP490\SEP490_G10-Backend\VJN\VJN\bin\Debug\net6.0\Newtonsoft.Json.Bson.dll
