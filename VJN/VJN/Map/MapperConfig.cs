@@ -26,7 +26,7 @@ namespace VJN.Map
 
 
 
-            CreateMap<UserDTO, UserDTOforList>();
+            CreateMap<UserDTO, UserDTOforList>().ForMember(dest => dest.Apply_id, opt => opt.MapFrom(src => 0)); ;
 
             CreateMap<User, UserDTOdetail>();
 

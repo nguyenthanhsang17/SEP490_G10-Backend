@@ -38,7 +38,9 @@ namespace VJN.Controllers
                 foreach (var item in JobSeekersApplied) 
                 {
                     var _user = await _userService.findById(item.JobSeekerId ?? 0);
-                    userdtoforlist.Add(_mapper.Map<UserDTOforList>(_user));
+                    UserDTOforList userDTO = _mapper.Map<UserDTOforList>(_user);
+                    userDTO.Apply_id = item.Id;
+                    userdtoforlist.Add(userDTO);
                 }
                 return Ok(userdtoforlist);
             }
@@ -50,8 +52,8 @@ namespace VJN.Controllers
         }
 
         // GET: api/JobEmployer/GetDetailJobseekerApply/{JobSeekerApply_ID}
-        [HttpGet("GetDetailJobseekerApply/{JobSeekerApply_ID}")]
-        public async Task<ActionResult<UserDTOdetail>> GetDetailJobSeekerApply(int JobSeekerApply_ID)
+        [HttpGet("GetDetailJobseekerApply/{JobSeekerApply_ID}/{applyId}")]
+        public async Task<ActionResult<object>> GetDetailJobSeekerApply(int JobSeekerApply_ID,int applyId)
         {
             try
             {
@@ -61,7 +63,22 @@ namespace VJN.Controllers
                 .Where(c => c.UserId == jobseeker.UserId)
                 .ToListAsync();
                 jobseeker.Cvs = _mapper.Map<List<CvDTODetail>>(cvs);
-                return jobseeker;
+                var result = new
+                {
+                    jobseeker.UserId,
+                    jobseeker.Email,
+                    jobseeker.AvatarURL,
+                    jobseeker.FullName,
+                    jobseeker.Age,
+                    jobseeker.Phonenumber,
+                    jobseeker.CurrentJob,
+                    jobseeker.Description,
+                    jobseeker.Address,
+                    jobseeker.Gender,
+                    Cvs = _mapper.Map<List<CvDTODetail>>(cvs),
+                    applyID = applyId // Gán giá trị cho thuộc tính mới
+                };
+                return result;
             }
             catch (Exception ex)
             {
@@ -69,11 +86,11 @@ namespace VJN.Controllers
             }
         }
 
-        // GET: api/JobEmployer/ChangeStatusApplyJob/{JobSeekerApply_ID}
+        // GET: api/JobEmployer/ChangeStatusApplyJob
         [HttpGet("ChangeStatusApplyJob")]
-        public async Task<bool> ChangeStatusOfJobseekerApply(int JobSeekerApply_ID,int newStatus)
+        public async Task<bool> ChangeStatusOfJobseekerApply(int Applyjob_Id,int newStatus)
         {
-            return await _applyJoBService.ChangeStatusOfJobseekerApply(JobSeekerApply_ID,newStatus);
+            return await _applyJoBService.ChangeStatusOfJobseekerApply(Applyjob_Id, newStatus);
         }
     }
 }
