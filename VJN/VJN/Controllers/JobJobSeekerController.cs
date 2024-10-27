@@ -52,6 +52,7 @@ namespace VJN.Controllers
                     appliedJobList.Add(new ApplyJobForListApplied
                     {
                         Id = appliedJob.Id,
+                        JobSeekerId= appliedJob.JobSeekerId,
                         PostId = appliedJob.PostId,
                         JobTitle = postJobDTOForList?.JobTitle,
                         SalaryType = salaryName,
