@@ -57,6 +57,8 @@ namespace VJN.Controllers
         {
             try
             {
+                var applyjob = await _context.ApplyJobs.FindAsync(applyId);
+                var status = applyjob.Status;
                 var jobseeker = await _userService.GetUserDetail(JobSeekerApply_ID);
                 var cvs = await _context.Cvs
                 .Include(c => c.ItemOfCvs) 
@@ -76,7 +78,8 @@ namespace VJN.Controllers
                     jobseeker.Address,
                     jobseeker.Gender,
                     Cvs = _mapper.Map<List<CvDTODetail>>(cvs),
-                    applyID = applyId // Gán giá trị cho thuộc tính mới
+                    applyID = applyId, // Gán giá trị cho thuộc tính mới
+                    status = status,
                 };
                 return result;
             }
