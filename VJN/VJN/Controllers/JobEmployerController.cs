@@ -5,6 +5,7 @@ using VJN.Models;
 using VJN.ModelsDTO.ApplyJobDTOs;
 using VJN.ModelsDTO.CvDTOs;
 using VJN.ModelsDTO.UserDTOs;
+using VJN.Paging;
 using VJN.Services;
 
 namespace VJN.Controllers
@@ -29,42 +30,89 @@ namespace VJN.Controllers
 
         // GET: api/JobEmployer/GetAllJobseekerApply/{post_ID}
         [HttpGet("GetAllJobseekerApply/{post_ID}")]
-        public async Task<ActionResult<IEnumerable<UserDTOforList>>> GetAllJobSeekerApplied(int post_ID)
+        public async Task<ActionResult<PagedResult<UserDTOforList>>> GetAllJobSeekerApplied(int post_ID, int pageNumber = 1, int pageSize = 4, string? gender = null, int? age = null, string? jobName = null, int? applyStatus = null)
         {
             try
             {
-                var JobSeekersApplied = await _applyJoBService.getApplyJobByPostId(post_ID);
-                var userdtoforlist = new List <UserDTOforList>();
-                foreach (var item in JobSeekersApplied) 
+                // Lấy tất cả ứng viên đã nộp đơn
+                var jobSeekersApplied = await _applyJoBService.getApplyJobByPostId(post_ID);
+                var userdtoforlist = new List<UserDTOforList>();
+
+                // Duyệt qua từng ứng viên để lấy thông tin người dùng
+                foreach (var item in jobSeekersApplied)
                 {
                     var _user = await _userService.findById(item.JobSeekerId ?? 0);
-                    UserDTOforList userDTO = _mapper.Map<UserDTOforList>(_user);
-                    userDTO.Apply_id = item.Id;
-                    userdtoforlist.Add(userDTO);
+                    if (_user != null)
+                    {
+                        UserDTOforList userDTO = _mapper.Map<UserDTOforList>(_user);
+                        userDTO.Apply_id = item.Id;
+                        userdtoforlist.Add(userDTO);
+                    }
                 }
-                return Ok(userdtoforlist);
-            }
-            catch (Exception ex) 
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
 
+                // Lọc dữ liệu theo các trường tìm kiếm
+                if (!string.IsNullOrEmpty(gender))
+                {
+                    bool isMale = gender.Equals("Nam", StringComparison.OrdinalIgnoreCase);
+                    userdtoforlist = userdtoforlist.Where(u => u.Gender == isMale).ToList();
+                }
+
+                if (age.HasValue)
+                {
+                    userdtoforlist = userdtoforlist.Where(u => u.Age == age.Value).ToList();
+                }
+
+                if (!string.IsNullOrEmpty(jobName))
+                {
+                    userdtoforlist = userdtoforlist.Where(u => u.JobName.Equals(jobName, StringComparison.OrdinalIgnoreCase)).ToList();
+                }
+
+                if (applyStatus.HasValue)
+                {
+                    userdtoforlist = userdtoforlist.Where(u => u.Apply_id == applyStatus.Value).ToList();
+                }
+
+                // Apply pagination to the user list
+                var pagedResult = userdtoforlist.AsQueryable().GetPaged(pageNumber, pageSize);
+
+                return Ok(pagedResult);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Lỗi hệ thống: {ex.Message}");
+            }
         }
+
+
+
+
 
         // GET: api/JobEmployer/GetDetailJobseekerApply/{JobSeekerApply_ID}
         [HttpGet("GetDetailJobseekerApply/{JobSeekerApply_ID}/{applyId}")]
-        public async Task<ActionResult<object>> GetDetailJobSeekerApply(int JobSeekerApply_ID,int applyId)
+        public async Task<ActionResult<object>> GetDetailJobSeekerApply(int JobSeekerApply_ID, int applyId)
         {
             try
             {
                 var applyjob = await _context.ApplyJobs.FindAsync(applyId);
+                if (applyjob == null) return NotFound("Application not found."); // Kiểm tra nếu applyjob tồn tại
+
                 var status = applyjob.Status;
                 var jobseeker = await _userService.GetUserDetail(JobSeekerApply_ID);
+
+                // Lấy danh sách CV của job seeker
                 var cvs = await _context.Cvs
-                .Include(c => c.ItemOfCvs) 
-                .Where(c => c.UserId == jobseeker.UserId)
-                .ToListAsync();
-                jobseeker.Cvs = _mapper.Map<List<CvDTODetail>>(cvs);
+                    .Include(c => c.ItemOfCvs)
+                    .Where(c => c.UserId == jobseeker.UserId)
+                    .ToListAsync();
+
+                // Lọc CV chỉ lấy CV có ID bằng applyjob.CvId
+                var cvsfilter = cvs
+                    .Where(c => c.CvId == applyjob.CvId)
+                    .Select(c => _mapper.Map<CvDTODetail>(c))
+                    .ToList();
+
+                jobseeker.Cvs = cvsfilter;
+
                 var result = new
                 {
                     jobseeker.UserId,
@@ -77,11 +125,12 @@ namespace VJN.Controllers
                     jobseeker.Description,
                     jobseeker.Address,
                     jobseeker.Gender,
-                    Cvs = _mapper.Map<List<CvDTODetail>>(cvs),
+                    Cvs = cvsfilter, // Trả về danh sách CV đã được lọc
                     applyID = applyId, // Gán giá trị cho thuộc tính mới
                     status = status,
                 };
-                return result;
+
+                return Ok(result); // Trả về kết quả với mã 200
             }
             catch (Exception ex)
             {

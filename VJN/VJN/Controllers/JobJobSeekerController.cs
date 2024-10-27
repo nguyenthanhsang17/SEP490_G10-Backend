@@ -5,6 +5,7 @@ using VJN.Models;
 using VJN.ModelsDTO.ApplyJobDTOs;
 using VJN.ModelsDTO.PostJobDTOs;
 using VJN.ModelsDTO.UserDTOs;
+using VJN.Paging;
 using VJN.Services;
 
 namespace VJN.Controllers
@@ -26,13 +27,16 @@ namespace VJN.Controllers
         }
         // GET: api/JobJobSeeker/GetAllJobApplied/{JobSeeker_ID}
         [HttpGet("GetAllJobApplied/{JobSeeker_ID}")]
-        public async Task<ActionResult<IEnumerable<ApplyJobForListApplied>>> GetAllJobAppliedByUserId(int JobSeeker_ID)
+        public async Task<ActionResult<PagedResult<ApplyJobForListApplied>>> GetAllJobAppliedByUserId(
+        int JobSeeker_ID,
+        int pageNumber = 1,
+        int pageSize = 10)
         {
             try
             {
                 var appliedJobs = await _applyJoBService.getApplyJobByJobSeekerId(JobSeeker_ID);
                 var appliedJobList = new List<ApplyJobForListApplied>();
-               
+
                 foreach (var appliedJob in appliedJobs)
                 {
                     var postJobDTOForList = await _postJobService.GetPostJobById(appliedJob.PostId ?? 0);
@@ -41,18 +45,19 @@ namespace VJN.Controllers
                     if (authorid.HasValue)
                     {
                         UserDTO user = await _userService.findById(authorid.Value);
-                        authorName=user.FullName;
+                        authorName = user.FullName;
                     }
-                    
+
                     var salarytype = await _context.SalaryTypes.FindAsync(postJobDTOForList.SalaryTypesId);
                     string salaryName = salarytype.TypeName;
 
                     var jobcategory = await _context.JobCategories.FindAsync(postJobDTOForList.JobCategoryId);
                     string jobcategoryname = jobcategory.JobCategoryName;
+
                     appliedJobList.Add(new ApplyJobForListApplied
                     {
                         Id = appliedJob.Id,
-                        JobSeekerId= appliedJob.JobSeekerId,
+                        JobSeekerId = appliedJob.JobSeekerId,
                         PostId = appliedJob.PostId,
                         JobTitle = postJobDTOForList?.JobTitle,
                         SalaryType = salaryName,
@@ -64,12 +69,15 @@ namespace VJN.Controllers
                         CreateDate = postJobDTOForList?.CreateDate,
                         ExpirationDate = postJobDTOForList?.ExpirationDate,
                         StatusApplyJob = (int)appliedJob.Status,
-                        StatusJob= (int)postJobDTOForList.Status,
+                        StatusJob = (int)postJobDTOForList.Status,
                         JobCategory = jobcategoryname
                     });
                 }
 
-                return Ok(appliedJobList);
+                // Áp dụng phân trang bằng PaginationHelper
+                var pagedResult = appliedJobList.GetPaged(pageNumber, pageSize);
+
+                return Ok(pagedResult);
             }
             catch (Exception ex)
             {
