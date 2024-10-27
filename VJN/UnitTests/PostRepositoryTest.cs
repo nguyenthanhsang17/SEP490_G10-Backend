@@ -18,7 +18,7 @@ namespace UnitTests
             VJNDBContext testContext = new VJNDBContext();
             repository = new PostJobRepository(testContext);
         }
-
+        // test full
         [Test]
         public async Task TestSearchJob()
         {
