@@ -7,6 +7,6 @@
         public string? BlogDescription { get; set; }
         public DateTime? CreateDate { get; set; }
         public int? AuthorId { get; set; }
-        public int? Thumbnail { get; set; }
+        public string? Thumbnail { get; set; }
     }
 }

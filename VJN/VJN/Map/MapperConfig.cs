@@ -35,7 +35,7 @@ namespace VJN.Map
 
             //Mapper for user
             //Mapper for Blog
-            CreateMap<Blog, BlogDTO>();
+            CreateMap<Blog, BlogDTO>().ForMember(dest=> dest.Thumbnail, opt => opt.MapFrom(src => src.ThumbnailNavigation.Url));
             //Mapper for Blog
 
             //Maper for Media
