@@ -3,6 +3,7 @@
     public class UserDTOforList
     {
         public int UserId { get; set; }
+        public int Apply_id { get; set; }
         public int? Avatar { get; set; }
         public string? AvatarURL { get; set; }
         public string FullName { get; set; }

@@ -3,6 +3,7 @@
     public class ApplyJobForListApplied
     {
         public int Id { get; set; }
+        public int? JobSeekerId { get; set; }
         public int? PostId { get; set; }
         public string? JobTitle { get; set; }
         public string? SalaryType { get; set; }
