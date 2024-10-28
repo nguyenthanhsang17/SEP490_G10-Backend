@@ -34,13 +34,14 @@ namespace VJN.Controllers
             {
                 await file.CopyToAsync(memoryStream);
                 byte[] fileBytes = memoryStream.ToArray();
-
+                Console.WriteLine("day la file name: "+file.FileName);
                 try
                 {
                     FileCreateRequest uploadRequest = new FileCreateRequest
                     {
                         file = fileBytes,
-                        fileName = file.FileName
+                        fileName = file.FileName,
+                        overwriteFile = true
                     };
                     Result result = _imagekitClient.Upload(uploadRequest);
                     var media = new MediaItemDTO
