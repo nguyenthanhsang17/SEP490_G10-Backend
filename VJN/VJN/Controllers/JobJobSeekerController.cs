@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.IdentityModel.Tokens.Jwt;
 using VJN.Models;
 using VJN.ModelsDTO.ApplyJobDTOs;
 using VJN.ModelsDTO.PostJobDTOs;
@@ -14,7 +15,7 @@ namespace VJN.Controllers
     [ApiController]
     public class JobJobSeekerController : ControllerBase
     {
-        private readonly IApplyJobService _applyJoBService ;
+        private readonly IApplyJobService _applyJoBService;
         private readonly IPostJobService _postJobService;
         private readonly IUserService _userService;
         private readonly VJNDBContext _context;
@@ -25,13 +26,36 @@ namespace VJN.Controllers
             _userService = userService;
             _context = context;
         }
-        // GET: api/JobJobSeeker/GetAllJobApplied/{JobSeeker_ID}
-        [HttpGet("GetAllJobApplied/{JobSeeker_ID}")]
-        public async Task<ActionResult<PagedResult<ApplyJobForListApplied>>> GetAllJobAppliedByUserId(
-        int JobSeeker_ID,
-        int pageNumber = 1,
-        int pageSize = 10)
+
+        private string GetUserIdFromToken()
         {
+            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            Console.WriteLine(token);
+            if (string.IsNullOrEmpty(token))
+            {
+                throw new Exception("Missing token in Authorization header.");
+            }
+
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+
+            var userIdClaim = jwtToken.Claims.FirstOrDefault(claim => claim.Type == "nameid");
+
+            if (userIdClaim == null)
+            {
+                throw new Exception("User ID not found in token.");
+            }
+
+            return userIdClaim.Value;
+        }
+
+
+        // GET: api/JobJobSeeker/GetAllJobApplied}
+        [HttpGet("GetAllJobApplied")]
+        public async Task<ActionResult<PagedResult<ApplyJobForListApplied>>> GetAllJobAppliedByUserId(int pageNumber = 1,int pageSize = 10)
+        {
+            string userid_str = GetUserIdFromToken();
+            int JobSeeker_ID = int.Parse(userid_str);
             try
             {
                 var appliedJobs = await _applyJoBService.getApplyJobByJobSeekerId(JobSeeker_ID);
