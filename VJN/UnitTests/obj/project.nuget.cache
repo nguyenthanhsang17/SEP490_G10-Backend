@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Ga5rB4f+NYg=",
+  "dgSpecHash": "GZgjXUkuVWg=",
   "success": true,
-  "projectFilePath": "C:\\Users\\vieta\\OneDrive\\Máy tính\\Đồ án\\New folder\\SEP490_G10-Backend\\VJN\\UnitTests\\UnitTests.csproj",
+  "projectFilePath": "C:\\Users\\vieta\\OneDrive\\Máy tính\\Đồ án\\Đồ AN 3 intern 1\\SEP490_G10-Backend\\VJN\\UnitTests\\UnitTests.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\vieta\\.nuget\\packages\\automapper\\13.0.1\\automapper.13.0.1.nupkg.sha512",
     "C:\\Users\\vieta\\.nuget\\packages\\bouncycastle.cryptography\\2.4.0\\bouncycastle.cryptography.2.4.0.nupkg.sha512",
