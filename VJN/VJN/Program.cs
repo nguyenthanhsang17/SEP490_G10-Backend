@@ -141,6 +141,8 @@ namespace VJN
 
             builder.Services.AddScoped<ICvRepository, CvRepository>();
             builder.Services.AddScoped<ICvService, CvService>();
+
+            builder.Services.AddScoped<IServicePriceLogRepository, ServicePriceLogRepository>();
             // Register services and repositories
 
             var app = builder.Build();
