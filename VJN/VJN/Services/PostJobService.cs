@@ -14,11 +14,13 @@ namespace VJN.Services
         const double EarthRadiusKm = 6371.0;
 
         private readonly IPostJobRepository _postJobRepository;
+        private readonly IServicePriceLogRepository _priceLogRepository;
         private readonly IMapper _mapper;
-        public PostJobService(IPostJobRepository postJobRepository, IMapper mapper)
+        public PostJobService(IPostJobRepository postJobRepository, IMapper mapper, IServicePriceLogRepository priceLogRepository)
         {
             _postJobRepository = postJobRepository;
             _mapper = mapper;
+            _priceLogRepository = priceLogRepository;
         }
         public async Task<IEnumerable<PostJobDTOForHomepage>> getPorpularJob()
         {
@@ -133,6 +135,7 @@ namespace VJN.Services
             var postjob = _mapper.Map<PostJob>(postJob);
             postjob.AuthorId = u;
             int id = await _postJobRepository.CreatePostJob(postjob);
+            _priceLogRepository.subtraction(u, postJob.IsUrgentRecruitment.Value);
             return id;
         }
 
