@@ -15,7 +15,7 @@ namespace VJN.Repositories
         {
             var oneMonthAgo = DateTime.Now.AddMonths(-1);
             var recentLogs = await _context.ServicePriceLogs
-                .Where(log => log.UserId == userid && log.RegisterDate >= oneMonthAgo && log.NumberPostRemaining>0&&log.NumberPostsUrgentRecruitmentRemaining>0)
+                .Where(log => log.UserId == userid && log.RegisterDate >= oneMonthAgo && log.NumberPosts>0&&log.NumberPostsUrgentRecruitment>0)
                 .AnyAsync();
             return recentLogs;
         }
@@ -29,11 +29,11 @@ namespace VJN.Repositories
                 .Where(log => log.UserId == userid && log.RegisterDate >= oneMonthAgo);
             if(!check)
             {
-                recentLogs = recentLogs.Where(log => log.NumberPostRemaining > 0);
+                recentLogs = recentLogs.Where(log => log.NumberPosts > 0);
             }
             else
             {
-                recentLogs = recentLogs.Where(log => log.NumberPostsUrgentRecruitmentRemaining > 0);
+                recentLogs = recentLogs.Where(log => log.NumberPostsUrgentRecruitment > 0);
             }
 
             var exitst = await recentLogs.AnyAsync();
@@ -42,11 +42,11 @@ namespace VJN.Repositories
                 var log = await recentLogs.FirstOrDefaultAsync();
                 if (!check)
                 {
-                    log.NumberPostRemaining = log.NumberPostRemaining - 1;
+                    log.NumberPosts = log.NumberPosts - 1;
                 }
                 else
                 {
-                    log.NumberPostsUrgentRecruitmentRemaining = log.NumberPostsUrgentRecruitmentRemaining - 1;
+                    log.NumberPostsUrgentRecruitment = log.NumberPostsUrgentRecruitment - 1;
                 }
                 _context.Entry(log).State = EntityState.Modified;
                 await _context.SaveChangesAsync();

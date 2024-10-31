@@ -2,7 +2,7 @@
 {
     public class UserUpdateDTO
     {
-        public int? Avatar { get; set; }
+        public IFormFile? Avatar { get; set; }
         public string? FullName { get; set; }
         public int? Age { get; set; }
         public string? Phonenumber { get; set; }

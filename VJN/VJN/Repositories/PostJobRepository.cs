@@ -62,7 +62,7 @@ namespace VJN.Repositories
             if (!string.IsNullOrEmpty(s.JobKeyWord))
             {
                 sql = sql + $" and dbo.RemoveDiacritics(p.JobTitle)  LIKE '%'+ dbo.RemoveDiacritics(N'{s.JobKeyWord}')+'%'";
-                sql = sql + $" and dbo.RemoveDiacritics(JobDescription) like '%'+ dbo.RemoveDiacritics(N'{s.JobKeyWord}%')+'%' ";
+                sql = sql + $" OR dbo.RemoveDiacritics(JobDescription) like '%'+ dbo.RemoveDiacritics(N'{s.JobKeyWord}%')+'%' ";
             }
             if(s.SalaryTypesId != 0)
             {
@@ -211,7 +211,7 @@ namespace VJN.Repositories
             if (!string.IsNullOrEmpty(s.JobKeyWord))
             {
                 sql = sql + $" and dbo.RemoveDiacritics(p.JobTitle)  LIKE '%'+ dbo.RemoveDiacritics(N'{s.JobKeyWord}')+'%'";
-                sql = sql + $" and dbo.RemoveDiacritics(JobDescription) like '%'+ dbo.RemoveDiacritics(N'{s.JobKeyWord}%')+'%' ";
+                sql = sql + $" OR dbo.RemoveDiacritics(JobDescription) like '%'+ dbo.RemoveDiacritics(N'{s.JobKeyWord}%')+'%' ";
             }
             if (s.SalaryTypesId != 0)
             {

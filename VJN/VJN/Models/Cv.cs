@@ -12,6 +12,7 @@ namespace VJN.Models
         }
 
         public int CvId { get; set; }
+        public string? NameCv { get; set; }
         public int? UserId { get; set; }
 
         public virtual User? User { get; set; }
