@@ -134,8 +134,14 @@ namespace VJN.Services
         {
             var postjob = _mapper.Map<PostJob>(postJob);
             postjob.AuthorId = u;
-            int id = await _postJobRepository.CreatePostJob(postjob);
-            _priceLogRepository.subtraction(u, postJob.IsUrgentRecruitment.Value);
+
+            var c = await _priceLogRepository.subtraction(u, postJob.IsUrgentRecruitment.Value);
+            int id = -1;
+            if (c)
+            {
+                id = await _postJobRepository.CreatePostJob(postjob);
+
+            }
             return id;
         }
 

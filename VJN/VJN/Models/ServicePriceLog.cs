@@ -9,8 +9,11 @@ namespace VJN.Models
         public int? UserId { get; set; }
         public int? ServicePriceId { get; set; }
         public DateTime? RegisterDate { get; set; }
-        public int? NumberPostRemaining { get; set; }
-        public int? NumberPostsUrgentRecruitmentRemaining { get; set; }
+        public int? NumberPosts { get; set; }
+        public int? NumberPostsUrgentRecruitment { get; set; }
+        public int? IsFindJobseekers { get; set; }
+        public int? DurationsMonth { get; set; }
+        public int? ExpirationMonth { get; set; }
         public int? Status { get; set; }
 
         public virtual ServicePriceList? ServicePrice { get; set; }

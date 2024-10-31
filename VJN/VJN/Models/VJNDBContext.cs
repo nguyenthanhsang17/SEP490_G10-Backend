@@ -46,23 +46,12 @@ namespace VJN.Models
         public virtual DbSet<WishJob> WishJobs { get; set; } = null!;
         public virtual DbSet<WorkingHour> WorkingHours { get; set; } = null!;
 
-
-        private string getConnectionString()
-        {
-            string connectionString;
-            IConfiguration config = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", true, true)
-                .Build();
-            connectionString = config["ConnectionStrings:DefaultConnection"];
-            return connectionString;
-        }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer(getConnectionString());
+                optionsBuilder.UseSqlServer("server =(local); database = VJNDB;uid=sa;pwd=123456;TrustServerCertificate =true");
             }
         }
 
@@ -101,15 +90,13 @@ namespace VJN.Models
             modelBuilder.Entity<BanLogPostJob>(entity =>
             {
                 entity.HasKey(e => e.BanLogPostJob1)
-                    .HasName("PK__BanLogPo__8801D8C9DCE24900");
+                    .HasName("PK__BanLogPo__8801D8C9A870D4E4");
 
                 entity.ToTable("BanLogPostJob");
 
                 entity.Property(e => e.BanLogPostJob1).HasColumnName("BanLogPostJob");
 
-                entity.Property(e => e.Reason)
-                    .HasColumnName("reason")
-                    .UseCollation("Vietnamese_CI_AI");
+                entity.Property(e => e.Reason).HasColumnName("reason");
 
                 entity.Property(e => e.Status).HasColumnName("status");
 
@@ -127,7 +114,7 @@ namespace VJN.Models
             modelBuilder.Entity<BanUserLog>(entity =>
             {
                 entity.HasKey(e => e.BanId)
-                    .HasName("PK__BanUserL__FD9DEB4A972BB09B");
+                    .HasName("PK__BanUserL__FD9DEB4A08233583");
 
                 entity.ToTable("BanUserLog");
 
@@ -136,8 +123,6 @@ namespace VJN.Models
                 entity.Property(e => e.AdminId).HasColumnName("AdminID");
 
                 entity.Property(e => e.BanDate).HasColumnType("datetime");
-
-                entity.Property(e => e.BanReason).UseCollation("Vietnamese_CI_AI");
 
                 entity.Property(e => e.UnbanDate).HasColumnType("datetime");
 
@@ -162,11 +147,7 @@ namespace VJN.Models
 
                 entity.Property(e => e.AuthorId).HasColumnName("Author_Id");
 
-                entity.Property(e => e.BlogDescription).UseCollation("Vietnamese_CI_AI");
-
-                entity.Property(e => e.BlogTitle)
-                    .HasMaxLength(200)
-                    .UseCollation("Vietnamese_CI_AI");
+                entity.Property(e => e.BlogTitle).HasMaxLength(200);
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
@@ -188,8 +169,6 @@ namespace VJN.Models
                 entity.ToTable("Chat");
 
                 entity.Property(e => e.ChatId).HasColumnName("Chat_Id");
-
-                entity.Property(e => e.Message).UseCollation("Vietnamese_CI_AI");
 
                 entity.Property(e => e.SendFromId).HasColumnName("SendFrom_Id");
 
@@ -216,8 +195,7 @@ namespace VJN.Models
 
                 entity.Property(e => e.JobName)
                     .HasMaxLength(200)
-                    .HasColumnName("Job_Name")
-                    .UseCollation("Vietnamese_CI_AI");
+                    .HasColumnName("Job_Name");
             });
 
             modelBuilder.Entity<Cv>(entity =>
@@ -236,8 +214,6 @@ namespace VJN.Models
 
                 entity.Property(e => e.FavoriteListId).HasColumnName("Favorite_List_Id");
 
-                entity.Property(e => e.Description).UseCollation("Vietnamese_CI_AI");
-
                 entity.HasOne(d => d.Employer)
                     .WithMany(p => p.FavoriteListEmployers)
                     .HasForeignKey(d => d.EmployerId)
@@ -252,7 +228,7 @@ namespace VJN.Models
             modelBuilder.Entity<ImagePostJob>(entity =>
             {
                 entity.HasKey(e => e.ImageJobId)
-                    .HasName("PK__ImagePos__94211786DBD33181");
+                    .HasName("PK__ImagePos__94211786FE2F7EFA");
 
                 entity.ToTable("ImagePostJob");
 
@@ -279,10 +255,6 @@ namespace VJN.Models
 
                 entity.Property(e => e.ItemOfCvId).HasColumnName("ItemOfCvID");
 
-                entity.Property(e => e.ItemDescription).UseCollation("Vietnamese_CI_AI");
-
-                entity.Property(e => e.ItemName).UseCollation("Vietnamese_CI_AI");
-
                 entity.HasOne(d => d.Cv)
                     .WithMany(p => p.ItemOfCvs)
                     .HasForeignKey(d => d.CvId)
@@ -295,15 +267,13 @@ namespace VJN.Models
 
                 entity.Property(e => e.JobCategoryId).HasColumnName("JobCategory_Id");
 
-                entity.Property(e => e.JobCategoryName)
-                    .HasMaxLength(200)
-                    .UseCollation("Vietnamese_CI_AI");
+                entity.Property(e => e.JobCategoryName).HasMaxLength(200);
             });
 
             modelBuilder.Entity<JobPostDate>(entity =>
             {
                 entity.HasKey(e => e.EventDateId)
-                    .HasName("PK__JobPostD__C24CACCE85A9DA3A");
+                    .HasName("PK__JobPostD__C24CACCE8060898B");
 
                 entity.Property(e => e.EventDateId).HasColumnName("EventDate_Id");
 
@@ -320,7 +290,7 @@ namespace VJN.Models
             modelBuilder.Entity<JobSchedule>(entity =>
             {
                 entity.HasKey(e => e.ScheduleId)
-                    .HasName("PK__JobSched__8C4D3C5BCDE86448");
+                    .HasName("PK__JobSched__8C4D3C5BB1D633AB");
 
                 entity.ToTable("JobSchedule");
 
@@ -357,22 +327,20 @@ namespace VJN.Models
             modelBuilder.Entity<MediaItem>(entity =>
             {
                 entity.Property(e => e.Url)
-                    .HasColumnName("URL")
-                    .UseCollation("Vietnamese_CI_AI");
+                    .HasColumnType("text")
+                    .HasColumnName("URL");
             });
 
             modelBuilder.Entity<Notification>(entity =>
             {
                 entity.HasKey(e => e.NotifycationId)
-                    .HasName("PK__Notifica__391E35C83D5EEA85");
+                    .HasName("PK__Notifica__391E35C8CBA133BA");
 
                 entity.ToTable("Notification");
 
                 entity.Property(e => e.NotifycationId).HasColumnName("Notifycation_Id");
 
-                entity.Property(e => e.NotifycationContent)
-                    .HasMaxLength(255)
-                    .UseCollation("Vietnamese_CI_AI");
+                entity.Property(e => e.NotifycationContent).HasMaxLength(255);
 
                 entity.Property(e => e.UserId).HasColumnName("User_ID");
 
@@ -385,13 +353,13 @@ namespace VJN.Models
             modelBuilder.Entity<PostJob>(entity =>
             {
                 entity.HasKey(e => e.PostId)
-                    .HasName("PK__PostJob__5875F7AD0EB32C41");
+                    .HasName("PK__PostJob__5875F7ADF8046E08");
 
                 entity.ToTable("PostJob");
 
                 entity.Property(e => e.PostId).HasColumnName("Post_Id");
 
-                entity.Property(e => e.Address).UseCollation("Vietnamese_CI_AI");
+                entity.Property(e => e.Address).HasColumnType("text");
 
                 entity.Property(e => e.CensorDate)
                     .HasColumnType("datetime")
@@ -405,11 +373,7 @@ namespace VJN.Models
 
                 entity.Property(e => e.JobCategoryId).HasColumnName("JobCategory_Id");
 
-                entity.Property(e => e.JobDescription).UseCollation("Vietnamese_CI_AI");
-
-                entity.Property(e => e.JobTitle)
-                    .HasMaxLength(200)
-                    .UseCollation("Vietnamese_CI_AI");
+                entity.Property(e => e.JobTitle).HasMaxLength(200);
 
                 entity.Property(e => e.Latitude)
                     .HasColumnType("decimal(17, 14)")
@@ -448,18 +412,14 @@ namespace VJN.Models
             {
                 entity.ToTable("RegisterEmployer");
 
-                entity.HasIndex(e => e.UserId, "UQ__Register__206D91712D62C3E3")
+                entity.HasIndex(e => e.UserId, "UQ__Register__206D9171BBEACAEF")
                     .IsUnique();
 
                 entity.Property(e => e.RegisterEmployerId).HasColumnName("RegisterEmployer_Id");
 
-                entity.Property(e => e.BussinessAddress)
-                    .HasMaxLength(200)
-                    .UseCollation("Vietnamese_CI_AI");
+                entity.Property(e => e.BussinessAddress).HasMaxLength(200);
 
-                entity.Property(e => e.BussinessName)
-                    .HasMaxLength(200)
-                    .UseCollation("Vietnamese_CI_AI");
+                entity.Property(e => e.BussinessName).HasMaxLength(200);
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
@@ -474,7 +434,7 @@ namespace VJN.Models
             modelBuilder.Entity<RegisterEmployerMedium>(entity =>
             {
                 entity.HasKey(e => e.RegisterEmployerMedia)
-                    .HasName("PK__Register__AA6A3626A5EAF4F4");
+                    .HasName("PK__Register__AA6A36268E03B942");
 
                 entity.Property(e => e.MediaId).HasColumnName("Media_Id");
 
@@ -503,8 +463,6 @@ namespace VJN.Models
 
                 entity.Property(e => e.PostId).HasColumnName("Post_Id");
 
-                entity.Property(e => e.Reason).UseCollation("Vietnamese_CI_AI");
-
                 entity.HasOne(d => d.JobSeeker)
                     .WithMany(p => p.Reports)
                     .HasForeignKey(d => d.JobSeekerId)
@@ -519,7 +477,7 @@ namespace VJN.Models
             modelBuilder.Entity<ReportMedium>(entity =>
             {
                 entity.HasKey(e => e.ReportImageId)
-                    .HasName("PK__ReportMe__585F554B743EB798");
+                    .HasName("PK__ReportMe__585F554B2DD5BE32");
 
                 entity.Property(e => e.ReportImageId).HasColumnName("ReportImage_Id");
 
@@ -544,15 +502,13 @@ namespace VJN.Models
 
                 entity.Property(e => e.RoleId).HasColumnName("Role_Id");
 
-                entity.Property(e => e.RoleName)
-                    .HasMaxLength(100)
-                    .UseCollation("Vietnamese_CI_AI");
+                entity.Property(e => e.RoleName).HasMaxLength(100);
             });
 
             modelBuilder.Entity<SalaryType>(entity =>
             {
                 entity.HasKey(e => e.SalaryTypesId)
-                    .HasName("PK__salary_t__0CA27F784628EF1A");
+                    .HasName("PK__salary_t__0CA27F78677A9E2C");
 
                 entity.ToTable("salary_types");
 
@@ -560,18 +516,19 @@ namespace VJN.Models
 
                 entity.Property(e => e.TypeName)
                     .HasMaxLength(50)
-                    .HasColumnName("type_name")
-                    .UseCollation("Vietnamese_CI_AI");
+                    .HasColumnName("type_name");
             });
 
             modelBuilder.Entity<ServicePriceList>(entity =>
             {
                 entity.HasKey(e => e.ServicePriceId)
-                    .HasName("PK__Service___59C7673B976C2F13");
+                    .HasName("PK__Service___59C7673BE0D909A1");
 
                 entity.ToTable("Service_price_list");
 
                 entity.Property(e => e.ServicePriceId).HasColumnName("Service_price_id");
+
+                entity.Property(e => e.DurationsMonth).HasColumnName("durationsMonth");
 
                 entity.Property(e => e.Price).HasColumnType("money");
             });
@@ -581,6 +538,8 @@ namespace VJN.Models
                 entity.ToTable("Service_price_Log");
 
                 entity.Property(e => e.ServicePriceLogId).HasColumnName("Service_price_Log_Id");
+
+                entity.Property(e => e.DurationsMonth).HasColumnName("durationsMonth");
 
                 entity.Property(e => e.RegisterDate)
                     .HasColumnType("datetime")
@@ -630,17 +589,11 @@ namespace VJN.Models
 
                 entity.Property(e => e.UserId).HasColumnName("User_Id");
 
-                entity.Property(e => e.Address).UseCollation("Vietnamese_CI_AI");
-
                 entity.Property(e => e.Balance).HasColumnType("money");
-
-                entity.Property(e => e.Description).UseCollation("Vietnamese_CI_AI");
 
                 entity.Property(e => e.Email).HasMaxLength(100);
 
-                entity.Property(e => e.FullName)
-                    .HasMaxLength(100)
-                    .UseCollation("Vietnamese_CI_AI");
+                entity.Property(e => e.FullName).HasMaxLength(100);
 
                 entity.Property(e => e.Password)
                     .HasMaxLength(100)

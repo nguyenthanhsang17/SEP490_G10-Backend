@@ -10,7 +10,6 @@ namespace VJN.Services
         public Task<IEnumerable<PostJobDTOForHomepage>> getPorpularJob();
         public Task<PagedResult<JobSearchResult>> SearchJobPopular(PostJobSearch postJobSearch);
         public Task<PostJobDetailDTO> getJostJobByID(int id, int? userid);
-
         public Task<PostJobDTOForList> GetPostJobById(int id);
         public Task<bool> ChangeStatusPostJob(int jobID, int status);
         public Task<int> CreatePostJob(PostJobCreateDTO postJob, int uid);
