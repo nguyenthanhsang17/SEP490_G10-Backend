@@ -19,6 +19,7 @@ namespace VJN.Services
             {
                 CvId = cv.CvId,
                 UserId = cv.UserId,
+                NameCv = cv.NameCv,
                 ItemOfCvs = cv.ItemOfCvs.Select(it => new ModelsDTO.ItemOfCvDTOs.ItemOfcvDTOforView
                 {
                     ItemOfCvId = it.ItemOfCvId,

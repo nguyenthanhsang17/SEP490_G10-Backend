@@ -3,6 +3,7 @@ using AutoMapper.Execution;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using VJN.Models;
 using VJN.ModelsDTO.PostJobDTOs;
+using VJN.ModelsDTO.ReportDTO;
 using VJN.Paging;
 using VJN.Repositories;
 
@@ -174,5 +175,23 @@ namespace VJN.Services
             var page = new PagedResult<JobSearchResultEmployer>(jobSearchResult, id.Count(), s.pageNumber, PageSize);
             return page;
         }
+
+        public async Task<IEnumerable<PostJobDTOforReport>> GetAllPostJob(int status)
+        {
+            var postJobs = await _postJobRepository.GetAllPostJob(status);
+            var result = _mapper.Map<IEnumerable<PostJobDTOforReport>>(postJobs);
+
+            foreach (var postJobDto in result)
+            {
+
+                if (postJobDto.Reports != null && postJobDto.Reports.Any())
+                {
+                    postJobDto.Reports = postJobDto.Reports.Select(report => _mapper.Map<ReportDTO>(report)).ToList();
+                }
+            }
+
+            return result;
+        }
+
     }
 }

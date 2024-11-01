@@ -285,5 +285,16 @@ namespace VJN.Repositories
             var id = results.Select(u => u.PostId);
             return id;
         }
+
+
+        async Task<IEnumerable<PostJob>> IPostJobRepository.GetAllPostJob(int status)
+        {
+            if (status == -1)
+            {
+                return await _context.PostJobs.Include(p => p.Reports).ToListAsync();
+            }
+            var PostJobs = await _context.PostJobs.Where(p => p.Status == status).Include(p => p.Reports).ToListAsync();
+            return PostJobs;
+        }
     }
 }
