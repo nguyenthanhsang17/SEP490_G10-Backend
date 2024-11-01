@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
+using Imagekit.Sdk;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NuGet.Protocol.Plugins;
 using VJN.Models;
+using VJN.ModelsDTO.MediaItemDTOs;
 using VJN.ModelsDTO.PostJobDTOs;
 using VJN.Paging;
 using VJN.Repositories;
@@ -21,11 +24,18 @@ namespace VJN.Controllers
     {
         private readonly IPostJobService _postJobService;
         private readonly ISlotService _slotService;
-
-        public PostJobsController(IPostJobService postJobService, ISlotService slotService)
+        private readonly ImagekitClient _imagekitClient;
+        private readonly IMediaItemService _mediaItemService;
+        private readonly IImagePostJobService _imagepostJobService;
+        private readonly IJobPostDateService _jobPostDateService;
+        public PostJobsController(IPostJobService postJobService, ISlotService slotService, IMediaItemService mediaItemService, IImagePostJobService imagepostJobService, IJobPostDateService jobPostDateService)
         {
             _postJobService = postJobService;
             _slotService = slotService;
+            _imagekitClient = new ImagekitClient("public_Q+yi7A0O9A+joyXIoqM4TpVqOrQ=", "private_e2V3fNLKwK0pGwSrEmFH+iKQtks=", "https://ik.imagekit.io/ryf3sqxfn");
+            _mediaItemService = mediaItemService;
+            _imagepostJobService = imagepostJobService;
+            _jobPostDateService = jobPostDateService;
         }
 
         [HttpGet]
@@ -83,14 +93,19 @@ namespace VJN.Controllers
                 return BadRequest(new { Message = "Ẩn bài post thất bại" });
             }
         }
+
         [Authorize]
         [HttpPost("CreatePost")]
         public async Task<IActionResult> CreatePostJob([FromBody] PostJobCreateDTO postJobCreateDTO )
         {
+            Console.WriteLine("chay ham nay");
             string userid_str = GetUserIdFromToken();
             int uid = int.Parse(userid_str);
-
             var id = await _postJobService.CreatePostJob(postJobCreateDTO, uid);
+            if(id <= 0)
+            {
+                return BadRequest(new { Message="Lỗi Tạo Công Việc"});
+            }
             return Ok(id);
         }
 

@@ -57,12 +57,21 @@ namespace VJN.Repositories
 
         public async Task<IEnumerable<int>> SearchJobPopular(PostJobSearch s)
         {
-            string sql = "SELECT * FROM PostJob p WHERE 1=1 AND p.ExpirationDate > GETDATE() ";
+            string sql = "";
+            if (s.SortNumberApplied != 0)
+            {
+                sql = "SELECT p.* FROM PostJob p left join ApplyJob aj on p.Post_Id = aj.Post_Id WHERE 1=1 AND p.ExpirationDate > GETDATE() ";
+            }
+            else
+            {
+                sql = "SELECT p.* FROM PostJob p WHERE 1=1 AND p.ExpirationDate > GETDATE() ";
+            }
+            
 
             if (!string.IsNullOrEmpty(s.JobKeyWord))
             {
-                sql = sql + $" and dbo.RemoveDiacritics(p.JobTitle)  LIKE '%'+ dbo.RemoveDiacritics(N'{s.JobKeyWord}')+'%'";
-                sql = sql + $" OR dbo.RemoveDiacritics(JobDescription) like '%'+ dbo.RemoveDiacritics(N'{s.JobKeyWord}%')+'%' ";
+                sql = sql + $" and ( dbo.RemoveDiacritics(p.JobTitle)  LIKE '%'+ dbo.RemoveDiacritics(N'{s.JobKeyWord}')+'%'";
+                sql = sql + $" OR dbo.RemoveDiacritics(JobDescription) like '%'+ dbo.RemoveDiacritics(N'{s.JobKeyWord}%')+'%' ) ";
             }
             if(s.SalaryTypesId != 0)
             {
@@ -98,11 +107,11 @@ namespace VJN.Repositories
                 sql = sql + " GROUP BY p.Post_Id, p.JobTitle, p.JobDescription, p.salary_types_id, p.Salary, p.NumberPeople, p.Address, p.latitude, p.longitude, p.AuthorId, p.CreateDate, p.ExpirationDate, p.Status, p.censor_Id, p.censor_Date, p.IsUrgentRecruitment, p.JobCategory_Id";
                 if(s.SortNumberApplied > 0)
                 {
-                    sql = sql + " order by COUNT(p.Post_Id) ";
+                    sql = sql + " order by COUNT(aj.id) ";
                 }
                 else
                 {
-                    sql = sql + " order by COUNT(p.Post_Id) desc";
+                    sql = sql + " order by COUNT(aj.id) desc";
                 }
             }
             Console.WriteLine(sql);
@@ -131,8 +140,17 @@ namespace VJN.Repositories
 
         public async Task<IEnumerable<PostJob>> jobSearchResults(IEnumerable<int> jobIds)
         {
-            var jobs = await _context.PostJobs.Include(j => j.Author).Include(j => j.JobCategory).Include(j => j.SalaryTypes).Include(j => j.ImagePostJobs).ThenInclude(img => img.Image).Where(u => jobIds.Contains(u.PostId)).Include(j=>j.ApplyJobs).ToListAsync();
-            return jobs;
+            List<PostJob> postJobs = new List<PostJob>();
+
+            foreach (var id in jobIds)
+            {
+                var job = await _context.PostJobs.Include(j => j.Author).
+                    Include(j => j.JobCategory).Include(j => j.SalaryTypes).
+                    Include(j => j.ImagePostJobs).ThenInclude(img => img.Image).
+                    Where(u => u.PostId == id).Include(j => j.ApplyJobs).SingleOrDefaultAsync();
+                postJobs.Add(job);
+            }
+            return postJobs;
         }
 
         public async Task<PostJob> getJostJobByID(int id)
@@ -206,7 +224,15 @@ namespace VJN.Repositories
 
         public async Task<IEnumerable<int>> GetPostJobCreatedByEmployerID(int employerID, PostJobSearchEmployer s)
         {
-            string sql = $"SELECT * FROM PostJob p WHERE 1=1 and AuthorId = {employerID} ";
+            string sql = "";
+            if (s.SortNumberApplied != 0)
+            {
+                sql = $"SELECT p.* FROM PostJob p left join ApplyJob aj on p.Post_Id = aj.Post_Id WHERE 1=1 and AuthorId = {employerID} ";
+            }
+            else
+            {
+                sql = $"SELECT p.* FROM PostJob p WHERE 1=1 and AuthorId = {employerID} ";
+            }
 
             if (!string.IsNullOrEmpty(s.JobKeyWord))
             {
@@ -244,11 +270,11 @@ namespace VJN.Repositories
                 sql = sql + " GROUP BY p.Post_Id, p.JobTitle, p.JobDescription, p.salary_types_id, p.Salary, p.NumberPeople, p.Address, p.latitude, p.longitude, p.AuthorId, p.CreateDate, p.ExpirationDate, p.Status, p.censor_Id, p.censor_Date, p.IsUrgentRecruitment, p.JobCategory_Id";
                 if (s.SortNumberApplied > 0)
                 {
-                    sql = sql + " order by COUNT(p.Post_Id) ";
+                    sql = sql + " order by COUNT(aj.id) ";
                 }
                 else
                 {
-                    sql = sql + " order by COUNT(p.Post_Id) desc ";
+                    sql = sql + " order by COUNT(aj.id) desc ";
                 }
             }
             Console.WriteLine(sql);
