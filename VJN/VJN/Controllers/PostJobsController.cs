@@ -125,5 +125,51 @@ namespace VJN.Controllers
 
             return userIdClaim.Value;
         }
+
+        [HttpPut("Accept/{id}")]
+        public async Task<IActionResult> AcceptPostJob(int id)
+        {
+            var c = await _postJobService.ChangeStatusPostJob(id, 2);
+            if (c)
+            {
+                return Ok(c);
+            }
+            else
+            {
+                return BadRequest(new { Message = "Duyệt bài đăng thất bại" });
+            }
+        }
+
+        [HttpPut("Reject/{id}")]
+        public async Task<IActionResult> RejectPostJob(int id)
+        {
+            var c = await _postJobService.ChangeStatusPostJob(id, 3);
+            if (c)
+            {
+                return Ok(c);
+            }
+            else
+            {
+                return BadRequest(new { Message = "Từ chối bài đăng thất bại" });
+            }
+        }
+
+        [HttpGet("GetAllPostJobs")]
+        public async Task<ActionResult<PagedResult<PostJob>>> GetAllPostJobs([FromQuery] int status, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        {
+            var allPostJobs = await _postJobService.GetAllPostJob(status);
+            if (status == 1)
+            {
+                return Ok(allPostJobs.GetPaged(pageNumber, pageSize));
+            }
+            if (status == -1)
+            {
+                return Ok(allPostJobs.GetPaged(pageNumber, pageSize));
+            }
+            var filteredPage = allPostJobs.Where(item => item.Reports != null && item.Reports.Any());
+            return Ok(filteredPage.GetPaged(pageNumber, pageSize));
+        }
+
+
     }
 }

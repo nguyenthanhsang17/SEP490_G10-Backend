@@ -34,11 +34,10 @@ namespace VJN.Controllers
         {
             try
             {
-                // Lấy tất cả ứng viên đã nộp đơn
+
                 var jobSeekersApplied = await _applyJoBService.getApplyJobByPostId(post_ID);
                 var userdtoforlist = new List<UserDTOforList>();
 
-                // Duyệt qua từng ứng viên để lấy thông tin người dùng
                 foreach (var item in jobSeekersApplied)
                 {
                     var _user = await _userService.findById(item.JobSeekerId ?? 0);
@@ -50,7 +49,6 @@ namespace VJN.Controllers
                     }
                 }
 
-                // Lọc dữ liệu theo các trường tìm kiếm
                 if (!string.IsNullOrEmpty(gender))
                 {
                     bool isMale = gender.Equals("Nam", StringComparison.OrdinalIgnoreCase);
@@ -72,7 +70,7 @@ namespace VJN.Controllers
                     userdtoforlist = userdtoforlist.Where(u => u.Apply_id == applyStatus.Value).ToList();
                 }
 
-                // Apply pagination to the user list
+
                 var pagedResult = userdtoforlist.AsQueryable().GetPaged(pageNumber, pageSize);
 
                 return Ok(pagedResult);
@@ -94,7 +92,7 @@ namespace VJN.Controllers
             try
             {
                 var applyjob = await _context.ApplyJobs.FindAsync(applyId);
-                if (applyjob == null) return NotFound("Application not found."); // Kiểm tra nếu applyjob tồn tại
+                if (applyjob == null) return NotFound("Application not found.");
 
                 var status = applyjob.Status;
                 var jobseeker = await _userService.GetUserDetail(JobSeekerApply_ID);
