@@ -21,5 +21,7 @@ namespace VJN.Repositories
         public Task<int> CreatePostJob(PostJob postJob);
 
         public Task<IEnumerable<int>> GetPostJobCreatedByEmployerID(int employerID, PostJobSearchEmployer search);
+
+        public Task<IEnumerable<PostJob>> GetAllPostJob(int status);
     }
 }

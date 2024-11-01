@@ -8,6 +8,8 @@ using VJN.ModelsDTO.CvDTOs;
 using VJN.ModelsDTO.ItemOfCvDTOs;
 using VJN.ModelsDTO.SlotDTOs;
 using VJN.ModelsDTO.ApplyJobDTOs;
+using VJN.ModelsDTO.ReportDTO;
+using System.Drawing;
 
 namespace VJN.Map
 {
@@ -49,7 +51,10 @@ namespace VJN.Map
             CreateMap<PostJob, PostJobDetailDTO>().ForMember(dest => dest.AuthorName, opt => opt.MapFrom(src => src.Author.FullName))
                                             .ForMember(dest => dest.JobCategoryName, opt => opt.MapFrom(src => src.JobCategory.JobCategoryName))
                                             .ForMember(dest => dest.SalaryTypeName, opt => opt.MapFrom(src => src.SalaryTypes.TypeName));
-
+            CreateMap<PostJob, PostJobDTOforReport>().ForMember(dest => dest.AuthorName, opt => opt.MapFrom(src => src.Author.FullName))
+                                            .ForMember(dest => dest.JobCategoryName, opt => opt.MapFrom(src => src.JobCategory.JobCategoryName))
+                                            .ForMember(dest => dest.SalaryTypeName, opt => opt.MapFrom(src => src.SalaryTypes.TypeName));
+            CreateMap<Report, ReportDTO>().ForMember(dest => dest.jobseekerName, opt => opt.MapFrom(src => src.JobSeeker.FullName));
             CreateMap<PostJobCreateDTO, PostJob>().ForMember(dest=>dest.CreateDate, opt=>opt.MapFrom(src=> DateTime.Now));
 
             CreateMap<Cv, CvDTODetail>();

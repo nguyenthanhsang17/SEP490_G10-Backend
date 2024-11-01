@@ -15,6 +15,6 @@ namespace VJN.Services
         public Task<int> CreatePostJob(PostJobCreateDTO postJob, int uid);
 
         public Task<PagedResult<JobSearchResultEmployer>> GetJobListByEmployerID(int employerID, PostJobSearchEmployer s);
-
+        public Task<IEnumerable<PostJobDTOforReport>> GetAllPostJob(int status);
     }
 }
