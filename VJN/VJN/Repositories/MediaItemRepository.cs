@@ -12,7 +12,7 @@ namespace VJN.Repositories
 
         public async Task<int> CreateMediaItem(MediaItem mediaItem)
         {
-            var mi = await _context.MediaItems.Where(x => x.Url.Equals(mediaItem.Url)).SingleOrDefaultAsync();
+            var mi = await _context.MediaItems.Where(x => EF.Functions.Like(x.Url, mediaItem.Url)).SingleOrDefaultAsync();
             if(mi != null)
             {
                 return mi.Id;

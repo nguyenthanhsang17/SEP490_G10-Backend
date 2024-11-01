@@ -131,9 +131,13 @@ namespace VJN.Services
             return check;
         }
 
-        public async Task<bool> UpdateProfile(int v, UserUpdateDTO model)
+        public async Task<bool> UpdateProfile(int v, UserUpdateDTO model, int avatarID)
         {
             var user = _mapper.Map<User>(model);
+            if(avatarID != 0)
+            {
+                user.Avatar = avatarID;
+            }
             var check = await _userRepository.UpdateProfile(v, user);
             return check;
         }

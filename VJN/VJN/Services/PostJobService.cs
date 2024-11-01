@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using AutoMapper.Execution;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using VJN.Models;
 using VJN.ModelsDTO.PostJobDTOs;
@@ -11,17 +12,23 @@ namespace VJN.Services
     public class PostJobService : IPostJobService
     {
         //so luong job trong 1 trang
-        const int PageSize = 3;
+        const int PageSize = 6;
         const double EarthRadiusKm = 6371.0;
 
         private readonly IPostJobRepository _postJobRepository;
         private readonly IServicePriceLogRepository _priceLogRepository;
         private readonly IMapper _mapper;
-        public PostJobService(IPostJobRepository postJobRepository, IMapper mapper, IServicePriceLogRepository priceLogRepository)
+        private readonly IImagePostJobRepository _imagePostJobRepository;
+        private readonly ISlotRepository _slotRepository;
+        private readonly IJobPostDateRepository _jobPostDateRepository;
+        public PostJobService(IPostJobRepository postJobRepository, IMapper mapper, IServicePriceLogRepository priceLogRepository, IImagePostJobRepository imagePostJobRepository, ISlotRepository slotRepository, IJobPostDateRepository jobPostDateRepository)
         {
             _postJobRepository = postJobRepository;
             _mapper = mapper;
             _priceLogRepository = priceLogRepository;
+            _imagePostJobRepository = imagePostJobRepository;
+            _slotRepository = slotRepository;
+            _jobPostDateRepository = jobPostDateRepository;
         }
         public async Task<IEnumerable<PostJobDTOForHomepage>> getPorpularJob()
         {
@@ -63,7 +70,7 @@ namespace VJN.Services
             var jobSearchResultTasks = jobs.Select(async j => new JobSearchResult
             {
                 PostId = j.PostId,
-                thumbnail =  j.ImagePostJobs.Count()==0 || j.ImagePostJobs==null?"": j.ImagePostJobs.ElementAt(0).Image.Url,
+                thumbnail = j.ImagePostJobs.Count() == 0 || j.ImagePostJobs == null ? "" : j.ImagePostJobs.ElementAt(0).Image.Url,
                 JobTitle = j.JobTitle,
                 Salary = j.Salary,
                 NumberPeople = j.NumberPeople,
@@ -90,10 +97,11 @@ namespace VJN.Services
             {
                 return 0; // Or any default value you prefer
             }
-            return Math.Abs(Haversine(lat1.Value, lon1.Value, lat2.Value, lon2.Value));
+            var result = Math.Abs(Haversine(lat1.Value, lon1.Value, lat2.Value, lon2.Value));
+            return Math.Round(result, 2);
         }
 
-        
+
 
 
         public async Task<PostJobDTOForList> GetPostJobById(int id)
@@ -110,7 +118,7 @@ namespace VJN.Services
             var postdto = _mapper.Map<PostJobDetailDTO>(post);
 
             postdto.ImagePostJobs = await _postJobRepository.getAllImageJobByJobId(postdto.PostId);
-            if(userid.HasValue)
+            if (userid.HasValue)
             {
                 postdto.isAppliedJob = await _postJobRepository.GetisAppliedJob(postdto.PostId, userid.Value);
                 postdto.isWishJob = await _postJobRepository.GetisWishJob(postdto.PostId, userid.Value);
@@ -120,8 +128,8 @@ namespace VJN.Services
                 postdto.isAppliedJob = false;
                 postdto.isWishJob = false;
             }
-            postdto .NumberAppliedUser = await _postJobRepository.CountApplyJob(postdto.PostId);
-           
+            postdto.NumberAppliedUser = await _postJobRepository.CountApplyJob(postdto.PostId);
+
             return postdto;
         }
 
@@ -131,18 +139,11 @@ namespace VJN.Services
             return check;
         }
 
-        public async Task<int> CreatePostJob(PostJobCreateDTO postJob, int u)
+        public async Task<int> CreatePostJob(PostJobCreateDTO postJobdto, int u)
         {
-            var postjob = _mapper.Map<PostJob>(postJob);
+            var postjob = _mapper.Map<PostJob>(postJobdto);
             postjob.AuthorId = u;
-
-            var c = await _priceLogRepository.subtraction(u, postJob.IsUrgentRecruitment.Value);
-            int id = -1;
-            if (c)
-            {
-                id = await _postJobRepository.CreatePostJob(postjob);
-
-            }
+            int id = await _postJobRepository.CreatePostJob(postjob);
             return id;
         }
 
