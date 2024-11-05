@@ -15,6 +15,7 @@ namespace VJN.Models
         public string? BussinessName { get; set; }
         public string? BussinessAddress { get; set; }
         public DateTime? CreateDate { get; set; }
+        public int? Status { get; set; }
 
         public virtual User? User { get; set; }
         public virtual ICollection<RegisterEmployerMedium> RegisterEmployerMedia { get; set; }

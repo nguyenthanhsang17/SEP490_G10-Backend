@@ -344,7 +344,7 @@ namespace VJN.Controllers
                 }
                 else
                 {
-                    return Ok(new { Message = "Cập nhật Thất bại" });
+                    return BadRequest(new { Message = "Cập nhật Thất bại" });
                 }
 
             }
@@ -359,6 +359,10 @@ namespace VJN.Controllers
             int Registerid = await _registerEmployerService.RegisterEmployer(dto, id);
 
             if(id == -1)
+            {
+                return BadRequest("Đã đăng ký để trở thành nhà tuyển dụng, đợi duyệt");
+            }
+            if(id == -2)
             {
                 return BadRequest("Đã đăng ký để trở thành nhà tuyển dụng");
             }
