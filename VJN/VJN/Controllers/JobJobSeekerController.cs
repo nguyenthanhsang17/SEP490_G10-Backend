@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Hosting.Builder;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
 using VJN.Models;
 using VJN.ModelsDTO.ApplyJobDTOs;
+using VJN.ModelsDTO.FavoriteListDTOs;
+using VJN.ModelsDTO.JobSeekerDTOs;
 using VJN.ModelsDTO.PostJobDTOs;
 using VJN.ModelsDTO.UserDTOs;
 using VJN.Paging;
@@ -18,13 +21,15 @@ namespace VJN.Controllers
         private readonly IApplyJobService _applyJoBService;
         private readonly IPostJobService _postJobService;
         private readonly IUserService _userService;
+        private readonly IJobSeekerService _seekerService;
         private readonly VJNDBContext _context;
-        public JobJobSeekerController(IApplyJobService applyJoBService, IPostJobService postJobService, IUserService userService, VJNDBContext context)
+        public JobJobSeekerController(IApplyJobService applyJoBService, IPostJobService postJobService, IUserService userService, VJNDBContext context, IJobSeekerService jobSeekerService)
         {
             _applyJoBService = applyJoBService;
             _postJobService = postJobService;
             _userService = userService;
             _context = context;
+            _seekerService = jobSeekerService;
         }
 
         private string GetUserIdFromToken()
@@ -36,9 +41,14 @@ namespace VJN.Controllers
                 throw new Exception("Missing token in Authorization header.");
             }
 
+           
+
             var handler = new JwtSecurityTokenHandler();
             var jwtToken = handler.ReadJwtToken(token);
-
+            foreach (var claim in jwtToken.Claims)
+            {
+                Console.WriteLine($"Claim Type: {claim.Type}, Claim Value: {claim.Value}");
+            }
             var userIdClaim = jwtToken.Claims.FirstOrDefault(claim => claim.Type == "nameid");
 
             if (userIdClaim == null)
@@ -108,7 +118,20 @@ namespace VJN.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+        //[Authorize]
+        //[HttpGet]
+        //public async Task<PagedResult<JobSeekerDTO>> GetAllJobSeeker()
+        //{
 
+        //}
+
+        [Authorize]
+        [HttpGet("GetJobSeekerDetail/{id}")]
+        public async Task<JobSeekerDetailDTO> GetJobSeekerDetail(int id)
+        {
+            var dto = await _seekerService.GetJobSeekerByIserID(id);
+            return dto;
+        }
 
     }
 }

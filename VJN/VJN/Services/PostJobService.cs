@@ -63,6 +63,7 @@ namespace VJN.Services
         public async Task<PagedResult<JobSearchResult>> SearchJobPopular(PostJobSearch postJobSearch)
         {
             var jobsIds = await _postJobRepository.SearchJobPopular(postJobSearch);
+
             var pageIds = PaginationHelper.GetPaged<int>(jobsIds, postJobSearch.pageNumber, PageSize);
 
             var jobs = await _postJobRepository.jobSearchResults(pageIds.Items);
@@ -150,6 +151,7 @@ namespace VJN.Services
         public async Task<PagedResult<JobSearchResultEmployer>> GetJobListByEmployerID(int employerID, PostJobSearchEmployer s)
         {
             var id = await _postJobRepository.GetPostJobCreatedByEmployerID(employerID, s);
+
             var pageIds = PaginationHelper.GetPaged<int>(id, s.pageNumber, PageSize);
 
             var jobs = await _postJobRepository.jobSearchResults(pageIds.Items);
@@ -193,5 +195,63 @@ namespace VJN.Services
             return result;
         }
 
+        public async Task<bool> AddWishJob(int jobid, int userid)
+        {
+            var c  = await _postJobRepository.AddWishJob(jobid, userid);
+            return c;
+        }
+
+        public async Task<bool> DeleteWishJob(int jobid, int userid)
+        {
+            var c  = await _postJobRepository.DeleteWishJob(jobid, userid);
+            return c;
+        }
+
+        public async Task<PagedResult<JobSearchResult>> getJobWishList(PostJobSearchWishList s, int userid)
+        {
+            var ids = await _postJobRepository.getJobIdInWishList(s, userid);
+
+            var pageIds = PaginationHelper.GetPaged<int>(ids, s.pageNumber, PageSize);
+            var jobs = await _postJobRepository.jobSearchResults(pageIds.Items);
+            var jobSearchResultTasks = jobs.Select(async j => new JobSearchResult
+            {
+                PostId = j.PostId,
+                thumbnail = j.ImagePostJobs.Count() == 0 || j.ImagePostJobs == null ? "" : j.ImagePostJobs.ElementAt(0).Image.Url,
+                JobTitle = j.JobTitle,
+                Salary = j.Salary,
+                NumberPeople = j.NumberPeople,
+                Address = j.Address,
+                Latitude = j.Latitude,
+                Longitude = j.Longitude,
+                distance = CalculateDistance(s.Latitude, s.Longitude, j.Latitude, j.Longitude),
+                AuthorName = j.Author.FullName,
+                SalaryTypeName = j.SalaryTypes.TypeName,
+                JobCategoryName = j.JobCategory.JobCategoryName,
+                ExpirationDate = j.ExpirationDate,
+                IsUrgentRecruitment = j.IsUrgentRecruitment,
+                NumberOfApplicants = j.ApplyJobs.Count(),
+
+            }).ToList();
+
+            var jobSearchResult = await Task.WhenAll(jobSearchResultTasks);
+            var page = new PagedResult<JobSearchResult>(jobSearchResult, ids.Count(), s.pageNumber, PageSize);
+            return page;
+
+        }
+
+        public async Task<int> ReportJob(ReportCreateDTO report, int userid)
+        {
+            var reportModel = new Report()
+            {
+                JobSeekerId = userid,
+                Reason = report.Reason,
+                PostId = report.PostId,
+                CreateDate = DateTime.Now,
+                Status = 1
+            };
+
+            var i = await _postJobRepository.ReportJob(reportModel);
+            return i;
+        }
     }
 }

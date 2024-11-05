@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.RazorPages;
 using VJN.Models;
 using VJN.ModelsDTO.PostJobDTOs;
+using VJN.ModelsDTO.ReportDTO;
 using VJN.Paging;
 
 namespace VJN.Services
@@ -15,5 +16,10 @@ namespace VJN.Services
         public Task<int> CreatePostJob(PostJobCreateDTO postJob, int uid);
         public Task<PagedResult<JobSearchResultEmployer>> GetJobListByEmployerID(int employerID, PostJobSearchEmployer s);
         public Task<IEnumerable<PostJobDTOforReport>> GetAllPostJob(int status);
+
+        public Task<bool> AddWishJob(int jobid, int userid);
+        public Task<bool> DeleteWishJob(int jobid, int userid);
+        public Task<PagedResult<JobSearchResult>> getJobWishList(PostJobSearchWishList s, int userid);
+        public Task<int> ReportJob(ReportCreateDTO report, int userid);
     }
 }

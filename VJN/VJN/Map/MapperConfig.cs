@@ -10,6 +10,10 @@ using VJN.ModelsDTO.SlotDTOs;
 using VJN.ModelsDTO.ApplyJobDTOs;
 using VJN.ModelsDTO.ReportDTO;
 using System.Drawing;
+using VJN.ModelsDTO.RegisterEmployer;
+using VJN.ModelsDTO.WishJob;
+using VJN.ModelsDTO.FavoriteListDTOs;
+using VJN.ModelsDTO.JobSeekerDTOs;
 
 namespace VJN.Map
 {
@@ -68,6 +72,13 @@ namespace VJN.Map
 
             CreateMap<ApplyJobCreateDTO, ApplyJob>().ForMember(dest=>dest.ApplyDate, otp=>otp.MapFrom(src=>DateTime.Now))
                                                     .ForMember(dest=>dest.Status, otp=>otp.MapFrom(src=>0));
+
+            CreateMap<FavoriteListCreateDTO, FavoriteList>();
+
+            CreateMap<User, JobSeekerDetailDTO>().ForMember(dest => dest.AvatarURL, otp => otp.MapFrom(src => src.AvatarNavigation.Url))
+                                                 .ForMember(dest => dest.CurrentJob, otp => otp.MapFrom(src => src.CurrentJobNavigation.JobName))
+                                                 .ForMember(dest => dest.NumberAppiled, otp => otp.MapFrom(src => src.ApplyJobs.Count))
+                                                 .ForMember(dest => dest.NumberAppiledAccept, otp => otp.MapFrom(src => src.ApplyJobs != null ? src.ApplyJobs.Count(aj => aj.Status == 3 || aj.Status == 4) : 0));
         }
     }
 }
