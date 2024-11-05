@@ -15,10 +15,14 @@ namespace VJN.Repositories
         public async Task<int> RegisterEmployer(RegisterEmployer employer)
         {
 
-            var c = await _context.Users.Where(x => x.UserId==employer.UserId&&x.Status==2).AnyAsync();
-
-            if(c) {
+            var c = await _context.RegisterEmployers.Where(re=>re.UserId==employer.UserId&&re.Status==0).AnyAsync();
+            var c1 = await _context.RegisterEmployers.Where(re => re.UserId == employer.UserId && re.Status == 2).AnyAsync();
+            if (c) {
                 return -1;
+            }
+            else if(c1)
+            {
+                return -2;
             }
 
             _context.RegisterEmployers.Add(employer);

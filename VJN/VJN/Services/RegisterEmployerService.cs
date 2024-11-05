@@ -21,6 +21,7 @@ namespace VJN.Services
                 BussinessName = dto.BussinessName,
                 BussinessAddress = dto.BussinessAddress,
                 CreateDate = DateTime.Now,
+                Status = 0,
             };
 
             int id = await _registerEmployerRepository.RegisterEmployer(rg);
