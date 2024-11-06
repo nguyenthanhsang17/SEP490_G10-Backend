@@ -1,5 +1,6 @@
 ﻿using NuGet.Protocol.Core.Types;
 using VJN.Models;
+using VJN.ModelsDTO.JobSeekerDTOs;
 using VJN.Repositories;
 
 namespace UnitTests
@@ -8,12 +9,14 @@ namespace UnitTests
     {
         private UserRepository repository;
         private RegisterEmployerRepository registerEmployerRepository;
+        private JobSeekerRespository jobSeekerRespository;
         [SetUp]
         public void Setup()
         {
             VJNDBContext testContext = new VJNDBContext();
             repository = new UserRepository(testContext);
             registerEmployerRepository = new RegisterEmployerRepository(testContext);
+            jobSeekerRespository = new JobSeekerRespository(testContext);
         }
 
         [Test]
@@ -23,18 +26,35 @@ namespace UnitTests
             Assert.IsNotNull(user);
         }
 
-        [Test] 
-        public async Task TestRegister()
+        //[Test] 
+        //public async Task TestRegister()
+        //{
+        //    var Register = new RegisterEmployer()
+        //    {
+        //        UserId = 1,
+        //        BussinessAddress = "cổng trường đại học fpt",
+        //        BussinessName = "Test",
+        //        CreateDate = DateTime.Now,
+        //    };
+        //    var id = await registerEmployerRepository.RegisterEmployer(Register);
+        //    Assert.AreEqual(2, id, "id : "+id);
+        //}
+
+        [Test]
+        public async Task TestSelectJobseekerall()
         {
-            var Register = new RegisterEmployer()
+            var s = new JobSeekerSearchDTO()
             {
-                UserId = 1,
-                BussinessAddress = "cổng trường đại học fpt",
-                BussinessName = "Test",
-                CreateDate = DateTime.Now,
+                keyword = "đại học bách khoa hà nội",
+                CurrentJob = 3,
+                sort = 1,
+                numberPage = 1,
+                agemax = 30,
+                agemin = 18,
+                address="Hưng yên"
             };
-            var id = await registerEmployerRepository.RegisterEmployer(Register);
-            Assert.AreEqual(2, id, "id : "+id);
+            var id = await jobSeekerRespository.GetAllJobSeeker(s, 2);
+            Assert.AreEqual(1, id.Count(), "result ");
         }
     }
 }

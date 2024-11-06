@@ -92,5 +92,17 @@ namespace VJN.Services
             dto.CvDTOs = cvdtos;
             return dto;
         }
+
+        public async Task<PagedResult<JobSeekerForListDTO>> GetAllJobSeeker(JobSeekerSearchDTO s, int userid)
+        {
+            var ids = await _jobSeekerRespository.GetAllJobSeeker(s, userid);
+
+            var pageIds = PaginationHelper.GetPaged<int>(ids, s.numberPage.Value, PageSize);
+
+            var users = await _jobSeekerRespository.GetUserByListId(pageIds.Items);
+            var jobSeekerDTOs = _mapper.Map<IEnumerable<JobSeekerForListDTO>>(users);
+            var page = new PagedResult<JobSeekerForListDTO>(jobSeekerDTOs, ids.Count(), s.numberPage.Value, PageSize);
+            return page;
+        }
     }
 }

@@ -118,12 +118,15 @@ namespace VJN.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
-        //[Authorize]
-        //[HttpGet]
-        //public async Task<PagedResult<JobSeekerDTO>> GetAllJobSeeker()
-        //{
-
-        //}
+        [Authorize]
+        [HttpGet("GetAllJobSeeker")]
+        public async Task<PagedResult<JobSeekerForListDTO>> GetAllJobSeeker([FromQuery]JobSeekerSearchDTO s)
+        {
+            var id_str = GetUserIdFromToken();
+            var userid = int.Parse(id_str);
+            var page = await _seekerService.GetAllJobSeeker(s, userid);
+            return page;
+        }
 
         [Authorize]
         [HttpGet("GetJobSeekerDetail/{id}")]

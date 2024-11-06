@@ -79,6 +79,11 @@ namespace VJN.Map
                                                  .ForMember(dest => dest.CurrentJob, otp => otp.MapFrom(src => src.CurrentJobNavigation.JobName))
                                                  .ForMember(dest => dest.NumberAppiled, otp => otp.MapFrom(src => src.ApplyJobs.Count))
                                                  .ForMember(dest => dest.NumberAppiledAccept, otp => otp.MapFrom(src => src.ApplyJobs != null ? src.ApplyJobs.Count(aj => aj.Status == 3 || aj.Status == 4) : 0));
+
+            CreateMap<User, JobSeekerForListDTO>().ForMember(dest => dest.AvatarURL, otp => otp.MapFrom(src => src.AvatarNavigation.Url))
+                                                  .ForMember(dest => dest.CurrentJob, otp => otp.MapFrom(src => src.CurrentJobNavigation.JobName))
+                                                  .ForMember(dest => dest.NumberApplied, otp => otp.MapFrom(src => src.ApplyJobs.Count))
+                                                  .ForMember(dest => dest.NumberAppliedAccept, otp => otp.MapFrom(src => src.ApplyJobs != null ? src.ApplyJobs.Count(aj => aj.Status == 3 || aj.Status == 4) : 0));
         }
     }
 }

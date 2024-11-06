@@ -1,6 +1,7 @@
 ﻿using VJN.Models;
 using VJN.ModelsDTO.CvDTOs;
 using VJN.ModelsDTO.FavoriteListDTOs;
+using VJN.ModelsDTO.JobSeekerDTOs;
 
 namespace VJN.Repositories
 {
@@ -17,6 +18,7 @@ namespace VJN.Repositories
 
         public Task<IEnumerable<Cv>> GetCVByUserId(int userID);
 
-        public Task<IEnumerable<int>> GetAllJobSeeker();
+        public Task<IEnumerable<int>> GetAllJobSeeker(JobSeekerSearchDTO s, int userid);
+        public Task<IEnumerable<User>> GetUserByListId(IEnumerable<int> ids);
     }
 }
