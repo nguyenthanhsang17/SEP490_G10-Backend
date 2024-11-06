@@ -81,18 +81,6 @@ namespace VJN.Repositories
             {
                 sql = sql + $" and dbo.RemoveDiacritics(p.Address) like '%'+ dbo.RemoveDiacritics(N'{s.Address}')+'%'";
             }
-            if (s.RangeSalaryMin.HasValue)
-            {
-                sql = sql + $" and Salary >= {s.RangeSalaryMin}";
-            }
-            if (s.RangeSalaryMax.HasValue)
-            {
-                sql = sql + $" and Salary <= {s.RangeSalaryMax} ";
-            }
-            if (s.IsUrgentRecruitment != -1)
-            {
-                sql = sql + $" and p.IsUrgentRecruitment = {s.IsUrgentRecruitment}";
-            }
 
             if (s.JobCategoryId != 0)
             {
@@ -147,7 +135,7 @@ namespace VJN.Repositories
                 var job = await _context.PostJobs.Include(j => j.Author).
                     Include(j => j.JobCategory).Include(j => j.SalaryTypes).
                     Include(j => j.ImagePostJobs).ThenInclude(img => img.Image).
-                    Where(u => u.PostId == id).Include(j => j.ApplyJobs).SingleOrDefaultAsync();
+                    Where(u => u.PostId == id).Include(j => j.ApplyJobs).Include(j=>j.WishJobs).SingleOrDefaultAsync();
                 postJobs.Add(job);
             }
             return postJobs;

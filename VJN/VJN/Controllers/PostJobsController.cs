@@ -41,10 +41,17 @@ namespace VJN.Controllers
             _reportMediaService = reportMediaService;
         }
 
+
         [HttpGet]
         public async Task<ActionResult<PagedResult<JobSearchResult>>> GetPostJobsPopular([FromQuery] PostJobSearch model)
         {
-            var jobs = await _postJobService.SearchJobPopular(model);
+            string id_str = GetUserIdFromToken();
+            int userid = 0;
+            if (!string.IsNullOrEmpty(id_str))
+            {
+                userid = int.Parse(id_str);
+            }
+            var jobs = await _postJobService.SearchJobPopular(model, userid);
             if (jobs == null || jobs.Items.Count() == 0)
             {
                 return BadRequest(new { Message = "không tìm thấy công việc !!!" });

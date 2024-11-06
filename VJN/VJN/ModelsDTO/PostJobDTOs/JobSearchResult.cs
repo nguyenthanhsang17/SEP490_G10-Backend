@@ -17,5 +17,6 @@
         public DateTime? ExpirationDate { get; set; }
         public bool? IsUrgentRecruitment { get; set; }
         public int NumberOfApplicants { get; set; }
+        public int? isWishlist { get; set; }
     }
 }
