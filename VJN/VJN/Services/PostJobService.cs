@@ -60,7 +60,7 @@ namespace VJN.Services
             return degrees * (Math.PI / 180);
         }
 
-        public async Task<PagedResult<JobSearchResult>> SearchJobPopular(PostJobSearch postJobSearch)
+        public async Task<PagedResult<JobSearchResult>> SearchJobPopular(PostJobSearch postJobSearch, int? userid)
         {
             var jobsIds = await _postJobRepository.SearchJobPopular(postJobSearch);
 
@@ -85,7 +85,7 @@ namespace VJN.Services
                 ExpirationDate = j.ExpirationDate,
                 IsUrgentRecruitment = j.IsUrgentRecruitment,
                 NumberOfApplicants = j.ApplyJobs.Count(),
-
+                isWishlist =  j.WishJobs.Where(wj=> userid != 0&&wj.JobSeekerId==userid&&wj.PostJobId==j.PostId).Count(),
             }).ToList();
 
             var jobSearchResult = await Task.WhenAll(jobSearchResultTasks);
