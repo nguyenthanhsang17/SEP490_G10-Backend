@@ -12,5 +12,7 @@ namespace VJN.Services
         public Task<PagedResult<JobSeekerDTO>> GetAllFavoriteList(FavoriteListSearch s, int userid);
 
         public Task<JobSeekerDetailDTO> GetJobSeekerByIserID(int userID);
+
+        public Task<PagedResult<JobSeekerForListDTO>> GetAllJobSeeker(JobSeekerSearchDTO s, int userid);
     }
 }
