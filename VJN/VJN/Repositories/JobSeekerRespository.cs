@@ -97,9 +97,9 @@ namespace VJN.Repositories
 
         public async Task<IEnumerable<int>> GetAllJobSeeker(JobSeekerSearchDTO s, int userid)
         {
-            string sql = $"SELECT u.*\r\nFROM [User] u\r\nJOIN Cv c ON u.User_Id = c.UserId\r\nJOIN ApplyJob a ON u.User_Id = a.JobSeeker_Id\r\nLEFT JOIN ItemOfCv i ON c.CvId = i.CvId\r\nWHERE \r\nu.User_Id != {userid} \r\n  AND a.Status IN (3, 4)\r\n  AND (u.Status = 1 or u.Status=2)";
+            string sql = $"SELECT u.*\r\n      FROM [User] u\r\n      LEFT JOIN Cv c ON u.User_Id = c.UserId\r\n      LEFT JOIN ApplyJob a ON u.User_Id = a.JobSeeker_Id AND a.Status IN (3, 4)\r\n      LEFT JOIN ItemOfCv i ON c.CvId = i.CvId\r\n      WHERE\r\n      u.User_Id != {userid}\r\n        AND (u.Status = 1 or u.Status=2)";
 
-            if (s.CurrentJob.HasValue)
+            if (s.CurrentJob.HasValue&&s.CurrentJob!=0)
             {
                 sql = sql + $" AND u.CurrentJob = {s.CurrentJob}";
             }

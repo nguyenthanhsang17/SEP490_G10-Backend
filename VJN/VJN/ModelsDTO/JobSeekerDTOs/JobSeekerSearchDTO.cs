@@ -11,6 +11,5 @@
         public int? agemax { get; set; } // tìm kiếm tuổi
         public string? address { get; set; } // tìm kiếm đia chỉ // null là ko tìm j
         public int? gender { get; set; } // tìm kiếm giới tính -1 là tìm tất cả 0 là nữ 1 là nam select option 
-        
     }
 }
