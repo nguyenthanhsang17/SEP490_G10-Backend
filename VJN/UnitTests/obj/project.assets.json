@@ -11808,11 +11808,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\vieta\\OneDrive\\Máy tính\\Đồ án\\Đồ án intern2\\SEP490_G10-Backend\\VJN\\UnitTests\\UnitTests.csproj",
+      "projectUniqueName": "C:\\Users\\vieta\\OneDrive\\Máy tính\\Đồ án\\Đồ án intern2\\MergeMain\\SEP490_G10-Backend\\VJN\\UnitTests\\UnitTests.csproj",
       "projectName": "UnitTests",
-      "projectPath": "C:\\Users\\vieta\\OneDrive\\Máy tính\\Đồ án\\Đồ án intern2\\SEP490_G10-Backend\\VJN\\UnitTests\\UnitTests.csproj",
+      "projectPath": "C:\\Users\\vieta\\OneDrive\\Máy tính\\Đồ án\\Đồ án intern2\\MergeMain\\SEP490_G10-Backend\\VJN\\UnitTests\\UnitTests.csproj",
       "packagesPath": "C:\\Users\\vieta\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\vieta\\OneDrive\\Máy tính\\Đồ án\\Đồ án intern2\\SEP490_G10-Backend\\VJN\\UnitTests\\obj\\",
+      "outputPath": "C:\\Users\\vieta\\OneDrive\\Máy tính\\Đồ án\\Đồ án intern2\\MergeMain\\SEP490_G10-Backend\\VJN\\UnitTests\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\vieta\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -11830,8 +11830,8 @@
         "net6.0": {
           "targetAlias": "net6.0",
           "projectReferences": {
-            "C:\\Users\\vieta\\OneDrive\\Máy tính\\Đồ án\\Đồ án intern2\\SEP490_G10-Backend\\VJN\\VJN\\VJN.csproj": {
-              "projectPath": "C:\\Users\\vieta\\OneDrive\\Máy tính\\Đồ án\\Đồ án intern2\\SEP490_G10-Backend\\VJN\\VJN\\VJN.csproj"
+            "C:\\Users\\vieta\\OneDrive\\Máy tính\\Đồ án\\Đồ án intern2\\MergeMain\\SEP490_G10-Backend\\VJN\\VJN\\VJN.csproj": {
+              "projectPath": "C:\\Users\\vieta\\OneDrive\\Máy tính\\Đồ án\\Đồ án intern2\\MergeMain\\SEP490_G10-Backend\\VJN\\VJN\\VJN.csproj"
             }
           }
         }
