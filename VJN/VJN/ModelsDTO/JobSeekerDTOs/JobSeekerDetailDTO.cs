@@ -17,6 +17,7 @@ namespace VJN.ModelsDTO.JobSeekerDTOs
         public int? RoleId { get; set; }
         public int NumberAppiled {  get; set; }
         public int NumberAppiledAccept {  get; set; }
+        public int? isFavorite { get; set; }
         public IEnumerable<CvDTODetail> CvDTOs { get; set; }
 
     }

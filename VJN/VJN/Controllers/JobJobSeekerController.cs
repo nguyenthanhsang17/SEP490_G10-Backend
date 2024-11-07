@@ -132,7 +132,9 @@ namespace VJN.Controllers
         [HttpGet("GetJobSeekerDetail/{id}")]
         public async Task<JobSeekerDetailDTO> GetJobSeekerDetail(int id)
         {
-            var dto = await _seekerService.GetJobSeekerByIserID(id);
+            var employerid_str = GetUserIdFromToken();
+            var employerid = int.Parse(employerid_str);
+            var dto = await _seekerService.GetJobSeekerByIserID(id, employerid);
             return dto;
         }
 

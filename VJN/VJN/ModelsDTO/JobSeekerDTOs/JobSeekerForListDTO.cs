@@ -12,5 +12,6 @@
         public bool? Gender { get; set; }
         public int? NumberAppliedAccept { get; set; }
         public int? NumberApplied { get; set; }
+        public int? isFavorite { get; set; }
     }
 }

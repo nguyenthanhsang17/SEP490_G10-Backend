@@ -11,7 +11,7 @@ namespace VJN.Services
         public Task<bool> DeleteFavorite(int JobseekerID, int userid);
         public Task<PagedResult<JobSeekerDTO>> GetAllFavoriteList(FavoriteListSearch s, int userid);
 
-        public Task<JobSeekerDetailDTO> GetJobSeekerByIserID(int userID);
+        public Task<JobSeekerDetailDTO> GetJobSeekerByIserID(int jobseekerid, int EmployerID);
 
         public Task<PagedResult<JobSeekerForListDTO>> GetAllJobSeeker(JobSeekerSearchDTO s, int userid);
     }
