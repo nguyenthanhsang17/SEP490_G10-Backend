@@ -67,13 +67,13 @@ namespace VJN.Services
             return paged;
         }
 
-        public async Task<JobSeekerDetailDTO> GetJobSeekerByIserID(int userID)
+        public async Task<JobSeekerDetailDTO> GetJobSeekerByIserID(int jobseekerid, int EmployerID)
         {
-            var user = await _jobSeekerRespository.GetJobSeekerByIserID(userID);
+            var user = await _jobSeekerRespository.GetJobSeekerByIserID(jobseekerid);
             var dto = _mapper.Map<JobSeekerDetailDTO>(user);
+            dto.isFavorite = await _jobSeekerRespository.IsFavorite(EmployerID, jobseekerid);
 
-
-            var cvmodel = await _jobSeekerRespository.GetCVByUserId(userID);
+            var cvmodel = await _jobSeekerRespository.GetCVByUserId(jobseekerid);
 
             var cvdtos = new List<CvDTODetail>();
             foreach(var cv  in cvmodel)
@@ -101,6 +101,12 @@ namespace VJN.Services
 
             var users = await _jobSeekerRespository.GetUserByListId(pageIds.Items);
             var jobSeekerDTOs = _mapper.Map<IEnumerable<JobSeekerForListDTO>>(users);
+
+            foreach (var item in jobSeekerDTOs)
+            {
+                item.isFavorite = await _jobSeekerRespository.IsFavorite(userid, item.UserId);
+            }
+
             var page = new PagedResult<JobSeekerForListDTO>(jobSeekerDTOs, ids.Count(), s.numberPage.Value, PageSize);
             return page;
         }

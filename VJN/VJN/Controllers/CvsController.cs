@@ -33,6 +33,17 @@ namespace VJN.Controllers
             var cv = await _cvService.GetCvByUserID(int.Parse(id_str));
             return Ok(cv);
         }
+        [Authorize]
+        [HttpPut("UpdateCv")]
+        public async Task<ActionResult<bool>> UpdateCv([FromBody] List<CvUpdateDTO> model)
+        {
+            var id_str = GetUserIdFromToken();
+            var userid = int.Parse(id_str);
+
+            var result = await _cvService.UpdateCV(model, userid);
+
+            return result? Ok(result):BadRequest(result);
+        }
 
         private string GetUserIdFromToken()
         {
@@ -55,6 +66,8 @@ namespace VJN.Controllers
 
             return userIdClaim.Value;
         }
+
+
 
     }
 }

@@ -20,5 +20,7 @@ namespace VJN.Repositories
 
         public Task<IEnumerable<int>> GetAllJobSeeker(JobSeekerSearchDTO s, int userid);
         public Task<IEnumerable<User>> GetUserByListId(IEnumerable<int> ids);
+
+        public Task<int> IsFavorite(int employerid, int jobseekerid);
     }
 }

@@ -158,5 +158,11 @@ namespace VJN.Repositories
             }
             return users;
         }
+
+        public async Task<int> IsFavorite(int employerid, int jobseekerid)
+        {
+            var result = await _context.FavoriteLists.Where(fl=>fl.EmployerId==employerid&&fl.JobSeekerId==jobseekerid).AnyAsync();
+            return result ? 1 : 0;
+        }
     }
 }

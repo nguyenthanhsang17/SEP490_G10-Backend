@@ -1,4 +1,5 @@
-﻿using VJN.ModelsDTO.CvDTOs;
+﻿using VJN.Models;
+using VJN.ModelsDTO.CvDTOs;
 using VJN.Repositories;
 
 namespace VJN.Services
@@ -29,6 +30,33 @@ namespace VJN.Services
                 }).ToList(),
             }).ToList();
             return cvdto;
+        }
+
+        public async Task<bool> UpdateCV(List<CvUpdateDTO> cvsdto, int userid)
+        {
+            List<Cv> cvs = new List<Cv>();
+            foreach (CvUpdateDTO cv in cvsdto)
+            {
+                var model = new Cv()
+                {
+                    NameCv = cv.NameCv,
+                    UserId = userid,
+                };
+                List<ItemOfCv> modelITs = new List<ItemOfCv>();
+                foreach (var item in cv.ItemOfCvs)
+                {
+                    var modelIT = new ItemOfCv()
+                    {
+                        ItemName = item.ItemName,
+                        ItemDescription = item.ItemDescription,
+                    };
+                    modelITs.Add(modelIT);
+                }
+                model.ItemOfCvs = modelITs;
+                cvs.Add(model);
+            }
+            var c = await _cvRepository.UpdateCV(cvs, userid);
+            return c;
         }
     }
 }
