@@ -142,6 +142,9 @@ namespace VJN
             builder.Services.AddScoped<ICvRepository, CvRepository>();
             builder.Services.AddScoped<ICvService, CvService>();
 
+            builder.Services.AddScoped<IReportRepository, ReportRepository>();
+            builder.Services.AddScoped<IRepostService, ReportService>();
+
             builder.Services.AddScoped<IServicePriceLogRepository, ServicePriceLogRepository>();
             
 

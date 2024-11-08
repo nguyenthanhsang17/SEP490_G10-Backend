@@ -8,6 +8,7 @@ using Imagekit.Sdk;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NuGet.Protocol.Plugins;
 using VJN.Models;
 using VJN.ModelsDTO.MediaItemDTOs;
@@ -25,6 +26,10 @@ namespace VJN.Controllers
     {
         private readonly IPostJobService _postJobService;
         private readonly ISlotService _slotService;
+
+        private readonly VJNDBContext _context;
+
+
         private readonly ImagekitClient _imagekitClient;
         private readonly IMediaItemService _mediaItemService;
         private readonly IImagePostJobService _imagepostJobService;
@@ -166,9 +171,10 @@ namespace VJN.Controllers
         }
 
         [HttpPut("Reject/{id}")]
-        public async Task<IActionResult> RejectPostJob(int id)
+        public async Task<IActionResult> RejectPostJob(int id, string reasonRejecr)
         {
             var c = await _postJobService.ChangeStatusPostJob(id, 3);
+            //do something with reasonRejecr
             if (c)
             {
                 return Ok(c);
@@ -179,20 +185,18 @@ namespace VJN.Controllers
             }
         }
 
-        [HttpGet("GetAllPostJobs")]
-        public async Task<ActionResult<PagedResult<PostJob>>> GetAllPostJobs([FromQuery] int status, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        [HttpPut("Ban/{id}")]
+        public async Task<IActionResult> BanPostJob(int id, string reasonBan)
         {
-            var allPostJobs = await _postJobService.GetAllPostJob(status);
-            if (status == 1)
+            var c = await _postJobService.ChangeStatusPostJob(id, 6);
+            if (c)
             {
-                return Ok(allPostJobs.GetPaged(pageNumber, pageSize));
+                return Ok(c);
             }
-            if (status == -1)
+            else
             {
-                return Ok(allPostJobs.GetPaged(pageNumber, pageSize));
+                return BadRequest(new { Message = "Cấm bài viết thất bại " });
             }
-            var filteredPage = allPostJobs.Where(item => item.Reports != null && item.Reports.Any());
-            return Ok(filteredPage.GetPaged(pageNumber, pageSize));
         }
         [Authorize]
         [HttpPost("ReportJob")] 
@@ -251,6 +255,67 @@ namespace VJN.Controllers
             return Ok(result);
         }
 
+        [HttpPut("UnBan/{id}")]
+        public async Task<IActionResult> RUnBanPostJob(int id)
+        {
+            var c = await _postJobService.ChangeStatusPostJob(id, 2);
+            if (c)
+            {
+                return Ok(c);
+            }
+            else
+            {
+                return BadRequest(new { Message = "Baì viết đã được gỡ lệnh cấm" });
+            }
+        }
+
+        [HttpGet("GetAllPostJobs")]
+        public async Task<ActionResult<PagedResult<PostJobDTOforReport>>> GetAllPostJobs([FromQuery] int status, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        {
+
+            IEnumerable<PostJobDTOforReport> postJobs;
+
+            // Lấy dữ liệu từ dịch vụ dựa trên giá trị của status
+            if (status == 1)
+            {
+                // Lấy tất cả các bài đăng với status 1 (yêu cầu duyệt)
+                postJobs = await _postJobService.GetAllPostJobByStatus(1);
+            }
+            else if (status == -1)
+            {
+                // Lấy tất cả các bài đăng
+                postJobs = await _postJobService.GetAllPostJobByStatus(-1);
+            }
+            //else if (status == 2)
+            //{
+            //    // Lấy tất cả các bài đăng theo trang thai khac
+            //    postJobs = await _postJobService.GetAllPostJobByStatus(stt);
+            //}
+            else 
+            {
+                // Lấy các bài đăng có báo cáo (Reports)
+                postJobs = (await _postJobService.GetAllPostJobByStatus(-1))
+                            .Where(item => item.Reports != null && item.Reports.Any());
+            }
+            var pagedResult = postJobs.GetPaged(pageNumber, pageSize);
+
+            return Ok(pagedResult);
+        }
+        
+
+        [HttpGet("GetPostDetailForStaff")]
+        public async Task<IActionResult> GetPostDetailForStaff(int id)
+        {
+            var post = await _postJobService.GetPostByIDForStaff(id);
+            if (post!=null)
+            {
+                return Ok(post);
+            }
+            else
+            {
+                return BadRequest(new { Message = "Bài đăng ko tồn tại" });
+            }
+        }
 
     }
 }
