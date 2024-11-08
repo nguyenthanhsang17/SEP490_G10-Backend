@@ -21,6 +21,7 @@ namespace VJN.Models
             Notifications = new HashSet<Notification>();
             PostJobAuthors = new HashSet<PostJob>();
             PostJobCensors = new HashSet<PostJob>();
+            RegisterEmployers = new HashSet<RegisterEmployer>();
             Reports = new HashSet<Report>();
             ServicePriceLogs = new HashSet<ServicePriceLog>();
             Slots = new HashSet<Slot>();
@@ -47,7 +48,6 @@ namespace VJN.Models
         public virtual MediaItem? AvatarNavigation { get; set; }
         public virtual CurrentJob? CurrentJobNavigation { get; set; }
         public virtual Role? Role { get; set; }
-        public virtual RegisterEmployer? RegisterEmployer { get; set; }
         public virtual ICollection<ApplyJob> ApplyJobs { get; set; }
         public virtual ICollection<BanLogPostJob> BanLogPostJobs { get; set; }
         public virtual ICollection<BanUserLog> BanUserLogAdmins { get; set; }
@@ -62,6 +62,7 @@ namespace VJN.Models
         public virtual ICollection<Notification> Notifications { get; set; }
         public virtual ICollection<PostJob> PostJobAuthors { get; set; }
         public virtual ICollection<PostJob> PostJobCensors { get; set; }
+        public virtual ICollection<RegisterEmployer> RegisterEmployers { get; set; }
         public virtual ICollection<Report> Reports { get; set; }
         public virtual ICollection<ServicePriceLog> ServicePriceLogs { get; set; }
         public virtual ICollection<Slot> Slots { get; set; }

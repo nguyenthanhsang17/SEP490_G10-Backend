@@ -16,7 +16,7 @@ namespace VJN.Services
         public Task<int> CreateUser(UserCreateDTO userdto, string otp);
         public Task<int> UpdateStatusByUid(int uid, int status);
         public Task<int> UpdateStatusByEmail(string email, int status);
-        public Task<bool> UpdateProfile(int v, UserUpdateDTO model);
+        public Task<bool> UpdateProfile(int v, UserUpdateDTO model, int avatarID);
         public Task<UserDTO> GetUserByEmail(string Email);
         public Task<bool> UpdatePassword(int userid, string password);
         public Task<bool> CheckOtpExits(string otp);

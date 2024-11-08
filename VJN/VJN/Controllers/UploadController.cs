@@ -15,12 +15,16 @@ namespace VJN.Controllers
         private readonly ImagekitClient _imagekitClient;
         private readonly IMediaItemService _mediaItemService;
         private readonly IImagePostJobService _imagepostJobService;
+        private readonly IRegisterEmployerMediaService _registerEmployerMediaService;
+        private readonly IReportMediaServices _reportMediaService;
 
-        public UploadController(IMediaItemService mediaItemService, IImagePostJobService imagepostJobService)
+        public UploadController(IMediaItemService mediaItemService, IImagePostJobService imagepostJobService, IRegisterEmployerMediaService registerEmployerMediaService, IReportMediaServices reportMediaService)
         {
             _imagekitClient = new ImagekitClient("public_Q+yi7A0O9A+joyXIoqM4TpVqOrQ=", "private_e2V3fNLKwK0pGwSrEmFH+iKQtks=", "https://ik.imagekit.io/ryf3sqxfn");
             _mediaItemService = mediaItemService;
             _imagepostJobService = imagepostJobService;
+            _registerEmployerMediaService = registerEmployerMediaService;
+            _reportMediaService = reportMediaService;
         }
 
         [HttpPost]
@@ -107,5 +111,96 @@ namespace VJN.Controllers
             return Ok(result);
         }
 
+        [HttpPost("UploadMultipleFilesForRegisterEmployer")]
+        public async Task<ActionResult> UploadMultipleFilesForRegisterEmployer([FromForm] List<IFormFile> files, int registerID)
+        {
+            if (files == null || !files.Any())
+                return BadRequest("No files provided.");
+
+            var mediaIds = new List<int>();
+
+            var uploadTasks = files.Select(async file =>
+            {
+                if (file.Length == 0)
+                    throw new ArgumentException("One or more files are empty.");
+
+                using (var memoryStream = new System.IO.MemoryStream())
+                {
+                    await file.CopyToAsync(memoryStream);
+                    byte[] fileBytes = memoryStream.ToArray();
+
+                    FileCreateRequest uploadRequest = new FileCreateRequest
+                    {
+                        file = fileBytes,
+                        fileName = file.FileName
+                    };
+
+                    Result result = _imagekitClient.Upload(uploadRequest);
+                    var media = new MediaItemDTO
+                    {
+                        Url = result.url,
+                        Status = true
+                    };
+                    return await _mediaItemService.CreateMediaItem(media);
+                }
+            });
+
+            try
+            {
+                mediaIds = (await Task.WhenAll(uploadTasks)).ToList();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, $"Upload failed: {ex.Message}");
+            }
+            var result = await _registerEmployerMediaService.CreateRegisterEmployerMedia(registerID, mediaIds);
+            return Ok(result);
+        }
+
+        [HttpPost("UploadMultipleFilesForReport")]
+        public async Task<ActionResult> UploadMultipleFilesForReport([FromForm] List<IFormFile> files, int reportid)
+        {
+            if (files == null || !files.Any())
+                return BadRequest("No files provided.");
+
+            var mediaIds = new List<int>();
+
+            var uploadTasks = files.Select(async file =>
+            {
+                if (file.Length == 0)
+                    throw new ArgumentException("One or more files are empty.");
+
+                using (var memoryStream = new System.IO.MemoryStream())
+                {
+                    await file.CopyToAsync(memoryStream);
+                    byte[] fileBytes = memoryStream.ToArray();
+
+                    FileCreateRequest uploadRequest = new FileCreateRequest
+                    {
+                        file = fileBytes,
+                        fileName = file.FileName
+                    };
+
+                    Result result = _imagekitClient.Upload(uploadRequest);
+                    var media = new MediaItemDTO
+                    {
+                        Url = result.url,
+                        Status = true
+                    };
+                    return await _mediaItemService.CreateMediaItem(media);
+                }
+            });
+
+            try
+            {
+                mediaIds = (await Task.WhenAll(uploadTasks)).ToList();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, $"Upload failed: {ex.Message}");
+            }
+            var result = await _reportMediaService.CreateReportMedia(reportid, mediaIds);
+            return Ok(result);
+        }
     }
 }

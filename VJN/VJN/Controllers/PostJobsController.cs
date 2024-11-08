@@ -2,14 +2,18 @@
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
+using Imagekit.Sdk;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NuGet.Protocol.Plugins;
 using VJN.Models;
+using VJN.ModelsDTO.MediaItemDTOs;
 using VJN.ModelsDTO.PostJobDTOs;
+using VJN.ModelsDTO.ReportDTO;
 using VJN.Paging;
 using VJN.Repositories;
 using VJN.Services;
@@ -22,19 +26,40 @@ namespace VJN.Controllers
     {
         private readonly IPostJobService _postJobService;
         private readonly ISlotService _slotService;
+<<<<<<< HEAD
         private readonly VJNDBContext _context;
 
         public PostJobsController(IPostJobService postJobService, ISlotService slotService)
+=======
+        private readonly ImagekitClient _imagekitClient;
+        private readonly IMediaItemService _mediaItemService;
+        private readonly IImagePostJobService _imagepostJobService;
+        private readonly IJobPostDateService _jobPostDateService;
+        private readonly IReportMediaServices _reportMediaService;
+        public PostJobsController(IPostJobService postJobService, ISlotService slotService, IMediaItemService mediaItemService, IImagePostJobService imagepostJobService, IJobPostDateService jobPostDateService, IReportMediaServices reportMediaService)
+>>>>>>> 79fa441ff4e50fcad1fc1cf0fb84c14fb9c45118
         {
             _postJobService = postJobService;
             _slotService = slotService;
+            _imagekitClient = new ImagekitClient("public_Q+yi7A0O9A+joyXIoqM4TpVqOrQ=", "private_e2V3fNLKwK0pGwSrEmFH+iKQtks=", "https://ik.imagekit.io/ryf3sqxfn");
+            _mediaItemService = mediaItemService;
+            _imagepostJobService = imagepostJobService;
+            _jobPostDateService = jobPostDateService;
+            _reportMediaService = reportMediaService;
         }
+
 
         [HttpGet]
         public async Task<ActionResult<PagedResult<JobSearchResult>>> GetPostJobsPopular([FromQuery] PostJobSearch model)
         {
-            var jobs = await _postJobService.SearchJobPopular(model);
-            if(jobs == null || jobs.Items.Count() == 0)
+            string id_str = GetUserIdFromToken();
+            int userid = 0;
+            if (!string.IsNullOrEmpty(id_str))
+            {
+                userid = int.Parse(id_str);
+            }
+            var jobs = await _postJobService.SearchJobPopular(model, userid);
+            if (jobs == null || jobs.Items.Count() == 0)
             {
                 return BadRequest(new { Message = "không tìm thấy công việc !!!" });
             }
@@ -85,20 +110,25 @@ namespace VJN.Controllers
                 return BadRequest(new { Message = "Ẩn bài post thất bại" });
             }
         }
+
         [Authorize]
         [HttpPost("CreatePost")]
-        public async Task<IActionResult> CreatePostJob([FromBody] PostJobCreateDTO postJobCreateDTO )
+        public async Task<IActionResult> CreatePostJob([FromBody] PostJobCreateDTO postJobCreateDTO)
         {
+            Console.WriteLine("chay ham nay");
             string userid_str = GetUserIdFromToken();
             int uid = int.Parse(userid_str);
-
             var id = await _postJobService.CreatePostJob(postJobCreateDTO, uid);
+            if (id <= 0)
+            {
+                return BadRequest(new { Message = "Lỗi Tạo Công Việc" });
+            }
             return Ok(id);
         }
 
         [Authorize]
         [HttpGet("GetListJobsCreated")]
-        public async Task<ActionResult<PagedResult<JobSearchResultEmployer>>> GetListJobsCreated([FromQuery]PostJobSearchEmployer s)
+        public async Task<ActionResult<PagedResult<JobSearchResultEmployer>>> GetListJobsCreated([FromQuery] PostJobSearchEmployer s)
         {
             string userid = GetUserIdFromToken();
             int id = int.Parse(userid);
@@ -169,6 +199,62 @@ namespace VJN.Controllers
             {
                 return BadRequest(new { Message = "Cấm bài viết thất bại " });
             }
+        }
+        [Authorize]
+        [HttpPost("ReportJob")] 
+        public async Task<ActionResult<int>> ReportJob([FromForm] ReportCreateDTO model)
+        {
+            var id_str = GetUserIdFromToken();
+            var userid = int.Parse(id_str);
+
+            var reportid = await _postJobService.ReportJob(model, userid);
+
+            if(reportid<=0)
+            {
+                return BadRequest(new { Message = "Bạn đã Report 3 lần trong ngày" });
+            }           
+
+            if (model.files == null || !model.files.Any())
+                return BadRequest("No files provided.");
+
+            var mediaIds = new List<int>();
+
+            var uploadTasks = model.files.Select(async file =>
+            {
+                if (file.Length == 0)
+                    throw new ArgumentException("One or more files are empty.");
+
+                using (var memoryStream = new System.IO.MemoryStream())
+                {
+                    await file.CopyToAsync(memoryStream);
+                    byte[] fileBytes = memoryStream.ToArray();
+
+                    FileCreateRequest uploadRequest = new FileCreateRequest
+                    {
+                        file = fileBytes,
+                        fileName = file.FileName
+                    };
+
+                    Result result = _imagekitClient.Upload(uploadRequest);
+                    var media = new MediaItemDTO
+                    {
+                        Url = result.url,
+                        Status = true
+                    };
+                    return await _mediaItemService.CreateMediaItem(media);
+                }
+            });
+
+            try
+            {
+                mediaIds = (await Task.WhenAll(uploadTasks)).ToList();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, $"Upload failed: {ex.Message}");
+            }
+            var result = await _reportMediaService.CreateReportMedia(reportid, mediaIds);
+            return Ok(result);
         }
 
         [HttpPut("UnBan/{id}")]

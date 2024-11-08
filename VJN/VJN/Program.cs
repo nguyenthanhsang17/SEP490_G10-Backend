@@ -146,8 +146,19 @@ namespace VJN
             builder.Services.AddScoped<IRepostService, ReportService>();
 
             builder.Services.AddScoped<IServicePriceLogRepository, ServicePriceLogRepository>();
-            // Register services and repositories
+            
 
+            builder.Services.AddScoped<IRegisterEmployerMediaRepository, RegisterEmployerMediaRepository>();
+            builder.Services.AddScoped<IRegisterEmployerRepository, RegisterEmployerRepository>();
+            builder.Services.AddScoped<IRegisterEmployerService, RegisterEmployerService>();
+            builder.Services.AddScoped<IRegisterEmployerMediaService, RegisterEmployerMediaService>();
+
+            builder.Services.AddScoped<IJobSeekerRespository, JobSeekerRespository>();
+            builder.Services.AddScoped<IJobSeekerService, JobSeekerService>();
+            builder.Services.AddScoped<IReportMediaRepository, ReportMediaRepository>();
+            builder.Services.AddScoped<IReportMediaServices, ReportMediaServices>();
+
+            // Register services and repositories
             var app = builder.Build();
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Imagekit.Sdk;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +15,7 @@ using VJN.Authenticate;
 using VJN.Models;
 using VJN.ModelsDTO.EmailDTOs;
 using VJN.ModelsDTO.MediaItemDTOs;
+using VJN.ModelsDTO.RegisterEmployer;
 using VJN.ModelsDTO.UserDTOs;
 using VJN.Services;
 
@@ -28,8 +31,11 @@ namespace VJN.Controllers
         private OTPGenerator _generator;
         private IGoogleService _googleService;
         private readonly IMediaItemService _mediaItemService;
+        private readonly ImagekitClient _imagekitClient;
+        private readonly IRegisterEmployerMediaService _registerEmployerMediaService;
+        private readonly IRegisterEmployerService _registerEmployerService;
 
-        public UsersController(IUserService userService, JwtTokenGenerator jwtTokenGenerator, IEmailService emailService, OTPGenerator generator, IGoogleService googleService, IMediaItemService mediaItemService)
+        public UsersController(IUserService userService, JwtTokenGenerator jwtTokenGenerator, IEmailService emailService, OTPGenerator generator, IGoogleService googleService, IMediaItemService mediaItemService, IRegisterEmployerMediaService registerEmployerMediaService, IRegisterEmployerService registerEmployerService)
         {
             _userService = userService;
             _jwtTokenGenerator = jwtTokenGenerator;
@@ -37,6 +43,9 @@ namespace VJN.Controllers
             _generator = generator;
             _googleService = googleService;
             _mediaItemService = mediaItemService;
+            _imagekitClient = new ImagekitClient("public_Q+yi7A0O9A+joyXIoqM4TpVqOrQ=", "private_e2V3fNLKwK0pGwSrEmFH+iKQtks=", "https://ik.imagekit.io/ryf3sqxfn");
+            _registerEmployerMediaService = registerEmployerMediaService;
+            _registerEmployerService = registerEmployerService;
         }
 
         [HttpPost("Login")]
@@ -281,9 +290,9 @@ namespace VJN.Controllers
                 }
             }
         }
-
+        [Authorize]
         [HttpPut("UpdateProfile")]
-        public async Task<IActionResult> UpdateProfile([FromBody] UserUpdateDTO model)
+        public async Task<IActionResult> UpdateProfile([FromForm] UserUpdateDTO model)
         {
             if (model == null)
             {
@@ -292,18 +301,120 @@ namespace VJN.Controllers
             else
             {
                 var userId = GetUserIdFromToken();
-                var i = await _userService.UpdateProfile(int.Parse(userId), model);
+                var avatarID = 0;
+                if (model.AvatarURL == null || model.AvatarURL.Length == 0)
+                {
+                    Console.WriteLine("User ko cap nhat avatar");
+                }
+                else
+                {
+                    using (var memoryStream = new System.IO.MemoryStream())
+                    {
+                        await model.AvatarURL.CopyToAsync(memoryStream);
+                        byte[] fileBytes = memoryStream.ToArray();
+                        Console.WriteLine("day la file name: " + model.AvatarURL.FileName);
+                        try
+                        {
+                            FileCreateRequest uploadRequest = new FileCreateRequest
+                            {
+                                file = fileBytes,
+                                fileName = model.AvatarURL.FileName,
+                                overwriteFile = true
+                            };
+                            Result result = _imagekitClient.Upload(uploadRequest);
+                            var media = new MediaItemDTO
+                            {
+                                Url = result.url,
+                                Status = true
+                            };
+                            Console.WriteLine(Url);
+                            avatarID = await _mediaItemService.CreateMediaItem(media);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                        }
+                    }
+                }
+                Console.WriteLine("day la mediaID: " + avatarID);
+                var i = await _userService.UpdateProfile(int.Parse(userId), model, avatarID);
                 if (i)
                 {
                     return Ok(new { Message = "Cập nhật Thành công" });
                 }
                 else
                 {
-                    return Ok(new { Message = "Cập nhật Thất bại" });
+                    return BadRequest(new { Message = "Cập nhật Thất bại" });
                 }
 
             }
         }
+        [Authorize]
+        [HttpPost("VerifyEmployerAccount")]
+        public async Task<IActionResult> VerifyEmployerAccount([FromForm] VerifyEmployerAccountDTO dto)
+        {
+            var id_str = GetUserIdFromToken();
+            var id = int.Parse(id_str);
+            Console.WriteLine(id);
+            int Registerid = await _registerEmployerService.RegisterEmployer(dto, id);
+
+            if(id == -1)
+            {
+                return BadRequest("Đã đăng ký để trở thành nhà tuyển dụng, đợi duyệt");
+            }
+            if(id == -2)
+            {
+                return BadRequest("Đã đăng ký để trở thành nhà tuyển dụng");
+            }
+
+            if (dto == null)
+            {
+                return BadRequest(new { Message = "Không được để trống, người dùng cần nhập đầy đủ" });
+            }
+            if (dto.files == null || !dto.files.Any())
+                return BadRequest("No files provided.");
+
+            var mediaIds = new List<int>();
+
+            var uploadTasks = dto.files.Select(async file =>
+            {
+                if (file.Length == 0)
+                    throw new ArgumentException("One or more files are empty.");
+
+                using (var memoryStream = new System.IO.MemoryStream())
+                {
+                    await file.CopyToAsync(memoryStream);
+                    byte[] fileBytes = memoryStream.ToArray();
+
+                    FileCreateRequest uploadRequest = new FileCreateRequest
+                    {
+                        file = fileBytes,
+                        fileName = file.FileName
+                    };
+
+                    Result result = _imagekitClient.Upload(uploadRequest);
+                    var media = new MediaItemDTO
+                    {
+                        Url = result.url,
+                        Status = true
+                    };
+                    return await _mediaItemService.CreateMediaItem(media);
+                }
+            });
+
+            try
+            {
+                mediaIds = (await Task.WhenAll(uploadTasks)).ToList();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, $"Upload failed: {ex.Message}");
+            }
+
+            var result = await _registerEmployerMediaService.CreateRegisterEmployerMedia(Registerid, mediaIds);
+            return Ok(result);
+        }
+
         //ham lay dc userid dua vao token
         private string GetUserIdFromToken()
         {
@@ -316,7 +427,12 @@ namespace VJN.Controllers
 
             var handler = new JwtSecurityTokenHandler();
             var jwtToken = handler.ReadJwtToken(token);
-
+            /// check tên claim
+            //foreach (var claim in jwtToken.Claims)
+            //{
+            //    Console.WriteLine($"Claim Type: {claim.Type}, Claim Value: {claim.Value}");
+            //}
+            /// check tên claim
             var userIdClaim = jwtToken.Claims.FirstOrDefault(claim => claim.Type == "nameid");
 
             if (userIdClaim == null)

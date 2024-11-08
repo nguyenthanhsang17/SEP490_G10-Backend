@@ -13,7 +13,6 @@ namespace VJN.ModelsDTO.PostJobDTOs
         public string? Address { get; set; }
         public decimal? Latitude { get; set; }
         public decimal? Longitude { get; set; }
-        public DateTime? ExpirationDate { get; set; }
         public int? Status { get; set; }
         public bool? IsUrgentRecruitment { get; set; }
         public int? JobCategoryId { get; set; }
