@@ -1,9 +1,8 @@
 ﻿using AutoMapper;
-<<<<<<< HEAD
-using Microsoft.EntityFrameworkCore;
-=======
 using AutoMapper.Execution;
->>>>>>> 79fa441ff4e50fcad1fc1cf0fb84c14fb9c45118
+
+using Microsoft.EntityFrameworkCore;
+using AutoMapper.Execution;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using SQLitePCL;
 using VJN.Models;
@@ -24,28 +23,29 @@ namespace VJN.Services
         private readonly IPostJobRepository _postJobRepository;
         private readonly IServicePriceLogRepository _priceLogRepository;
         private readonly IMapper _mapper;
-<<<<<<< HEAD
+
         private readonly IUserService _userService;
         private readonly VJNDBContext _context;
-        public PostJobService(IPostJobRepository postJobRepository, IMapper mapper, IServicePriceLogRepository priceLogRepository, VJNDBContext context, IUserService userService)
-=======
         private readonly IImagePostJobRepository _imagePostJobRepository;
         private readonly ISlotRepository _slotRepository;
         private readonly IJobPostDateRepository _jobPostDateRepository;
-        public PostJobService(IPostJobRepository postJobRepository, IMapper mapper, IServicePriceLogRepository priceLogRepository, IImagePostJobRepository imagePostJobRepository, ISlotRepository slotRepository, IJobPostDateRepository jobPostDateRepository)
->>>>>>> 79fa441ff4e50fcad1fc1cf0fb84c14fb9c45118
+
+        public PostJobService(IPostJobRepository postJobRepository, IMapper mapper, IServicePriceLogRepository priceLogRepository, IImagePostJobRepository imagePostJobRepository, ISlotRepository slotRepository, IJobPostDateRepository jobPostDateRepository, VJNDBContext context, IUserService userService)
         {
             _postJobRepository = postJobRepository;
             _mapper = mapper;
             _priceLogRepository = priceLogRepository;
-<<<<<<< HEAD
-            _context = context;
-            _userService = userService;
-=======
             _imagePostJobRepository = imagePostJobRepository;
             _slotRepository = slotRepository;
             _jobPostDateRepository = jobPostDateRepository;
->>>>>>> 79fa441ff4e50fcad1fc1cf0fb84c14fb9c45118
+
+            _context = context;
+            _userService = userService;
+
+            _imagePostJobRepository = imagePostJobRepository;
+            _slotRepository = slotRepository;
+            _jobPostDateRepository = jobPostDateRepository;
+
         }
         public async Task<IEnumerable<PostJobDTOForHomepage>> getPorpularJob()
         {
@@ -241,7 +241,6 @@ namespace VJN.Services
             return result;
         }
 
-<<<<<<< HEAD
         public async Task<PostJobDTOReport?> GetPostByIDForStaff(int id)
         {
             var postJobDTO = await _context.PostJobs.Include(p=>p.ImagePostJobs).ThenInclude(i=>i.Image)
@@ -275,7 +274,7 @@ namespace VJN.Services
             return postJobDTO;
         }
 
-=======
+
         public async Task<bool> AddWishJob(int jobid, int userid)
         {
             var c  = await _postJobRepository.AddWishJob(jobid, userid);
@@ -334,6 +333,11 @@ namespace VJN.Services
             var i = await _postJobRepository.ReportJob(reportModel);
             return i;
         }
->>>>>>> 79fa441ff4e50fcad1fc1cf0fb84c14fb9c45118
+
+        
+
+        
+
+        
     }
 }

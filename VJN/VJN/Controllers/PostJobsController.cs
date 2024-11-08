@@ -26,18 +26,16 @@ namespace VJN.Controllers
     {
         private readonly IPostJobService _postJobService;
         private readonly ISlotService _slotService;
-<<<<<<< HEAD
+
         private readonly VJNDBContext _context;
 
-        public PostJobsController(IPostJobService postJobService, ISlotService slotService)
-=======
+
         private readonly ImagekitClient _imagekitClient;
         private readonly IMediaItemService _mediaItemService;
         private readonly IImagePostJobService _imagepostJobService;
         private readonly IJobPostDateService _jobPostDateService;
         private readonly IReportMediaServices _reportMediaService;
         public PostJobsController(IPostJobService postJobService, ISlotService slotService, IMediaItemService mediaItemService, IImagePostJobService imagepostJobService, IJobPostDateService jobPostDateService, IReportMediaServices reportMediaService)
->>>>>>> 79fa441ff4e50fcad1fc1cf0fb84c14fb9c45118
         {
             _postJobService = postJobService;
             _slotService = slotService;
@@ -303,6 +301,7 @@ namespace VJN.Controllers
 
             return Ok(pagedResult);
         }
+        
 
         [HttpGet("GetPostDetailForStaff")]
         public async Task<IActionResult> GetPostDetailForStaff(int id)
