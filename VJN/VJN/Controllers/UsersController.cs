@@ -17,6 +17,7 @@ using VJN.ModelsDTO.EmailDTOs;
 using VJN.ModelsDTO.MediaItemDTOs;
 using VJN.ModelsDTO.RegisterEmployer;
 using VJN.ModelsDTO.UserDTOs;
+using VJN.Paging;
 using VJN.Services;
 
 namespace VJN.Controllers
@@ -150,7 +151,7 @@ namespace VJN.Controllers
         [HttpPost("VerifycodeForgotPassword")]
         public async Task<IActionResult> VerifyCodeForgotPassword([FromBody] EmailForgotPassword model)
         {
-            if (model == null || string.IsNullOrEmpty(model.ToEmail) || string.IsNullOrEmpty(model.Opt)||string.IsNullOrEmpty(model.Password)||string.IsNullOrEmpty(model.ConfirmPassword))
+            if (model == null || string.IsNullOrEmpty(model.ToEmail) || string.IsNullOrEmpty(model.Opt) || string.IsNullOrEmpty(model.Password) || string.IsNullOrEmpty(model.ConfirmPassword))
             {
                 return BadRequest(new { Message = "Không được để trống, người dùng cần nhập đầy đủ" });
             }
@@ -358,11 +359,11 @@ namespace VJN.Controllers
             Console.WriteLine(id);
             int Registerid = await _registerEmployerService.RegisterEmployer(dto, id);
 
-            if(id == -1)
+            if (id == -1)
             {
                 return BadRequest("Đã đăng ký để trở thành nhà tuyển dụng, đợi duyệt");
             }
-            if(id == -2)
+            if (id == -2)
             {
                 return BadRequest("Đã đăng ký để trở thành nhà tuyển dụng");
             }
@@ -441,6 +442,113 @@ namespace VJN.Controllers
             }
 
             return userIdClaim.Value;
+        }
+
+        [HttpGet("ViewRegisterEmployerList")]
+        public async Task<PagedResult<RegisterEmployerDTOforDetail>> ViewRegisterEmployerList(int status,string? searchFullName = null,string? sortOrder = "asc",int pageNumber = 1,int pageSize = 10)
+        {
+
+            var res = await _registerEmployerService.getRegisterEmployerByStatus(status);
+
+
+            if (!string.IsNullOrEmpty(searchFullName))
+            {
+                res = res.Where(re => re.User != null && re.User.FullName.Contains(searchFullName, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+
+            res = sortOrder?.ToLower() == "desc"
+                ? res.OrderByDescending(re => re.CreateDate).ToList()
+                : res.OrderBy(re => re.CreateDate).ToList();
+
+
+            var result = res.Select(re => new RegisterEmployerDTOforDetail
+            {
+                RegisterEmployerId = re.RegisterEmployerId,
+                UserId = re.UserId,
+                BussinessName = re.BussinessName,
+                BussinessAddress = re.BussinessAddress,
+                CreateDate = re.CreateDate,
+                Status = re.Status,
+                User = re.User != null ? new UserDTOinRegisterEmployer
+                {
+                    UserId = re.User.UserId,
+                    Email = re.User.Email,
+                    AvatarURL = re.User.AvatarNavigation?.Url,
+                    FullName = re.User.FullName,
+                    Age = re.User.Age,
+                    Phonenumber = re.User.Phonenumber,
+                    Gender = re.User.Gender,
+                } : null,
+                ListIMG = re.RegisterEmployerMedia?.Select(media => media.Media.Url).ToList() ?? new List<string>()
+            });
+
+
+            var pagedResult = result.GetPaged(pageNumber, pageSize);
+
+            return pagedResult;
+        }
+
+        [HttpGet("RegisterEmployerDetail")]
+        public async Task<ActionResult<RegisterEmployerDTOforDetail>> RegisterEmployerDetail(int id)
+        {
+            var re = await _registerEmployerService.getRegisterEmployerByID(id);
+
+            if (re == null)
+            {
+                return NotFound();
+            }
+
+            var result = new RegisterEmployerDTOforDetail
+            {
+                RegisterEmployerId = re.RegisterEmployerId,
+                UserId = re.UserId,
+                BussinessName = re.BussinessName,
+                BussinessAddress = re.BussinessAddress,
+                CreateDate = re.CreateDate,
+                Status= re.Status,
+                User = re.User != null ? new UserDTOinRegisterEmployer
+                {
+                    UserId = re.User.UserId,
+                    Email = re.User.Email,
+                    AvatarURL = re.User.AvatarNavigation.Url,
+                    FullName = re.User.FullName,
+                    Age = re.User.Age,
+                    Phonenumber = re.User.Phonenumber,
+                    Gender = re.User.Gender,
+                } : null,
+                ListIMG = re.RegisterEmployerMedia?.Select(media => media.Media.Url).ToList() ?? new List<string>(),
+            };
+
+            return Ok(result);
+        }
+
+        [HttpPost("Accept/{id}")]
+        public async Task<IActionResult> AcceptEmployer(int id)
+        {
+            var result = await _registerEmployerService.AcceptRegisterEmployer(id);
+            if (result)
+            {
+                return Ok(new { message = "Đã chấp thuận nhà tuyển dụng." });
+            }
+            return BadRequest(new { message = "Không tìm thấy nhà tuyển dụng hoặc có lỗi xảy ra." });
+        }
+
+
+        [HttpPost("Reject/{id}")]
+        public async Task<IActionResult> RejectEmployer(int id, [FromBody] string reason)
+        {
+            if (string.IsNullOrEmpty(reason))
+            {
+                return BadRequest(new { message = "Vui lòng nhập lý do từ chối." });
+            }
+
+            var result = await _registerEmployerService.RejectRegisterEmployer(id, reason);
+            if (result)
+            {
+                return Ok(new { message = "Đã từ chối nhà tuyển dụng." });
+            }
+            return BadRequest(new { message = "Không tìm thấy nhà tuyển dụng hoặc có lỗi xảy ra." });
         }
 
 
