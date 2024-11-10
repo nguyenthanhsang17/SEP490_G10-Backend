@@ -1,4 +1,5 @@
-﻿using VJN.Models;
+﻿using SQLitePCL;
+using VJN.Models;
 using VJN.ModelsDTO.RegisterEmployer;
 using VJN.Repositories;
 
@@ -26,6 +27,26 @@ namespace VJN.Services
 
             int id = await _registerEmployerRepository.RegisterEmployer(rg);
             return id;
+        }
+
+        public async Task<bool> RejectRegisterEmployer(int status, string reason)
+        {
+            return await _registerEmployerRepository.RejectRegisterEmployer(status, reason);
+        }
+
+        public async Task<bool> AcceptRegisterEmployer(int status)
+        {
+            return await _registerEmployerRepository.AcceptRegisterEmployer(status);
+        }
+
+        public async Task<IEnumerable<RegisterEmployer>> getRegisterEmployerByStatus(int status)
+        {
+            return await _registerEmployerRepository.getRegisterEmployerByStatus(status);
+        }
+
+        public async Task<RegisterEmployer> getRegisterEmployerByID(int id)
+        {
+            return await _registerEmployerRepository.getRegisterEmployerByid(id);
         }
     }
 }
