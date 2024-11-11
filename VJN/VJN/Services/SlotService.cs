@@ -41,5 +41,22 @@ namespace VJN.Services
 
             return slotDTO;
         }
+
+        public async Task<bool> DeleteAllSlot(int postid)
+        {
+            var c = await _slotRepository.DeleteAllSlotByPostId(postid);
+            return c;
+        }
+
+        public async Task<IEnumerable<int>> UpadateSlot(IEnumerable<SlotCreateDTO> slotDTOs, int postid)
+        {
+            var c  = await _slotRepository.DeleteAllSlotByPostId(postid);
+            if (c==false)
+            {
+                var c1 = await _slotRepository.CreateSlotsWithSchedules(slotDTOs, postid);
+                return c1;
+            }
+            return null;
+        }
     }
 }

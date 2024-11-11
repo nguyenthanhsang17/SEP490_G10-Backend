@@ -1,8 +1,11 @@
-﻿using Imagekit.Sdk;
+﻿using Google.Apis.Util;
+using Imagekit.Sdk;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using System.Net;
+using VJN.Models;
+using VJN.ModelsDTO.ImagePostJobDTO;
 using VJN.ModelsDTO.MediaItemDTOs;
 using VJN.Services;
 
@@ -38,7 +41,7 @@ namespace VJN.Controllers
             {
                 await file.CopyToAsync(memoryStream);
                 byte[] fileBytes = memoryStream.ToArray();
-                Console.WriteLine("day la file name: "+file.FileName);
+                Console.WriteLine("day la file name: " + file.FileName);
                 try
                 {
                     FileCreateRequest uploadRequest = new FileCreateRequest
@@ -201,6 +204,67 @@ namespace VJN.Controllers
             }
             var result = await _reportMediaService.CreateReportMedia(reportid, mediaIds);
             return Ok(result);
+        }
+
+        [HttpPut("UpdateImagePostjob")]
+        public async Task<ActionResult<bool>> UpdateImagePostjob([FromForm] ImagePostJobForUpdateDTO imageupdate)
+        {
+            var imgbefore = await _imagepostJobService.GetImagePostJob(imageupdate.postid.Value);
+            var differentNumbers = imgbefore.Except(imageupdate.imageIds);
+            if (differentNumbers.Count() != 0 || differentNumbers.Any())
+            {
+                var c = _imagepostJobService.DeleteImagePost(differentNumbers.ToList(), imageupdate.postid.Value);
+                if (imageupdate.files == null || !imageupdate.files.Any())
+                {
+                    return Ok(false);
+                }
+                else
+                {
+                    var mediaIds = new List<int>();
+
+                    var uploadTasks = imageupdate.files.Select(async file =>
+                    {
+                        if (file.Length == 0)
+                            throw new ArgumentException("One or more files are empty.");
+
+                        using (var memoryStream = new System.IO.MemoryStream())
+                        {
+                            await file.CopyToAsync(memoryStream);
+                            byte[] fileBytes = memoryStream.ToArray();
+
+                            FileCreateRequest uploadRequest = new FileCreateRequest
+                            {
+                                file = fileBytes,
+                                fileName = file.FileName
+                            };
+
+                            Result result = _imagekitClient.Upload(uploadRequest);
+                            var media = new MediaItemDTO
+                            {
+                                Url = result.url,
+                                Status = true
+                            };
+                            return await _mediaItemService.CreateMediaItem(media);
+                        }
+                    });
+
+                    try
+                    {
+                        mediaIds = (await Task.WhenAll(uploadTasks)).ToList();
+                    }
+                    catch (Exception ex)
+                    {
+                        return StatusCode((int)HttpStatusCode.InternalServerError, $"Upload failed: {ex.Message}");
+                    }
+                    var result = await _imagepostJobService.createImagePostJob(imageupdate.postid.Value, mediaIds);
+                    return Ok(result);
+                }
+            }
+            else
+            {
+                return Ok(true);
+            }
+
         }
     }
 }

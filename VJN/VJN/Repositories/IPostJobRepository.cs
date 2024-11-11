@@ -29,5 +29,9 @@ namespace VJN.Repositories
 
         public Task<IEnumerable<int>> getJobIdInWishList(PostJobSearchWishList s, int userid);
         public Task<int> ReportJob(Report report);
+
+        public Task<PostJob> GetJobByIDForUpdate(int id);
+        public Task<bool> CheckJobByIDAndUserid(int id, int userid);
+        public Task<int> UpdatePostJob(PostJob postJob);
     }
 }

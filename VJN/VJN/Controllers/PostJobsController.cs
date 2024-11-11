@@ -255,6 +255,15 @@ namespace VJN.Controllers
             return Ok(result);
         }
 
+        [Authorize]
+        [HttpGet("GetJobDetailForUpdate/{id}")]
+        public async Task<ActionResult<PostJobDetailForUpdate>> GetJobDetailForUpdate(int id)
+        {
+            var idUser_str = GetUserIdFromToken();
+            var IdUser = int.Parse(idUser_str);
+            var postJobDetailForUpdate = await _postJobService.GetJobByIDForUpdate(id, IdUser);
+            return postJobDetailForUpdate != null ? Ok(postJobDetailForUpdate) : BadRequest(new { Message = "Bạn không được phép sửa công việc này !!!" });
+        }
         [HttpPut("UnBan/{id}")]
         public async Task<IActionResult> RUnBanPostJob(int id)
         {
@@ -317,5 +326,12 @@ namespace VJN.Controllers
             }
         }
 
+        [Authorize]
+        [HttpPut]
+        public async Task<ActionResult<int>> UpdatePostJob([FromBody] PostJobDetailUpdate postJobDetailForUpdate)
+        {
+            var c = await _postJobService.UpdatePostJob(postJobDetailForUpdate);
+            return Ok(c);
+        }
     }
 }

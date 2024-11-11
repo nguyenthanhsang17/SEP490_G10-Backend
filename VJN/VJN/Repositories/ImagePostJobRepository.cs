@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.EntityFrameworkCore;
 using VJN.Models;
 
 namespace VJN.Repositories
@@ -25,6 +26,23 @@ namespace VJN.Repositories
                 {
                     return false;
                 }
+            }
+            return true;
+        }
+
+        public async Task<IEnumerable<int>> GetImagePostJob(int postid)
+        {
+            var ids = await _context.ImagePostJobs.Where(ipj => ipj.PostId == postid).Select(ipj=> ipj.ImageId.Value).ToListAsync();
+            return ids;
+        }
+
+        public async Task<bool> DeleteImagePost(List<int> imageids, int postjobid)
+        {
+            var imp = await _context.ImagePostJobs.Where(im=>imageids.Contains(im.ImageId.Value)&&im.PostId==postjobid).ToListAsync();
+            foreach (var img in imp)
+            {
+                _context.ImagePostJobs.Remove(img);
+                await _context.SaveChangesAsync();
             }
             return true;
         }

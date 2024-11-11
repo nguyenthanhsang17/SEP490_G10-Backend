@@ -10,5 +10,7 @@ namespace VJN.Repositories
         public Task<IEnumerable<WorkingHour>> GetWorkingHoursByJobSchedule(int JobScheduleId);
         public Task<IEnumerable<int>> CreateSlotsWithSchedules(IEnumerable<SlotCreateDTO> slotDTOs);
 
+        public Task<bool> DeleteAllSlotByPostId(int postid);
+        public Task<IEnumerable<int>> CreateSlotsWithSchedules(IEnumerable<SlotCreateDTO> slotDTOs, int postid);
     }
 }
