@@ -1,11 +1,16 @@
 ﻿using AutoMapper;
 using AutoMapper.Execution;
+
+using Microsoft.EntityFrameworkCore;
+using AutoMapper.Execution;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using SQLitePCL;
 using VJN.Models;
 using VJN.ModelsDTO.JobPostDateDTOs;
 using VJN.ModelsDTO.PostJobDTOs;
 using VJN.ModelsDTO.ReportDTO;
 using VJN.ModelsDTO.SlotDTOs;
+using VJN.ModelsDTO.UserDTOs;
 using VJN.Paging;
 using VJN.Repositories;
 
@@ -20,10 +25,14 @@ namespace VJN.Services
         private readonly IPostJobRepository _postJobRepository;
         private readonly IServicePriceLogRepository _priceLogRepository;
         private readonly IMapper _mapper;
+
+        private readonly IUserService _userService;
+        private readonly VJNDBContext _context;
         private readonly IImagePostJobRepository _imagePostJobRepository;
         private readonly ISlotRepository _slotRepository;
         private readonly IJobPostDateRepository _jobPostDateRepository;
-        public PostJobService(IPostJobRepository postJobRepository, IMapper mapper, IServicePriceLogRepository priceLogRepository, IImagePostJobRepository imagePostJobRepository, ISlotRepository slotRepository, IJobPostDateRepository jobPostDateRepository)
+
+        public PostJobService(IPostJobRepository postJobRepository, IMapper mapper, IServicePriceLogRepository priceLogRepository, IImagePostJobRepository imagePostJobRepository, ISlotRepository slotRepository, IJobPostDateRepository jobPostDateRepository, VJNDBContext context, IUserService userService)
         {
             _postJobRepository = postJobRepository;
             _mapper = mapper;
@@ -31,6 +40,14 @@ namespace VJN.Services
             _imagePostJobRepository = imagePostJobRepository;
             _slotRepository = slotRepository;
             _jobPostDateRepository = jobPostDateRepository;
+
+            _context = context;
+            _userService = userService;
+
+            _imagePostJobRepository = imagePostJobRepository;
+            _slotRepository = slotRepository;
+            _jobPostDateRepository = jobPostDateRepository;
+
         }
         public async Task<IEnumerable<PostJobDTOForHomepage>> getPorpularJob()
         {
@@ -180,13 +197,42 @@ namespace VJN.Services
             return page;
         }
 
-        public async Task<IEnumerable<PostJobDTOforReport>> GetAllPostJob(int status)
+        public async Task<IEnumerable<PostJobDTOforReport>> GetAllPostJobByStatus(int status)
         {
             var postJobs = await _postJobRepository.GetAllPostJob(status);
             var result = _mapper.Map<IEnumerable<PostJobDTOforReport>>(postJobs);
 
             foreach (var postJobDto in result)
             {
+                var postJobDTOForReport = await _context.PostJobs.FindAsync(postJobDto.PostId);
+                string authorName = "";
+                int? authorid = postJobDTOForReport.AuthorId;
+                if (authorid.HasValue)
+                {
+                    UserDTO user = await _userService.findById(authorid.Value);
+                    authorName = user.FullName;
+                }
+                postJobDto.AuthorName = authorName;
+
+
+                var salarytype = await _context.SalaryTypes.FindAsync(postJobDTOForReport.SalaryTypesId);
+                string salaryName = salarytype.TypeName;
+                postJobDto.SalaryTypeName = salaryName;
+
+                var jobcategory = await _context.JobCategories.FindAsync(postJobDTOForReport.JobCategoryId);
+                string jobcategoryname = jobcategory.JobCategoryName;
+                postJobDto.JobCategoryName = jobcategoryname;
+
+                var imgPost = await _context.ImagePostJobs.Where(p => p.PostId == postJobDto.PostId).ToListAsync();
+                var imgMedia = imgPost.Select(img => img.ImageId).ToList();
+                List<String> images = new List<String>();
+                foreach (var img in imgPost)
+                {
+                    var mediaitem = await _context.MediaItems.FindAsync(img.ImageId);
+                    images.Add(mediaitem.Url);
+                }
+                postJobDto.ImagePostJobs = images;
+
 
                 if (postJobDto.Reports != null && postJobDto.Reports.Any())
                 {
@@ -196,6 +242,40 @@ namespace VJN.Services
 
             return result;
         }
+
+        public async Task<PostJobDTOReport?> GetPostByIDForStaff(int id)
+        {
+            var postJobDTO = await _context.PostJobs.Include(p=>p.ImagePostJobs).ThenInclude(i=>i.Image)
+                .Include(p=>p.Author).ThenInclude(a=>a.AvatarNavigation)
+                .Where(p => p.PostId == id)
+                .Select(p => new PostJobDTOReport
+                {
+                    PostId = p.PostId,
+                    JobTitle = p.JobTitle,
+                    JobDescription = p.JobDescription,
+                    Salary = p.Salary,
+                    NumberPeople = p.NumberPeople,
+                    Address = p.Address,
+                    CreateDate = p.CreateDate,
+                    ExpirationDate = p.ExpirationDate,
+                    Status = p.Status,
+                    CensorDate = p.CensorDate,
+
+                    // Các thuộc tính từ bảng liên quan, chỉ lấy những gì cần thiết
+                    Author = p.Author != null ? new UserDTOReport { UserId = p.Author.UserId, FullName = p.Author.FullName, Phonenumber = p.Author.Phonenumber, Age = p.Author.Age, Email = p.Author.Email, AvatarURL = p.Author.AvatarNavigation.Url } : null,
+                    Censor = p.Censor != null ? new UserDTOReport { UserId = p.Censor.UserId, FullName = p.Censor.FullName, Phonenumber = p.Censor.Phonenumber, Age = p.Censor.Age, Email = p.Censor.Email, AvatarURL = p.Censor.AvatarNavigation.Url } : null,
+                    JobCategory = p.JobCategory != null ? new JobCategory { JobCategoryId = p.JobCategory.JobCategoryId, JobCategoryName = p.JobCategory.JobCategoryName } : null,
+                    SalaryTypes = p.SalaryTypes != null ? new SalaryType { SalaryTypesId = p.SalaryTypes.SalaryTypesId, TypeName = p.SalaryTypes.TypeName } : null,
+
+                    // Chọn các thuộc tính cần thiết từ các bảng con có nhiều bản ghi
+                    ImagePostJobs = p.ImagePostJobs,
+
+                })
+                .FirstOrDefaultAsync();
+
+            return postJobDTO;
+        }
+
 
         public async Task<bool> AddWishJob(int jobid, int userid)
         {
