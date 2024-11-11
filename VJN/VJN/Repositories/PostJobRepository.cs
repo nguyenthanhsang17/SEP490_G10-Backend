@@ -358,5 +358,44 @@ namespace VJN.Repositories
             var i = await _context.SaveChangesAsync();
             return report.ReportId;
         }
+
+        public async Task<bool> CheckJobByIDAndUserid(int id, int userid)
+        {
+            var c  = await _context.PostJobs.Where(pj=>pj.PostId==id&&pj.AuthorId==userid&&pj.Status==0).AnyAsync();
+            return c;
+        }
+
+        public async Task<PostJob> GetJobByIDForUpdate(int id)
+        {
+            var postjob = await _context.PostJobs.Where(pj=>pj.PostId==id).Include(pj=>pj.ImagePostJobs).SingleOrDefaultAsync();
+            return postjob;
+        }
+
+        public async Task<int> UpdatePostJob(PostJob postJob)
+        {
+            var postjob = await _context.PostJobs.Where(pj => pj.PostId == postJob.PostId).SingleOrDefaultAsync();
+            if(postjob != null)
+            {
+                var postjobBefore = new PostJob
+                {
+                    PostId = postjob.PostId,
+                    JobTitle = postjob.JobTitle,
+                    JobDescription = postjob.JobDescription,
+                    SalaryTypesId = postjob.SalaryTypesId,
+                    Salary = postJob.Salary,
+                    NumberPeople = postjob.NumberPeople,
+                    Address = postjob.Address,
+                    Latitude = postjob.Latitude,
+                    Longitude = postjob.Longitude,
+                    Status = postjob.Status,
+                    IsUrgentRecruitment = postjob.IsUrgentRecruitment,
+                    JobCategory = postjob.JobCategory,
+                };
+                _context.Entry(postjobBefore).State = EntityState.Modified;
+                int i = await _context.SaveChangesAsync();
+                return postjob.PostId;
+            }
+            return 0;
+        }
     }
 }

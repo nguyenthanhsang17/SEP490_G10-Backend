@@ -22,5 +22,20 @@ namespace VJN.Controllers
             var createdSlotIds = await _slotService.CreateSlotsWithSchedules(slotDTOs);
             return Ok(createdSlotIds);
         }
+
+        [HttpDelete("DeleteAllSlot/{postid}")]
+        public async Task<ActionResult<bool>> DeleteAllSlot(int postid)
+        {
+            var c  = await _slotService.DeleteAllSlot(postid);
+            return Ok(c);
+        }
+
+        [HttpPut("UpdateSlot/{postid}")]
+        public async Task<ActionResult<IEnumerable<int>>> UpdateSlot(int postid, [FromBody] IEnumerable<SlotCreateDTO> slotDTOs)
+        {
+            var c = await _slotService.UpadateSlot(slotDTOs, postid);
+            return Ok(c);
+        }
+
     }
 }
