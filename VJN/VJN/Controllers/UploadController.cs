@@ -3,6 +3,7 @@ using Imagekit.Sdk;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using VJN.Models;
 using VJN.ModelsDTO.ImagePostJobDTO;
@@ -209,60 +210,68 @@ namespace VJN.Controllers
         [HttpPut("UpdateImagePostjob")]
         public async Task<ActionResult<bool>> UpdateImagePostjob([FromForm] ImagePostJobForUpdateDTO imageupdate)
         {
+            Console.WriteLine("====================================================================");
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             var imgbefore = await _imagepostJobService.GetImagePostJob(imageupdate.postid.Value);
+            Console.WriteLine("sasadsdasdads:   " + imgbefore.Count());
+            Console.WriteLine("sang :" + (imageupdate.files != null ? imageupdate.files.Count() : 0));
+
             var differentNumbers = imgbefore.Except(imageupdate.imageIds);
             if (differentNumbers.Count() != 0 || differentNumbers.Any())
             {
-                var c = _imagepostJobService.DeleteImagePost(differentNumbers.ToList(), imageupdate.postid.Value);
-                if (imageupdate.files == null || !imageupdate.files.Any())
-                {
-                    return Ok(false);
-                }
-                else
-                {
-                    var mediaIds = new List<int>();
+                var c = await _imagepostJobService.DeleteImagePost(differentNumbers.ToList(), imageupdate.postid.Value);
+            }
 
-                    var uploadTasks = imageupdate.files.Select(async file =>
-                    {
-                        if (file.Length == 0)
-                            throw new ArgumentException("One or more files are empty.");
+            
 
-                        using (var memoryStream = new System.IO.MemoryStream())
-                        {
-                            await file.CopyToAsync(memoryStream);
-                            byte[] fileBytes = memoryStream.ToArray();
-
-                            FileCreateRequest uploadRequest = new FileCreateRequest
-                            {
-                                file = fileBytes,
-                                fileName = file.FileName
-                            };
-
-                            Result result = _imagekitClient.Upload(uploadRequest);
-                            var media = new MediaItemDTO
-                            {
-                                Url = result.url,
-                                Status = true
-                            };
-                            return await _mediaItemService.CreateMediaItem(media);
-                        }
-                    });
-
-                    try
-                    {
-                        mediaIds = (await Task.WhenAll(uploadTasks)).ToList();
-                    }
-                    catch (Exception ex)
-                    {
-                        return StatusCode((int)HttpStatusCode.InternalServerError, $"Upload failed: {ex.Message}");
-                    }
-                    var result = await _imagepostJobService.createImagePostJob(imageupdate.postid.Value, mediaIds);
-                    return Ok(result);
-                }
+            if (imageupdate.files == null || !imageupdate.files.Any())
+            {
+                return Ok(true);
             }
             else
             {
-                return Ok(true);
+                var mediaIds = new List<int>();
+
+                var uploadTasks = imageupdate.files.Select(async file =>
+                {
+                    if (file.Length == 0)
+                        throw new ArgumentException("One or more files are empty.");
+
+                    using (var memoryStream = new System.IO.MemoryStream())
+                    {
+                        await file.CopyToAsync(memoryStream);
+                        byte[] fileBytes = memoryStream.ToArray();
+
+                        FileCreateRequest uploadRequest = new FileCreateRequest
+                        {
+                            file = fileBytes,
+                            fileName = file.FileName
+                        };
+
+                        Result result = _imagekitClient.Upload(uploadRequest);
+                        var media = new MediaItemDTO
+                        {
+                            Url = result.url,
+                            Status = true
+                        };
+                        return await _mediaItemService.CreateMediaItem(media);
+                    }
+                });
+
+                try
+                {
+                    mediaIds = (await Task.WhenAll(uploadTasks)).ToList();
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode((int)HttpStatusCode.InternalServerError, $"Upload failed: {ex.Message}");
+                }
+                Console.WriteLine(mediaIds.Count());
+                var result = await _imagepostJobService.createImagePostJob(imageupdate.postid.Value, mediaIds);
+                return Ok(result);
             }
 
         }
