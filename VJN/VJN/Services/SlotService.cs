@@ -50,13 +50,13 @@ namespace VJN.Services
 
         public async Task<IEnumerable<int>> UpadateSlot(IEnumerable<SlotCreateDTO> slotDTOs, int postid)
         {
-            var c  = await _slotRepository.DeleteAllSlotByPostId(postid);
-            if (c==false)
-            {
-                var c1 = await _slotRepository.CreateSlotsWithSchedules(slotDTOs, postid);
-                return c1;
-            }
-            return null;
+            var c = await _slotRepository.DeleteAllSlotByPostId(postid);
+            Console.WriteLine("c: " + c);
+
+            var c1 = await _slotRepository.CreateSlotsWithSchedules(slotDTOs, postid);
+            Console.WriteLine("c1: " + c1);
+            return c1;
+
         }
     }
 }

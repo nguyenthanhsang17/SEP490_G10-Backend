@@ -41,7 +41,7 @@ namespace VJN.Repositories
                 {
                     _context.JobPostDates.Remove(jdp);
                     int i = await _context.SaveChangesAsync();
-                    if (i>0)
+                    if (i<0)
                     {
                         return false;
                     }

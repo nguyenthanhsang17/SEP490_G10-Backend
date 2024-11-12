@@ -327,7 +327,7 @@ namespace VJN.Controllers
         }
 
         [Authorize]
-        [HttpPut]
+        [HttpPut("UpdatePostJob")]
         public async Task<ActionResult<int>> UpdatePostJob([FromBody] PostJobDetailUpdate postJobDetailForUpdate)
         {
             var c = await _postJobService.UpdatePostJob(postJobDetailForUpdate);

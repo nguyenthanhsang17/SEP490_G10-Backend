@@ -373,27 +373,25 @@ namespace VJN.Repositories
 
         public async Task<int> UpdatePostJob(PostJob postJob)
         {
-            var postjob = await _context.PostJobs.Where(pj => pj.PostId == postJob.PostId).SingleOrDefaultAsync();
-            if(postjob != null)
+            var postjobAfter = await _context.PostJobs.Where(pj => pj.PostId == postJob.PostId).SingleOrDefaultAsync();
+            if(postjobAfter != null)
             {
-                var postjobBefore = new PostJob
-                {
-                    PostId = postjob.PostId,
-                    JobTitle = postjob.JobTitle,
-                    JobDescription = postjob.JobDescription,
-                    SalaryTypesId = postjob.SalaryTypesId,
-                    Salary = postJob.Salary,
-                    NumberPeople = postjob.NumberPeople,
-                    Address = postjob.Address,
-                    Latitude = postjob.Latitude,
-                    Longitude = postjob.Longitude,
-                    Status = postjob.Status,
-                    IsUrgentRecruitment = postjob.IsUrgentRecruitment,
-                    JobCategory = postjob.JobCategory,
-                };
-                _context.Entry(postjobBefore).State = EntityState.Modified;
+
+                postjobAfter.JobTitle = postJob.JobTitle;
+                postjobAfter.JobDescription = postJob.JobDescription;
+                postjobAfter.SalaryTypesId = postJob.SalaryTypesId;
+                postjobAfter.Salary = postJob.Salary;
+                postjobAfter.NumberPeople = postJob.NumberPeople;
+                postjobAfter.Address = postJob.Address;
+                postjobAfter.Latitude = postJob.Latitude;
+                postjobAfter.Longitude = postJob.Longitude;
+                postjobAfter.Status = postJob.Status;
+                postjobAfter.IsUrgentRecruitment = postJob.IsUrgentRecruitment;
+                postjobAfter.JobCategoryId = postJob.JobCategoryId;
+                
+                _context.Entry(postjobAfter).State = EntityState.Modified;
                 int i = await _context.SaveChangesAsync();
-                return postjob.PostId;
+                return postJob.PostId;
             }
             return 0;
         }

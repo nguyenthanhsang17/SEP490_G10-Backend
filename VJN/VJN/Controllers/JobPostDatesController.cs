@@ -16,10 +16,12 @@ namespace VJN.Controllers
     public class JobPostDatesController : ControllerBase
     {
         private readonly IJobPostDateService _jobPostDateService;
+        private readonly ISlotService _slotService;
 
-        public JobPostDatesController(IJobPostDateService jobPostDateService)
+        public JobPostDatesController(IJobPostDateService jobPostDateService, ISlotService slotService)
         {
             _jobPostDateService = jobPostDateService;
+            _slotService = slotService;
         }
 
         [HttpPost]
@@ -39,6 +41,8 @@ namespace VJN.Controllers
         [HttpPut("UpdateJobPostDate/{postid}")]
         public async Task<ActionResult<bool>> UpdateJobPostDate(int postid, [FromBody] IEnumerable<JobPostDateForUpdateDTO> jobPostDate)
         {
+            var c1 = await _slotService.DeleteAllSlot(postid);
+            Console.WriteLine("delete slot: " + c1);
             var c = await _jobPostDateService.UpdateJobPostDate(postid, jobPostDate);
             return c?Ok(c):BadRequest(c);
         }
