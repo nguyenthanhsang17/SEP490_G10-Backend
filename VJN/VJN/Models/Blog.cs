@@ -11,6 +11,7 @@ namespace VJN.Models
         public DateTime? CreateDate { get; set; }
         public int? AuthorId { get; set; }
         public int? Thumbnail { get; set; }
+        public int? Status { get; set; }
 
         public virtual User? Author { get; set; }
         public virtual MediaItem? ThumbnailNavigation { get; set; }
