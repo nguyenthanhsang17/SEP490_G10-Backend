@@ -20,25 +20,18 @@ namespace UnitTests
         }
 
         [Test]
-        public async Task TestLogin()
+        public async Task TestLogin1()
         {
             var user = await repository.Login("sangnthe160447@fpt.edu.vn", "17102002");
             Assert.IsNotNull(user);
         }
 
-        //[Test] 
-        //public async Task TestRegister()
-        //{
-        //    var Register = new RegisterEmployer()
-        //    {
-        //        UserId = 1,
-        //        BussinessAddress = "cổng trường đại học fpt",
-        //        BussinessName = "Test",
-        //        CreateDate = DateTime.Now,
-        //    };
-        //    var id = await registerEmployerRepository.RegisterEmployer(Register);
-        //    Assert.AreEqual(2, id, "id : "+id);
-        //}
+        [Test]
+        public async Task TestLogin2()
+        {
+            var user = await repository.Login("sangnthe160447@fpt.edu.vn", "1710200");
+            Assert.IsNotNull(user);
+        }
 
         [Test]
         public async Task TestSelectJobseekerall()
