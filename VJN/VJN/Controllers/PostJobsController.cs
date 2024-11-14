@@ -36,7 +36,8 @@ namespace VJN.Controllers
         private readonly IJobPostDateService _jobPostDateService;
         private readonly IReportMediaServices _reportMediaService;
         private readonly IServicePriceLogService _priceLogService;
-        public PostJobsController(IPostJobService postJobService, ISlotService slotService, IMediaItemService mediaItemService, IImagePostJobService imagepostJobService, IJobPostDateService jobPostDateService, IReportMediaServices reportMediaService, IServicePriceLogService priceLogService)
+        public PostJobsController(IPostJobService postJobService, ISlotService slotService, IMediaItemService mediaItemService, IImagePostJobService imagepostJobService, IJobPostDateService jobPostDateService, IReportMediaServices reportMediaService, IServicePriceLogService priceLogService, VJNDBContext context)
+
         {
             _postJobService = postJobService;
             _slotService = slotService;
@@ -46,6 +47,7 @@ namespace VJN.Controllers
             _jobPostDateService = jobPostDateService;
             _reportMediaService = reportMediaService;
             _priceLogService = priceLogService;
+            _context = context;
         }
 
 
@@ -244,8 +246,17 @@ namespace VJN.Controllers
         public async Task<IActionResult> BanPostJob(int id, string reasonBan)
         {
             var c = await _postJobService.ChangeStatusPostJob(id, 6);
+            
             if (c)
             {
+                var banlog = new BanLogPostJob
+                {
+                    Reason = "aa",
+                    PostId = id,
+                    AdminId = 1
+                };
+                _context.BanLogPostJobs.Add(banlog);
+                 await _context.SaveChangesAsync();
                 return Ok(c);
             }
             else
