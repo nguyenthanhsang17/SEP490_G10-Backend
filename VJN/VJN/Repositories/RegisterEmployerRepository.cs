@@ -34,34 +34,47 @@ namespace VJN.Repositories
 
         public async Task<bool> AcceptRegisterEmployer(int id)
         {
+            // Find RegisterEmployer entry and check for existence
             var re = await _context.RegisterEmployers.FindAsync(id);
             if (re == null)
             {
-                return false; 
+                return false;
             }
-            re.Status = 1; 
-            _context.RegisterEmployers.Update(re);
-            var _user = await _context.Users.FindAsync(id);
-            _user.RoleId = 3;
-            _context.Users.Update(_user);
-            await _context.SaveChangesAsync();
 
-            return true; 
+            // Set status to approved
+            re.Status = 1;
+            _context.RegisterEmployers.Update(re);
+
+            // Verify UserId and update user role
+            var _user = await _context.Users.FindAsync(re.UserId);
+            if (_user != null)
+            {
+                _user.RoleId = 3;
+                _context.Users.Update(_user);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+
+            // Return false if user was not found
+            return false;
         }
+
 
         public async Task<bool> RejectRegisterEmployer(int id, string reason)
         {
+            // Find RegisterEmployer entry and check for existence
             var re = await _context.RegisterEmployers.FindAsync(id);
             if (re == null)
             {
-                return false; 
+                return false;
             }
-            re.Status = 2; 
-            // Làm gì đó với reason
+
+            // Set status to reject
+            re.Status = 2;
             _context.RegisterEmployers.Update(re);
             await _context.SaveChangesAsync();
+            return true;
 
-            return true; 
         }
 
         public async Task<IEnumerable<RegisterEmployer>> getRegisterEmployerByStatus(int status)
