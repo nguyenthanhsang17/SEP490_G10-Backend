@@ -26,13 +26,10 @@ namespace UnitTests
             {
                 JobKeyWord="tân",
                 SalaryTypesId=0,
-                RangeSalaryMin=null,
-                RangeSalaryMax=null,
                 Address=null,
                 Latitude=null,
                 Longitude=null,
                 distance=null,
-                IsUrgentRecruitment=null,
                 JobCategoryId=0,
                 SortNumberApplied=0,
                 pageNumber = 1

@@ -32,12 +32,19 @@ namespace VJN.Repositories
                 await _context.SaveChangesAsync();  // Lưu lại sau khi xóa UserId
             }
 
+            List<int> cvId = new List<int>();
+
             // Thêm các Cv mới
             foreach (var cv in cvs)
             {
-                cv.UserId = userid;  // Gán UserId cho Cv mới
-                _context.Cvs.Add(cv);  // Thêm Cv vào context
+                var newCv = new Cv
+                {
+                    UserId = userid,
+                    NameCv = cv.NameCv,
+                };
+                _context.Cvs.Add(newCv);  // Thêm Cv vào context
                 await _context.SaveChangesAsync();  // Lưu các Cv, giá trị CvId sẽ được sinh tự động
+                cv.CvId = newCv.CvId;
             }
 
            
@@ -47,7 +54,13 @@ namespace VJN.Repositories
             {
                 foreach (var item in cv.ItemOfCvs)
                 {
-                    item.CvId = cv.CvId;  // Gán CvId cho ItemOfCv
+                    item.CvId = cv.CvId;
+                    var newitem = new ItemOfCv()
+                    {
+                        CvId = item.CvId,
+                        ItemName = item.ItemName,
+                        ItemDescription = item.ItemDescription,
+                    };
                     _context.ItemOfCvs.Add(item);  // Thêm ItemOfCv vào context
                     await _context.SaveChangesAsync();
                 }

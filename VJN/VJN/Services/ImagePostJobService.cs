@@ -17,5 +17,17 @@ namespace VJN.Services
             var c = _imagePostJobRepository.createImagePostJob(postid, image);
             return c;
         }
+
+        public async Task<bool> DeleteImagePost(List<int> imageids, int postjobid)
+        {
+            var c = await _imagePostJobRepository.DeleteImagePost(imageids, postjobid);
+            return c;
+        }
+
+        public async Task<IEnumerable<int>> GetImagePostJob(int postid)
+        {
+            var c  = await _imagePostJobRepository.GetImagePostJob(postid);
+            return c;
+        }
     }
 }

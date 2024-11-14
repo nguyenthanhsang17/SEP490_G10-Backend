@@ -22,6 +22,8 @@ namespace VJN.Services
         public Task<bool> DeleteWishJob(int jobid, int userid);
         public Task<PagedResult<JobSearchResult>> getJobWishList(PostJobSearchWishList s, int userid);
         public Task<int> ReportJob(ReportCreateDTO report, int userid);
+        public Task<PostJobDetailForUpdate> GetJobByIDForUpdate(int id, int userid);
+        public Task<int> UpdatePostJob(PostJobDetailUpdate post);
 
     }
 }

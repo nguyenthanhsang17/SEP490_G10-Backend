@@ -56,6 +56,7 @@ namespace VJN.Models
             connectionString = config["ConnectionStrings:DefaultConnection"];
             return connectionString;
         }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -100,7 +101,7 @@ namespace VJN.Models
             modelBuilder.Entity<BanLogPostJob>(entity =>
             {
                 entity.HasKey(e => e.BanLogPostJob1)
-                    .HasName("PK__BanLogPo__8801D8C913FA153B");
+                    .HasName("PK__BanLogPo__8801D8C959E88FF7");
 
                 entity.ToTable("BanLogPostJob");
 
@@ -124,7 +125,7 @@ namespace VJN.Models
             modelBuilder.Entity<BanUserLog>(entity =>
             {
                 entity.HasKey(e => e.BanId)
-                    .HasName("PK__BanUserL__FD9DEB4A8C44CFFF");
+                    .HasName("PK__BanUserL__FD9DEB4A0E548FF6");
 
                 entity.ToTable("BanUserLog");
 
@@ -160,6 +161,8 @@ namespace VJN.Models
                 entity.Property(e => e.BlogTitle).HasMaxLength(200);
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Status).HasColumnName("status");
 
                 entity.Property(e => e.Thumbnail).HasColumnName("thumbnail");
 
@@ -238,7 +241,7 @@ namespace VJN.Models
             modelBuilder.Entity<ImagePostJob>(entity =>
             {
                 entity.HasKey(e => e.ImageJobId)
-                    .HasName("PK__ImagePos__942117863D9CF161");
+                    .HasName("PK__ImagePos__94211786ECA37F6A");
 
                 entity.ToTable("ImagePostJob");
 
@@ -283,7 +286,7 @@ namespace VJN.Models
             modelBuilder.Entity<JobPostDate>(entity =>
             {
                 entity.HasKey(e => e.EventDateId)
-                    .HasName("PK__JobPostD__C24CACCE409A63F8");
+                    .HasName("PK__JobPostD__C24CACCE6674C9B9");
 
                 entity.Property(e => e.EventDateId).HasColumnName("EventDate_Id");
 
@@ -300,7 +303,7 @@ namespace VJN.Models
             modelBuilder.Entity<JobSchedule>(entity =>
             {
                 entity.HasKey(e => e.ScheduleId)
-                    .HasName("PK__JobSched__8C4D3C5BC1F2FE5D");
+                    .HasName("PK__JobSched__8C4D3C5BBA13824E");
 
                 entity.ToTable("JobSchedule");
 
@@ -344,7 +347,7 @@ namespace VJN.Models
             modelBuilder.Entity<Notification>(entity =>
             {
                 entity.HasKey(e => e.NotifycationId)
-                    .HasName("PK__Notifica__391E35C8079868E2");
+                    .HasName("PK__Notifica__391E35C8C4BCB9AC");
 
                 entity.ToTable("Notification");
 
@@ -363,7 +366,7 @@ namespace VJN.Models
             modelBuilder.Entity<PostJob>(entity =>
             {
                 entity.HasKey(e => e.PostId)
-                    .HasName("PK__PostJob__5875F7AD06CE4EC8");
+                    .HasName("PK__PostJob__5875F7ADBA2D1AE6");
 
                 entity.ToTable("PostJob");
 
@@ -437,7 +440,7 @@ namespace VJN.Models
             modelBuilder.Entity<RegisterEmployerMedium>(entity =>
             {
                 entity.HasKey(e => e.RegisterEmployerMedia)
-                    .HasName("PK__Register__AA6A3626FB4F22EC");
+                    .HasName("PK__Register__AA6A36265EB29BD5");
 
                 entity.Property(e => e.MediaId).HasColumnName("Media_Id");
 
@@ -480,7 +483,7 @@ namespace VJN.Models
             modelBuilder.Entity<ReportMedium>(entity =>
             {
                 entity.HasKey(e => e.ReportImageId)
-                    .HasName("PK__ReportMe__585F554BE6C4B3B0");
+                    .HasName("PK__ReportMe__585F554B49C08680");
 
                 entity.Property(e => e.ReportImageId).HasColumnName("ReportImage_Id");
 
@@ -511,7 +514,7 @@ namespace VJN.Models
             modelBuilder.Entity<SalaryType>(entity =>
             {
                 entity.HasKey(e => e.SalaryTypesId)
-                    .HasName("PK__salary_t__0CA27F781C102316");
+                    .HasName("PK__salary_t__0CA27F7858C7A79D");
 
                 entity.ToTable("salary_types");
 
@@ -525,7 +528,7 @@ namespace VJN.Models
             modelBuilder.Entity<ServicePriceList>(entity =>
             {
                 entity.HasKey(e => e.ServicePriceId)
-                    .HasName("PK__Service___59C7673BD7E7370E");
+                    .HasName("PK__Service___59C7673BCDDAC59B");
 
                 entity.ToTable("Service_price_list");
 
