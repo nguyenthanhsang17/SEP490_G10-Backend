@@ -60,11 +60,11 @@ namespace VJN.Repositories
             string sql = "";
             if (s.SortNumberApplied != 0)
             {
-                sql = "SELECT p.* FROM PostJob p left join ApplyJob aj on p.Post_Id = aj.Post_Id WHERE 1=1 AND p.ExpirationDate > GETDATE() ";
+                sql = "SELECT p.* FROM PostJob p left join ApplyJob aj on p.Post_Id = aj.Post_Id WHERE 1=1 AND p.ExpirationDate > GETDATE() AND p.Status = 2 ";
             }
             else
             {
-                sql = "SELECT p.* FROM PostJob p WHERE 1=1 AND p.ExpirationDate > GETDATE() ";
+                sql = "SELECT p.* FROM PostJob p WHERE 1=1 AND p.ExpirationDate > GETDATE() AND p.Status = 2 ";
             }
 
 
@@ -332,7 +332,7 @@ namespace VJN.Repositories
             }
             else if(s.Longitude.HasValue&&s.Latitude.HasValue&&s.sort==3) // sort == 3 // uu tien khoangr cach
             {
-                sql = sql + $"order by (6371 * ACOS(COS(RADIANS({s.Latitude})) * COS(RADIANS(p.latitude)) * COS(RADIANS(p.longitude) - RADIANS({s.Longitude})) +SIN(RADIANS({s.Latitude})) * SIN(RADIANS(p.latitude)))) desc";
+                sql = sql + $"order by (6371 * ACOS(COS(RADIANS({s.Latitude})) * COS(RADIANS(p.latitude)) * COS(RADIANS(p.longitude) - RADIANS({s.Longitude})) +SIN(RADIANS({s.Latitude})) * SIN(RADIANS(p.latitude)))) asc";
             }
             Console.WriteLine(sql);
 

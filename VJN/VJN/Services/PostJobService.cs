@@ -163,7 +163,10 @@ namespace VJN.Services
         {
             var postjob = _mapper.Map<PostJob>(postJobdto);
             postjob.AuthorId = u;
+
+
             int id = await _postJobRepository.CreatePostJob(postjob);
+            
             return id;
         }
 
