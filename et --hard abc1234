@@ -1,0 +1,271 @@
+[33mcommit 8ca7f184ca82ba06d3c88d00c2ca9e9865848eab[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mvietanhIT2_new[m[33m, [m[1;31morigin/vietanhIT2_new[m[33m)[m
+Author: dhvietanh1001 <vieanh02@gmail.com>
+Date:   Thu Nov 14 13:30:04 2024 +0700
+
+    fix bug 28 29 36
+
+[33mcommit ea77966333299447d383740d231d64c7439f4516[m
+Author: dhvietanh1001 <vieanh02@gmail.com>
+Date:   Sun Nov 10 10:50:23 2024 +0700
+
+    manage request employer register
+
+[33mcommit 8100c8ebe64b5685e15e06fc8c81c42729ec2b63[m
+Merge: e6e5789 79fa441
+Author: dhvietanh1001 <vieanh02@gmail.com>
+Date:   Fri Nov 8 08:05:13 2024 +0700
+
+    handle confl nhuccaidaub
+
+[33mcommit e6e5789865f25e1e893f9f1351124f4a09ee84cb[m
+Author: dhvietanh1001 <vieanh02@gmail.com>
+Date:   Fri Nov 8 07:01:55 2024 +0700
+
+    something change
+
+[33mcommit 6d9403fcae28a3d7f1141c0f31f593e2211f1c84[m[33m ([m[1;32mvietanhIT2[m[33m)[m
+Author: dhvietanh1001 <vieanh02@gmail.com>
+Date:   Fri Nov 8 06:53:13 2024 +0700
+
+    something change
+
+[33mcommit 98fd6b661e653798f3fb8a96e4536cd9ef944dab[m
+Author: dhvietanh1001 <vieanh02@gmail.com>
+Date:   Fri Nov 8 05:58:06 2024 +0700
+
+    update manage post for staff
+
+[33mcommit 79fa441ff4e50fcad1fc1cf0fb84c14fb9c45118[m[33m ([m[1;32mmain[m[33m)[m
+Merge: 9acf074 ae0871c
+Author: nguyenthanhsang17 <nguyenthanhsang17102002@gmail.com>
+Date:   Thu Nov 7 13:19:44 2024 +0700
+
+    Merge pull request #38 from nguyenthanhsang17/Sang
+    
+    fix view job seeker
+
+[33mcommit ae0871cdad05c1d54bdf84701aef1f489a9576e8[m[33m ([m[1;31morigin/Sang[m[33m)[m
+Author: nguyenthanhsang17 <nguyenthanhsang17102002@gmail.com>
+Date:   Thu Nov 7 13:18:14 2024 +0700
+
+    fix view job seeker
+
+[33mcommit 9acf074e0cb3f261a7bdbce09d6476d7ad59470e[m
+Merge: 4e95678 ceacc1c
+Author: nguyenthanhsang17 <nguyenthanhsang17102002@gmail.com>
+Date:   Thu Nov 7 12:30:42 2024 +0700
+
+    Merge pull request #37 from nguyenthanhsang17/Sang
+    
+    sang fix jobseeker
+
+[33mcommit ceacc1c321587cc510b93b49dc08ed2bfcb78779[m
+Author: nguyenthanhsang17 <nguyenthanhsang17102002@gmail.com>
+Date:   Thu Nov 7 12:29:35 2024 +0700
+
+    sang fix jobseeker
+
+[33mcommit 4e95678372dbed811cd7a6ae3f2c3d2cfc62fa03[m
+Merge: 1d0b2f6 27c361a
+Author: nguyenthanhsang17 <nguyenthanhsang17102002@gmail.com>
+Date:   Thu Nov 7 03:51:08 2024 +0700
+
+    Merge pull request #36 from nguyenthanhsang17/Sang
+    
+    sang code it2
+
+[33mcommit 27c361ad368832aebc3ab081aea7369f8203ba8f[m
+Author: nguyenthanhsang17 <nguyenthanhsang17102002@gmail.com>
+Date:   Thu Nov 7 03:50:35 2024 +0700
+
+    sang code it2
+
+[33mcommit 1d0b2f6018b4d5333f693257b2dbcc273897f614[m
+Merge: 1256dcc 34e7c05
+Author: nguyenthanhsang17 <nguyenthanhsang17102002@gmail.com>
+Date:   Wed Nov 6 23:07:54 2024 +0700
+
+    Merge pull request #35 from nguyenthanhsang17/Sang
+    
+    code Employer all
+
+[33mcommit 34e7c051b26ad997434f7e442b2ad7007eecdb51[m
+Author: nguyenthanhsang17 <nguyenthanhsang17102002@gmail.com>
+Date:   Wed Nov 6 23:06:57 2024 +0700
+
+    code Employer all
+
+[33mcommit 1256dccf1f30dafb8d7477b1269a18c84cf73e0f[m
+Merge: 3da0b50 3213d0b
+Author: nguyenthanhsang17 <nguyenthanhsang17102002@gmail.com>
+Date:   Tue Nov 5 17:34:42 2024 +0700
+
+    Merge pull request #34 from nguyenthanhsang17/Sang
+    
+    Snag update DB
+
+[33mcommit 3213d0b4b98d9bd493b977ad247da34c29596897[m
+Author: nguyenthanhsang17 <nguyenthanhsang17102002@gmail.com>
+Date:   Tue Nov 5 17:33:51 2024 +0700
+
+    Snag update DB
+
+[33mcommit 3da0b503bc107d6dc44095a88e772318e29ecf8e[m
+Merge: 832ebcc d49cef6
+Author: nguyenthanhsang17 <nguyenthanhsang17102002@gmail.com>
+Date:   Tue Nov 5 15:25:34 2024 +0700
+
+    Merge pull request #33 from nguyenthanhsang17/Sang
+    
+    sang code back end
+
+[33mcommit d49cef657705e5f24b14199afe65f2186d37a232[m
+Author: nguyenthanhsang17 <nguyenthanhsang17102002@gmail.com>
+Date:   Tue Nov 5 15:23:34 2024 +0700
+
+    sang code back end
+
+[33mcommit 832ebcc5f9f4c3353f622a66a049a73ad42a8896[m
+Merge: 18b6976 ad4e7f8
+Author: nguyenthanhsang17 <nguyenthanhsang17102002@gmail.com>
+Date:   Sat Nov 2 05:54:39 2024 +0700
+
+    Merge pull request #32 from nguyenthanhsang17/Sang
+    
+    sang fix bug
+
+[33mcommit ad4e7f8c1a33148db17ef0b35da203e1743ab313[m
+Merge: 12f2ace 18b6976
+Author: nguyenthanhsang17 <nguyenthanhsang17102002@gmail.com>
+Date:   Sat Nov 2 05:53:15 2024 +0700
+
+    sangfix conflic
+
+[33mcommit 12f2ace3fde8479971db6ebf99d1382b132da797[m
+Author: nguyenthanhsang17 <nguyenthanhsang17102002@gmail.com>
+Date:   Sat Nov 2 05:48:00 2024 +0700
+
+    sang fix bug
+
+[33mcommit 18b6976010b1d6c15260312d1fbc851f7766ba2b[m
+Merge: 9caedd7 dcddc2b
+Author: dhvietanh1001 <vieanh02@gmail.com>
+Date:   Sat Nov 2 04:25:15 2024 +0700
+
+    Merge pull request #31 from nguyenthanhsang17/vietanhIT2
+    
+    manage post / staff
+
+[33mcommit dcddc2b15a34fdc7d7ad12a88eb906599bb9f736[m
+Author: dhvietanh1001 <vieanh02@gmail.com>
+Date:   Sat Nov 2 04:21:55 2024 +0700
+
+    manage post / staff
+
+[33mcommit 9caedd7ef6f9c748488d31ecab008791e44d9402[m
+Merge: d1b1fa6 429360e
+Author: nguyenthanhsang17 <nguyenthanhsang17102002@gmail.com>
+Date:   Thu Oct 31 12:41:38 2024 +0700
+
+    Merge pull request #30 from nguyenthanhsang17/Sang
+    
+    sang update database
+
+[33mcommit 429360e8cf3b689dc85a88883c20e6ecde94a4ee[m
+Author: nguyenthanhsang17 <nguyenthanhsang17102002@gmail.com>
+Date:   Thu Oct 31 12:40:59 2024 +0700
+
+    sang update database
+
+[33mcommit d1b1fa619a79e16b8a7514dcc2f7ce2aa93476ad[m
+Merge: 249f22e d582e65
+Author: nguyenthanhsang17 <nguyenthanhsang17102002@gmail.com>
+Date:   Tue Oct 29 08:59:41 2024 +0700
+
+    Merge pull request #29 from nguyenthanhsang17/Sang
+    
+    fix backend
+
+[33mcommit d582e65cf3a0af0c732a4ea9dc1690d82b8df63c[m
+Author: nguyenthanhsang17 <nguyenthanhsang17102002@gmail.com>
+Date:   Tue Oct 29 08:59:03 2024 +0700
+
+    fix backend
+
+[33mcommit 249f22e780c865665395880f7d5fdb90ec40be66[m
+Merge: 61804f2 d7f5a2b
+Author: nguyenthanhsang17 <nguyenthanhsang17102002@gmail.com>
+Date:   Mon Oct 28 17:43:34 2024 +0700
+
+    Merge pull request #28 from nguyenthanhsang17/Sang
+    
+    sang fix up load image
+
+[33mcommit d7f5a2b151d64170dfdb63156a8cdde8e108bb88[m
+Merge: 20172c9 61804f2
+Author: nguyenthanhsang17 <nguyenthanhsang17102002@gmail.com>
+Date:   Mon Oct 28 17:42:37 2024 +0700
+
+    sang fix conflic
+
+[33mcommit 20172c992b2ce5147bfea5ab947376595e9c17a6[m
+Author: nguyenthanhsang17 <nguyenthanhsang17102002@gmail.com>
+Date:   Mon Oct 28 17:36:07 2024 +0700
+
+    sang fix up load image
+
+[33mcommit 61804f246ece282eb0d73b9b239f7ce308c366ea[m
+Merge: ea471e2 f443e6b
+Author: dhvietanh1001 <vieanh02@gmail.com>
+Date:   Mon Oct 28 13:56:14 2024 +0700
+
+    Merge pull request #27 from nguyenthanhsang17/vietanh
+    
+    update view job applied( drop id in param)
+
+[33mcommit f443e6b69746ea956b526b73bd229be562dd24cd[m[33m ([m[1;31morigin/vietanh[m[33m)[m
+Author: dhvietanh1001 <vieanh02@gmail.com>
+Date:   Mon Oct 28 13:53:13 2024 +0700
+
+    update view job applied( drop id in param)
+
+[33mcommit ea471e2097f51c12bc176ed5ccc9085957a96b0e[m
+Merge: fc4a50c 2a47603
+Author: dhvietanh1001 <vieanh02@gmail.com>
+Date:   Mon Oct 28 01:28:34 2024 +0700
+
+    Merge pull request #26 from nguyenthanhsang17/vietanh
+    
+     update applyjob, filter alljobseeker, paging
+
+[33mcommit 2a4760326e077c1e1ca198d5316c039c86c77264[m
+Author: dhvietanh1001 <vieanh02@gmail.com>
+Date:   Mon Oct 28 01:27:04 2024 +0700
+
+     update applyjob, filter alljobseeker, paging
+
+[33mcommit fc4a50c908cbedbdb084a2593d6145b96f3b9f67[m
+Merge: 6aa4383 739f361
+Author: dhvietanh1001 <vieanh02@gmail.com>
+Date:   Sun Oct 27 18:56:10 2024 +0700
+
+    Merge pull request #25 from nguyenthanhsang17/vietanh
+    
+    Vietanh
+
+[33mcommit 739f3612e87ce2223a9990e9997a8d4e02bd70cd[m
+Author: dhvietanh1001 <vieanh02@gmail.com>
+Date:   Sun Oct 27 18:53:39 2024 +0700
+
+    update view jobseeker
+
+[33mcommit db85d7838d971777073367d71e988c270a20dece[m
+Merge: fe0055c 6aa4383
+Author: dhvietanh1001 <vieanh02@gmail.com>
+Date:   Sun Oct 27 18:49:00 2024 +0700
+
+    Merge pull request #24 from nguyenthanhsang17/main
+    
+    Merge pull request #23 from nguyenthanhsang17/vietanh
+
+[33mcommit 6aa4383c4f1c3b9bdd81953957f8ad2227d6feb0
