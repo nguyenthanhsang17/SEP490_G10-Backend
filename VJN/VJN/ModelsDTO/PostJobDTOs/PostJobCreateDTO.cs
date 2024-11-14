@@ -16,5 +16,6 @@ namespace VJN.ModelsDTO.PostJobDTOs
         public int? Status { get; set; }
         public bool? IsUrgentRecruitment { get; set; }
         public int? JobCategoryId { get; set; }
+        public int? Time { get; set; }
     }
 }

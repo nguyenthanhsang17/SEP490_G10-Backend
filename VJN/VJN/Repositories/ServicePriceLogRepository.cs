@@ -11,46 +11,108 @@ namespace VJN.Repositories
         {
             _context = context;
         }
+
+        public async Task<bool> Addition(int userid, bool check, int time)
+        {
+            ServicePriceLog servicePriceLog;
+            if (check)
+            {
+                servicePriceLog = await _context.ServicePriceLogs.Where(sp => sp.UserId == userid && sp.NumberPostsUrgentRecruitment > 0).SingleOrDefaultAsync();
+            }
+            else
+            {
+                servicePriceLog = await _context.ServicePriceLogs.Where(sp => sp.UserId == userid).SingleOrDefaultAsync();
+            }
+
+            if (servicePriceLog != null)
+            {
+                if (check)
+                {
+                    servicePriceLog.NumberPostsUrgentRecruitment = servicePriceLog.NumberPostsUrgentRecruitment + time;
+                    _context.Entry(servicePriceLog).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                    return true;
+
+                }
+                else
+                {
+                    servicePriceLog.NumberPosts = servicePriceLog.NumberPosts + time;
+                    _context.Entry(servicePriceLog).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                    return true;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public async Task<int> GetNumberPosts(int userid)
+        {
+            var sum = await _context.ServicePriceLogs.Where(sp => sp.UserId == userid).SumAsync(sp => sp.NumberPosts);
+            return sum.Value;
+        }
+
         public async Task<bool> isexpired(int userid)
         {
             var oneMonthAgo = DateTime.Now.AddMonths(-1);
             var recentLogs = await _context.ServicePriceLogs
-                .Where(log => log.UserId == userid && log.RegisterDate >= oneMonthAgo && log.NumberPosts>0&&log.NumberPostsUrgentRecruitment>0)
+                .Where(log => log.UserId == userid && log.RegisterDate >= oneMonthAgo && log.NumberPosts > 0 && log.NumberPostsUrgentRecruitment > 0)
                 .AnyAsync();
             return recentLogs;
         }
 
-        public async Task<bool> subtraction(int userid, bool check)
+        public async Task<int> NumberPostsUrgentRecruitment(int userid)
         {
-            //check = true  dang bai tuyenr gap
-            //check = false dang bai binh thuong
-            var oneMonthAgo = DateTime.Now.AddMonths(-1);
-            var recentLogs = _context.ServicePriceLogs
-                .Where(log => log.UserId == userid && log.RegisterDate >= oneMonthAgo);
-            if(!check)
+            var sum = await _context.ServicePriceLogs.Where(sp => sp.UserId == userid).SumAsync(sp => sp.NumberPostsUrgentRecruitment);
+            return sum.Value;
+        }
+
+        public async Task<bool> subtraction(int userid, bool check, int time)
+        {
+            //check = true la dang bai dạc biet
+            //check = false dang bai thuong
+            ServicePriceLog servicePriceLog;
+            if (check)
             {
-                recentLogs = recentLogs.Where(log => log.NumberPosts > 0);
+                servicePriceLog = await _context.ServicePriceLogs.Where(sp => sp.UserId == userid && sp.NumberPostsUrgentRecruitment > 0).SingleOrDefaultAsync();
             }
             else
             {
-                recentLogs = recentLogs.Where(log => log.NumberPostsUrgentRecruitment > 0);
+                servicePriceLog = await _context.ServicePriceLogs.Where(sp => sp.UserId == userid).SingleOrDefaultAsync();
             }
 
-            var exitst = await recentLogs.AnyAsync();
-            if(exitst)
+            if (servicePriceLog != null)
             {
-                var log = await recentLogs.FirstOrDefaultAsync();
-                if (!check)
+                if (check)
                 {
-                    log.NumberPosts = log.NumberPosts - 1;
+                    if (servicePriceLog.NumberPostsUrgentRecruitment >= time )
+                    {
+                        servicePriceLog.NumberPostsUrgentRecruitment = servicePriceLog.NumberPostsUrgentRecruitment - 1;
+                        _context.Entry(servicePriceLog).State = EntityState.Modified;
+                        await _context.SaveChangesAsync();
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
                 else
                 {
-                    log.NumberPostsUrgentRecruitment = log.NumberPostsUrgentRecruitment - 1;
+                    if (servicePriceLog.NumberPosts >= time)
+                    {
+                        servicePriceLog.NumberPosts = servicePriceLog.NumberPosts - time;
+                        _context.Entry(servicePriceLog).State = EntityState.Modified;
+                        await _context.SaveChangesAsync();
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
-                _context.Entry(log).State = EntityState.Modified;
-                await _context.SaveChangesAsync();
-                return true;
             }
             else
             {

@@ -32,5 +32,6 @@ namespace VJN.ModelsDTO.PostJobDTOs
         public bool isAppliedJob { get; set; }
         public bool isWishJob { get; set; }
         public int NumberAppliedUser { get; set;}
+        public int? Time { get; set; }
     }
 }

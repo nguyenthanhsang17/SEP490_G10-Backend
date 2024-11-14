@@ -35,7 +35,9 @@ namespace VJN.Controllers
         private readonly IImagePostJobService _imagepostJobService;
         private readonly IJobPostDateService _jobPostDateService;
         private readonly IReportMediaServices _reportMediaService;
-        public PostJobsController(IPostJobService postJobService, ISlotService slotService, IMediaItemService mediaItemService, IImagePostJobService imagepostJobService, IJobPostDateService jobPostDateService, IReportMediaServices reportMediaService, VJNDBContext context)
+        private readonly IServicePriceLogService _priceLogService;
+        public PostJobsController(IPostJobService postJobService, ISlotService slotService, IMediaItemService mediaItemService, IImagePostJobService imagepostJobService, IJobPostDateService jobPostDateService, IReportMediaServices reportMediaService, IServicePriceLogService priceLogService, VJNDBContext context)
+
         {
             _postJobService = postJobService;
             _slotService = slotService;
@@ -44,6 +46,7 @@ namespace VJN.Controllers
             _imagepostJobService = imagepostJobService;
             _jobPostDateService = jobPostDateService;
             _reportMediaService = reportMediaService;
+            _priceLogService = priceLogService;
             _context = context;
         }
 
@@ -109,6 +112,53 @@ namespace VJN.Controllers
                 return BadRequest(new { Message = "Ẩn bài post thất bại" });
             }
         }
+        [Authorize]
+        [HttpPut("RequestForPublicPost/{id}")]
+        public async Task<IActionResult> RequestForPublicPost(int id)
+        {
+            string userid_str = GetUserIdFromToken();
+            int uid = int.Parse(userid_str);
+            var postdto = await _postJobService.getJostJobByID(id, uid);
+            bool check = postdto.IsUrgentRecruitment.Value;
+            var c1 = await _priceLogService.subtraction(uid, check, postdto.Time.Value);
+            if (!c1)
+            {
+                return BadRequest(new { Message = "Bạn đã hết số lượt đăng bài" });
+            }
+            var c = await _postJobService.ChangeStatusPostJob(id, 1);
+            if (c)
+            {
+                return Ok(c);
+            }
+            else
+            {
+                return BadRequest(new { Message = "Đăng post thất bại" });
+            }
+        }
+
+        [Authorize]
+        [HttpPut("CancelRequestForPublicPost/{id}")]
+        public async Task<IActionResult> CancelRequestForPublicPost(int id)
+        {
+            string userid_str = GetUserIdFromToken();
+            int uid = int.Parse(userid_str);
+            var postdto = await _postJobService.getJostJobByID(id, uid);
+            bool check = postdto.IsUrgentRecruitment.Value;
+            var c1 = await _priceLogService.Addition(uid, check, postdto.Time.Value);
+            if (!c1)
+            {
+                return BadRequest(new { Message = "Bạn đã hết số lượt đăng bài" });
+            }
+            var c = await _postJobService.ChangeStatusPostJob(id, 0);
+            if (c)
+            {
+                return Ok(c);
+            }
+            else
+            {
+                return BadRequest(new { Message = "Đăng post thất bại" });
+            }
+        }
 
         [Authorize]
         [HttpPost("CreatePost")]
@@ -117,6 +167,12 @@ namespace VJN.Controllers
             Console.WriteLine("chay ham nay");
             string userid_str = GetUserIdFromToken();
             int uid = int.Parse(userid_str);
+            bool check = postJobCreateDTO.IsUrgentRecruitment.Value;
+            var c = await _priceLogService.subtraction(uid, check, postJobCreateDTO.Time.Value);
+            if (!c)
+            {
+                return BadRequest(new { Message = "Bạn đã hết số lượt đăng bài" });
+            }
             var id = await _postJobService.CreatePostJob(postJobCreateDTO, uid);
             if (id <= 0)
             {

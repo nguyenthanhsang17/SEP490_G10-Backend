@@ -157,6 +157,7 @@ namespace VJN
             builder.Services.AddScoped<IJobSeekerService, JobSeekerService>();
             builder.Services.AddScoped<IReportMediaRepository, ReportMediaRepository>();
             builder.Services.AddScoped<IReportMediaServices, ReportMediaServices>();
+            builder.Services.AddScoped<IServicePriceLogService, ServicePriceLogService>();
 
             // Register services and repositories
             var app = builder.Build();
