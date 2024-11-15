@@ -13,7 +13,7 @@ namespace VJN.Repositories
 
         public async Task<bool> ApplyJob(ApplyJob applyJob)
         {
-            var c  = await _context.ApplyJobs.Where(aj=>aj.JobSeekerId==applyJob.JobSeekerId&&aj.PostId==applyJob.PostId&&aj.Status!=6&&aj.CvId==applyJob.CvId).AnyAsync();
+            var c  = await _context.ApplyJobs.Where(aj=>aj.JobSeekerId==applyJob.JobSeekerId&&aj.PostId==applyJob.PostId&&aj.Status!=6).AnyAsync();
             if(c)
             {
                 return false;
