@@ -37,7 +37,8 @@ namespace VJN.Controllers
         private readonly IJobPostDateService _jobPostDateService;
         private readonly IReportMediaServices _reportMediaService;
         private readonly IServicePriceLogService _priceLogService;
-        public PostJobsController(IPostJobService postJobService, ISlotService slotService, IMediaItemService mediaItemService, IImagePostJobService imagepostJobService, IJobPostDateService jobPostDateService, IReportMediaServices reportMediaService, IServicePriceLogService priceLogService, VJNDBContext context)
+        private readonly IEmailService _emailService;
+        public PostJobsController(IPostJobService postJobService, ISlotService slotService, IMediaItemService mediaItemService, IImagePostJobService imagepostJobService, IJobPostDateService jobPostDateService, IReportMediaServices reportMediaService, IServicePriceLogService priceLogService, VJNDBContext context, IEmailService emailService)
 
         {
             _postJobService = postJobService;
@@ -49,6 +50,7 @@ namespace VJN.Controllers
             _reportMediaService = reportMediaService;
             _priceLogService = priceLogService;
             _context = context;
+            _emailService = emailService;
         }
 
 
@@ -230,8 +232,23 @@ namespace VJN.Controllers
         public async Task<IActionResult> AcceptPostJob(int id)
         {
             var c = await _postJobService.ChangeStatusPostJob(id, 2);
+            var postJob = await _context.PostJobs.FindAsync(id);
             if (c)
             {
+
+                var userid = postJob.AuthorId;
+                var user = await _context.Users.FindAsync(id);
+                string body = $"Chào {user.FullName},\n\n" +
+                      "Bài đăng của bạn đã được duyệt thành công!\n\n" +
+                      "Chi tiết bài đăng:\n" +
+                      $"Tiêu đề: {postJob.JobTitle}\n" +
+                      $"Mô tả: {postJob.JobDescription}\n" +
+                      "Trạng thái: Đã duyệt\n\n" +
+                      "Chúng tôi sẽ thông báo khi có những cập nhật tiếp theo.\n\n" +
+                      "Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.\n\n" +
+                      "Trân trọng,\n" +
+                      "Đội ngũ hỗ trợ";
+                await _emailService.SendEmailAsync(user.Email, "Bài đăng của bạn đã được duyệt", body);
                 return Ok(c);
             }
             else
@@ -244,9 +261,24 @@ namespace VJN.Controllers
         public async Task<IActionResult> RejectPostJob(int id, string reasonRejecr)
         {
             var c = await _postJobService.ChangeStatusPostJob(id, 3);
-            //do something with reasonRejecr
+            var postJob = await _context.PostJobs.FindAsync(id);
             if (c)
             {
+
+                var userid = postJob.AuthorId;
+                var user = await _context.Users.FindAsync(id);
+                string body = $"Chào {user.FullName},\n\n" +
+                      "Bài đăng của bạn đã bị từ chối!\n\n" +
+                      "Chi tiết bài đăng:\n" +
+                      $"Tiêu đề: {postJob.JobTitle}\n" +
+                      $"Mô tả: {postJob.JobDescription}\n" +
+                      "Trạng thái: Bị từ chối\n\n" +
+                      $"Lý do : {reasonRejecr}.\n\n" +
+                      "Hãy xem lại điều khoản về bài đăng.\n\n" +
+                      "Nếu có thắc mắc gì hãy liên hệ ngay với chúng tôi.\n\n" +
+                      "Trân trọng,\n" +
+                      "Đội ngũ hỗ trợ";
+                await _emailService.SendEmailAsync(user.Email, "Bài đăng của bạn đã bị từ chối", body);
                 return Ok(c);
             }
             else
@@ -259,17 +291,31 @@ namespace VJN.Controllers
         public async Task<IActionResult> BanPostJob(int id, string reasonBan)
         {
             var c = await _postJobService.ChangeStatusPostJob(id, 6);
-            
+            var postJob = await _context.PostJobs.FindAsync(id);
             if (c)
             {
                 var banlog = new BanLogPostJob
                 {
-                    Reason = "aa",
+                    Reason = reasonBan,
                     PostId = id,
                     AdminId = 1
                 };
                 _context.BanLogPostJobs.Add(banlog);
                  await _context.SaveChangesAsync();
+                var userid = postJob.AuthorId;
+                var user = await _context.Users.FindAsync(id);
+                string body = $"Chào {user.FullName},\n\n" +
+                      "Bài đăng của bạn đã bị cấm !\n\n" +
+                      "Chi tiết bài đăng:\n" +
+                      $"Tiêu đề: {postJob.JobTitle}\n" +
+                      $"Mô tả: {postJob.JobDescription}\n" +
+                      "Trạng thái: Bị Cấm\n\n" +
+                      $"Lý do : {reasonBan}.\n\n" +
+                      "Hãy xem lại điều khoản về bài đăng.\n\n" +
+                      "Nếu có thắc mắc gì hãy liên hệ ngay với chúng tôi.\n\n" +
+                      "Trân trọng,\n" +
+                      "Đội ngũ hỗ trợ";
+                await _emailService.SendEmailAsync(user.Email, "Bài đăng của bạn đã bị cấm", body);
                 return Ok(c);
             }
             else
