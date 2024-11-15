@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Imagekit.Sdk;
 using Microsoft.AspNetCore.Authorization;
@@ -81,8 +82,17 @@ namespace VJN.Controllers
             var postdto = await _postJobService.getJostJobByID(id, iduser);
 
             var slotDTO = await _slotService.GetSlotByPostjobId(id);
-
-            postdto.slotDTOs = slotDTO;
+            if(slotDTO == null|| !slotDTO.Any() || slotDTO.Count() == 0)
+            {
+                postdto.slotDTOs = null;
+                var postjobdto = await _jobPostDateService.GetPostJobByPostID(id);
+                postdto.jobPostDateDTOs = postjobdto;
+            }
+            else
+            {
+                postdto.slotDTOs = slotDTO;
+                postdto.jobPostDateDTOs = null;
+            }
             return Ok(postdto);
         }
         [HttpPut("ShowPostJob/{id}")]
@@ -167,11 +177,14 @@ namespace VJN.Controllers
             Console.WriteLine("chay ham nay");
             string userid_str = GetUserIdFromToken();
             int uid = int.Parse(userid_str);
-            bool check = postJobCreateDTO.IsUrgentRecruitment.Value;
-            var c = await _priceLogService.subtraction(uid, check, postJobCreateDTO.Time.Value);
-            if (!c)
+            if (postJobCreateDTO.Status == 1)
             {
-                return BadRequest(new { Message = "Bạn đã hết số lượt đăng bài" });
+                bool check = postJobCreateDTO.IsUrgentRecruitment.Value;
+                var c = await _priceLogService.subtraction(uid, check, postJobCreateDTO.Time.Value);
+                if (!c)
+                {
+                    return BadRequest(new { Message = "Bạn đã hết số lượt đăng bài" });
+                }
             }
             var id = await _postJobService.CreatePostJob(postJobCreateDTO, uid);
             if (id <= 0)
@@ -396,6 +409,19 @@ namespace VJN.Controllers
         [HttpPut("UpdatePostJob")]
         public async Task<ActionResult<int>> UpdatePostJob([FromBody] PostJobDetailUpdate postJobDetailForUpdate)
         {
+            Console.WriteLine("chay ham nay");
+            string userid_str = GetUserIdFromToken();
+            int uid = int.Parse(userid_str);
+
+            if (postJobDetailForUpdate.Status == 1)
+            {
+                bool check = postJobDetailForUpdate.IsUrgentRecruitment.Value;
+                var c1 = await _priceLogService.subtraction(uid, check, postJobDetailForUpdate.Time.Value);
+                if (!c1)
+                {
+                    return BadRequest(new { Message = "Bạn đã hết số lượt đăng bài" });
+                }
+            }
             var c = await _postJobService.UpdatePostJob(postJobDetailForUpdate);
             return Ok(c);
         }

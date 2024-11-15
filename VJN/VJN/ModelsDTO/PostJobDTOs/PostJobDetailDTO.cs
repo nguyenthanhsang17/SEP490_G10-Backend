@@ -1,4 +1,5 @@
 ﻿using VJN.Models;
+using VJN.ModelsDTO.JobPostDateDTOs;
 using VJN.ModelsDTO.SlotDTOs;
 
 namespace VJN.ModelsDTO.PostJobDTOs
@@ -29,6 +30,7 @@ namespace VJN.ModelsDTO.PostJobDTOs
         //==============================================================
         public IEnumerable<string> ImagePostJobs { get; set; }
         public IEnumerable<SlotDTO> slotDTOs { get; set; }
+        public IEnumerable<JobPostDateDTO> jobPostDateDTOs { get; set; }
         public bool isAppliedJob { get; set; }
         public bool isWishJob { get; set; }
         public int NumberAppliedUser { get; set;}

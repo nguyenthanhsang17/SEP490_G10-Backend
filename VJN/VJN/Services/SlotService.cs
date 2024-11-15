@@ -24,6 +24,9 @@ namespace VJN.Services
         public async Task<IEnumerable<SlotDTO>> GetSlotByPostjobId(int id)
         {
             var slot = await _slotRepository.GetSlotByPostjobId(id);
+            if(slot == null||!slot.Any()||slot.Count()<=0) {
+                return null;
+            }
             var slotDTO = _mapper.Map<IEnumerable<SlotDTO>>(slot);
 
             foreach (SlotDTO dTO in slotDTO)

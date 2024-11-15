@@ -1,4 +1,6 @@
-﻿using VJN.ModelsDTO.JobPostDateDTOs;
+﻿using AutoMapper;
+using VJN.Models;
+using VJN.ModelsDTO.JobPostDateDTOs;
 using VJN.Repositories;
 
 namespace VJN.Services
@@ -6,10 +8,12 @@ namespace VJN.Services
     public class JobPostDateService : IJobPostDateService
     {
         public readonly IJobPostDateRepository _jobPostDateRepository;
+        private readonly IMapper _mapper;
 
-        public JobPostDateService(IJobPostDateRepository jobPostDateRepository)
+        public JobPostDateService(IJobPostDateRepository jobPostDateRepository, IMapper mapper)
         {
             _jobPostDateRepository = jobPostDateRepository;
+            _mapper = mapper;
         }
 
         public async Task<bool> CreateJobPostDate(IEnumerable<JobPostDateCreateDTO> jobPostDateCreateDTOs)
@@ -22,6 +26,13 @@ namespace VJN.Services
         {
             var c=await _jobPostDateRepository.DeleteAllJobPostByPOstID(postid);
             return c;
+        }
+
+        public async Task<IEnumerable<JobPostDateDTO>> GetPostJobByPostID(int postid)
+        {
+            var pj = await _jobPostDateRepository.GetPostJobByPostID(postid);
+            var pjdto = _mapper.Map<IEnumerable<JobPostDateDTO>>(pj);
+            return pjdto;   
         }
 
         public async Task<bool> UpdateJobPostDate(int postid, IEnumerable<JobPostDateForUpdateDTO> jobPostDates)

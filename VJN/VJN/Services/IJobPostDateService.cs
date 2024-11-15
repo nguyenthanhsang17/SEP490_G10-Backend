@@ -8,5 +8,7 @@ namespace VJN.Services
 
         public Task<bool> UpdateJobPostDate(int postid, IEnumerable<JobPostDateForUpdateDTO> jobPostDates);
         public Task<bool> DeleteAllJobPostDate(int postid);
+
+        public Task<IEnumerable<JobPostDateDTO>> GetPostJobByPostID(int postid);
     }
 }
