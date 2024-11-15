@@ -23,5 +23,6 @@ namespace VJN.ModelsDTO.PostJobDTOs
         public IEnumerable<SlotDTO> slotDTOs { get; set; }
         public IEnumerable<JobPostDateDTO> jobPostDateDTOs {  get; set; }
         public bool isLongterm { get; set; }
+        public int? Time { get; set; }
     }
 }
