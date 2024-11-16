@@ -1,4 +1,5 @@
 ﻿
+using VJN.ModelsDTO.ServicePriceLogDTOs;
 using VJN.Repositories;
 
 namespace VJN.Services
@@ -16,6 +17,11 @@ namespace VJN.Services
         {
             var c  = await _servicePriceLogRepository.Addition(userid, check, time);
             return c;
+        }
+
+        public Task<ServicePriceLogDTO> GetPriced(int userid)
+        {
+            return null;
         }
 
         public async Task<bool> subtraction(int userid, bool check, int time)
