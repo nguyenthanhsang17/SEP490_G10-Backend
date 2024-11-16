@@ -363,6 +363,7 @@ namespace VJN.Services
                 JobCategoryId = postjob.JobCategoryId,
                 ImagesURL = (await _postJobRepository.getAllImageJobByJobId(postjob.PostId)).ToList(),
                 ImagesURLIds = postjob.ImagePostJobs.Select(x => x.ImageId.Value).ToList(),
+                Time = postjob.Time
             };
 
             var slot = await _slotRepository.GetSlotByPostjobId(postjob.PostId);

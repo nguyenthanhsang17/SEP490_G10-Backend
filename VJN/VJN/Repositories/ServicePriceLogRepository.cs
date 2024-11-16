@@ -48,6 +48,11 @@ namespace VJN.Repositories
             }
         }
 
+        public async Task<bool> CheckIsViewAllJobSeeker(int userid)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<int> GetNumberPosts(int userid)
         {
             var sum = await _context.ServicePriceLogs.Where(sp => sp.UserId == userid).SumAsync(sp => sp.NumberPosts);
@@ -89,7 +94,7 @@ namespace VJN.Repositories
                 {
                     if (servicePriceLog.NumberPostsUrgentRecruitment >= time )
                     {
-                        servicePriceLog.NumberPostsUrgentRecruitment = servicePriceLog.NumberPostsUrgentRecruitment - 1;
+                        servicePriceLog.NumberPostsUrgentRecruitment = servicePriceLog.NumberPostsUrgentRecruitment - time;
                         _context.Entry(servicePriceLog).State = EntityState.Modified;
                         await _context.SaveChangesAsync();
                         return true;
