@@ -235,9 +235,7 @@ namespace VJN.Controllers
             var postJob = await _context.PostJobs.FindAsync(id);
             if (c)
             {
-
-                var userid = postJob.AuthorId;
-                var user = await _context.Users.FindAsync(id);
+                var user = await _context.Users.FindAsync(postJob.AuthorId);
                 string body = $"Chào {user.FullName},\n\n" +
                       "Bài đăng của bạn đã được duyệt thành công!\n\n" +
                       "Chi tiết bài đăng:\n" +
@@ -264,9 +262,7 @@ namespace VJN.Controllers
             var postJob = await _context.PostJobs.FindAsync(id);
             if (c)
             {
-
-                var userid = postJob.AuthorId;
-                var user = await _context.Users.FindAsync(id);
+                var user = await _context.Users.FindAsync(postJob.AuthorId);
                 string body = $"Chào {user.FullName},\n\n" +
                       "Bài đăng của bạn đã bị từ chối!\n\n" +
                       "Chi tiết bài đăng:\n" +
@@ -302,8 +298,7 @@ namespace VJN.Controllers
                 };
                 _context.BanLogPostJobs.Add(banlog);
                  await _context.SaveChangesAsync();
-                var userid = postJob.AuthorId;
-                var user = await _context.Users.FindAsync(id);
+                var user = await _context.Users.FindAsync(postJob.AuthorId);
                 string body = $"Chào {user.FullName},\n\n" +
                       "Bài đăng của bạn đã bị cấm !\n\n" +
                       "Chi tiết bài đăng:\n" +
