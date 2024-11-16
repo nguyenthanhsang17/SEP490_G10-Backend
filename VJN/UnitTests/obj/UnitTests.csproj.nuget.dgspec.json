@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\vieta\\OneDrive\\Máy tính\\Đồ án\\Đồ án intern 3\\SEP490_G10-Backend\\VJN\\UnitTests\\UnitTests.csproj": {}
+    "S:\\FULearning\\Fall2024\\SEP490\\SEP490_G10-Backend\\VJN\\UnitTests\\UnitTests.csproj": {}
   },
   "projects": {
-    "C:\\Users\\vieta\\OneDrive\\Máy tính\\Đồ án\\Đồ án intern 3\\SEP490_G10-Backend\\VJN\\UnitTests\\UnitTests.csproj": {
+    "S:\\FULearning\\Fall2024\\SEP490\\SEP490_G10-Backend\\VJN\\UnitTests\\UnitTests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\vieta\\OneDrive\\Máy tính\\Đồ án\\Đồ án intern 3\\SEP490_G10-Backend\\VJN\\UnitTests\\UnitTests.csproj",
+        "projectUniqueName": "S:\\FULearning\\Fall2024\\SEP490\\SEP490_G10-Backend\\VJN\\UnitTests\\UnitTests.csproj",
         "projectName": "UnitTests",
-        "projectPath": "C:\\Users\\vieta\\OneDrive\\Máy tính\\Đồ án\\Đồ án intern 3\\SEP490_G10-Backend\\VJN\\UnitTests\\UnitTests.csproj",
-        "packagesPath": "C:\\Users\\vieta\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\vieta\\OneDrive\\Máy tính\\Đồ án\\Đồ án intern 3\\SEP490_G10-Backend\\VJN\\UnitTests\\obj\\",
+        "projectPath": "S:\\FULearning\\Fall2024\\SEP490\\SEP490_G10-Backend\\VJN\\UnitTests\\UnitTests.csproj",
+        "packagesPath": "C:\\Users\\SANG\\.nuget\\packages\\",
+        "outputPath": "S:\\FULearning\\Fall2024\\SEP490\\SEP490_G10-Backend\\VJN\\UnitTests\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\vieta\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\SANG\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -22,15 +22,14 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net6.0": {
             "targetAlias": "net6.0",
             "projectReferences": {
-              "C:\\Users\\vieta\\OneDrive\\Máy tính\\Đồ án\\Đồ án intern 3\\SEP490_G10-Backend\\VJN\\VJN\\VJN.csproj": {
-                "projectPath": "C:\\Users\\vieta\\OneDrive\\Máy tính\\Đồ án\\Đồ án intern 3\\SEP490_G10-Backend\\VJN\\VJN\\VJN.csproj"
+              "S:\\FULearning\\Fall2024\\SEP490\\SEP490_G10-Backend\\VJN\\VJN\\VJN.csproj": {
+                "projectPath": "S:\\FULearning\\Fall2024\\SEP490\\SEP490_G10-Backend\\VJN\\VJN\\VJN.csproj"
               }
             }
           }
@@ -39,11 +38,6 @@
           "warnAsError": [
             "NU1605"
           ]
-        },
-        "restoreAuditProperties": {
-          "enableAudit": "true",
-          "auditLevel": "low",
-          "auditMode": "direct"
         }
       },
       "frameworks": {
@@ -87,21 +81,21 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.303\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\vieta\\OneDrive\\Máy tính\\Đồ án\\Đồ án intern 3\\SEP490_G10-Backend\\VJN\\VJN\\VJN.csproj": {
+    "S:\\FULearning\\Fall2024\\SEP490\\SEP490_G10-Backend\\VJN\\VJN\\VJN.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\vieta\\OneDrive\\Máy tính\\Đồ án\\Đồ án intern 3\\SEP490_G10-Backend\\VJN\\VJN\\VJN.csproj",
+        "projectUniqueName": "S:\\FULearning\\Fall2024\\SEP490\\SEP490_G10-Backend\\VJN\\VJN\\VJN.csproj",
         "projectName": "VJN",
-        "projectPath": "C:\\Users\\vieta\\OneDrive\\Máy tính\\Đồ án\\Đồ án intern 3\\SEP490_G10-Backend\\VJN\\VJN\\VJN.csproj",
-        "packagesPath": "C:\\Users\\vieta\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\vieta\\OneDrive\\Máy tính\\Đồ án\\Đồ án intern 3\\SEP490_G10-Backend\\VJN\\VJN\\obj\\",
+        "projectPath": "S:\\FULearning\\Fall2024\\SEP490\\SEP490_G10-Backend\\VJN\\VJN\\VJN.csproj",
+        "packagesPath": "C:\\Users\\SANG\\.nuget\\packages\\",
+        "outputPath": "S:\\FULearning\\Fall2024\\SEP490\\SEP490_G10-Backend\\VJN\\VJN\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\vieta\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\SANG\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -109,7 +103,6 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -122,11 +115,6 @@
           "warnAsError": [
             "NU1605"
           ]
-        },
-        "restoreAuditProperties": {
-          "enableAudit": "true",
-          "auditLevel": "low",
-          "auditMode": "direct"
         }
       },
       "frameworks": {
@@ -217,7 +205,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.303\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     }

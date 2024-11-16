@@ -388,6 +388,7 @@ namespace VJN.Repositories
                 postjobAfter.Status = postJob.Status;
                 postjobAfter.IsUrgentRecruitment = postJob.IsUrgentRecruitment;
                 postjobAfter.JobCategoryId = postJob.JobCategoryId;
+                postjobAfter.Time = postJob.Time;
                 
                 _context.Entry(postjobAfter).State = EntityState.Modified;
                 int i = await _context.SaveChangesAsync();
