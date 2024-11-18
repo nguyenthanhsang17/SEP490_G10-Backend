@@ -235,9 +235,7 @@ namespace VJN.Controllers
             var postJob = await _context.PostJobs.FindAsync(id);
             if (c)
             {
-
-                var userid = postJob.AuthorId;
-                var user = await _context.Users.FindAsync(userid);
+                var user = await _context.Users.FindAsync(postJob.AuthorId);
                 string body = $"Chào {user.FullName},\n\n" +
                       "Bài đăng của bạn đã được duyệt thành công!\n\n" +
                       "Chi tiết bài đăng:\n" +
@@ -264,9 +262,7 @@ namespace VJN.Controllers
             var postJob = await _context.PostJobs.FindAsync(id);
             if (c)
             {
-
-                var userid = postJob.AuthorId;
-                var user = await _context.Users.FindAsync(id);
+                var user = await _context.Users.FindAsync(postJob.AuthorId);
                 string body = $"Chào {user.FullName},\n\n" +
                       "Bài đăng của bạn đã bị từ chối!\n\n" +
                       "Chi tiết bài đăng:\n" +
@@ -290,38 +286,38 @@ namespace VJN.Controllers
         [HttpPut("Ban/{id}")]
         public async Task<IActionResult> BanPostJob(int id, string reasonBan)
         {
-            var c = await _postJobService.ChangeStatusPostJob(id, 6);
-            var postJob = await _context.PostJobs.FindAsync(id);
-            if (c)
-            {
-                var banlog = new BanLogPostJob
-                {
-                    Reason = reasonBan,
-                    PostId = id,
-                    AdminId = 1
-                };
-                _context.BanLogPostJobs.Add(banlog);
-                 await _context.SaveChangesAsync();
-                var userid = postJob.AuthorId;
-                var user = await _context.Users.FindAsync(id);
-                string body = $"Chào {user.FullName},\n\n" +
-                      "Bài đăng của bạn đã bị cấm !\n\n" +
-                      "Chi tiết bài đăng:\n" +
-                      $"Tiêu đề: {postJob.JobTitle}\n" +
-                      $"Mô tả: {postJob.JobDescription}\n" +
-                      "Trạng thái: Bị Cấm\n\n" +
-                      $"Lý do : {reasonBan}.\n\n" +
-                      "Hãy xem lại điều khoản về bài đăng.\n\n" +
-                      "Nếu có thắc mắc gì hãy liên hệ ngay với chúng tôi.\n\n" +
-                      "Trân trọng,\n" +
-                      "Đội ngũ hỗ trợ";
-                await _emailService.SendEmailAsync(user.Email, "Bài đăng của bạn đã bị cấm", body);
-                return Ok(c);
-            }
-            else
-            {
-                return BadRequest(new { Message = "Cấm bài viết thất bại " });
-            }
+            //var c = await _postJobService.ChangeStatusPostJob(id, 6);
+            //var postJob = await _context.PostJobs.FindAsync(id);
+            //if (c)
+            //{
+            //    var banlog = new BanLogPostJob
+            //    {
+            //        Reason = reasonBan,
+            //        PostId = id,
+            //        AdminId = 1
+            //    };
+            //    _context.BanLogPostJobs.Add(banlog);
+            //     await _context.SaveChangesAsync();
+            //    var user = await _context.Users.FindAsync(postJob.AuthorId);
+            //    string body = $"Chào {user.FullName},\n\n" +
+            //          "Bài đăng của bạn đã bị cấm !\n\n" +
+            //          "Chi tiết bài đăng:\n" +
+            //          $"Tiêu đề: {postJob.JobTitle}\n" +
+            //          $"Mô tả: {postJob.JobDescription}\n" +
+            //          "Trạng thái: Bị Cấm\n\n" +
+            //          $"Lý do : {reasonBan}.\n\n" +
+            //          "Hãy xem lại điều khoản về bài đăng.\n\n" +
+            //          "Nếu có thắc mắc gì hãy liên hệ ngay với chúng tôi.\n\n" +
+            //          "Trân trọng,\n" +
+            //          "Đội ngũ hỗ trợ";
+            //    await _emailService.SendEmailAsync(user.Email, "Bài đăng của bạn đã bị cấm", body);
+            //    return Ok(c);
+            //}
+            //else
+            //{
+            //    return BadRequest(new { Message = "Cấm bài viết thất bại " });
+            //}
+            return null;
         }
         [Authorize]
         [HttpPost("ReportJob")] 

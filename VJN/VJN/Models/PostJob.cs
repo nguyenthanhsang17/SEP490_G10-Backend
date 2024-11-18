@@ -8,7 +8,6 @@ namespace VJN.Models
         public PostJob()
         {
             ApplyJobs = new HashSet<ApplyJob>();
-            BanLogPostJobs = new HashSet<BanLogPostJob>();
             ImagePostJobs = new HashSet<ImagePostJob>();
             JobPostDates = new HashSet<JobPostDate>();
             Reports = new HashSet<Report>();
@@ -31,6 +30,7 @@ namespace VJN.Models
         public int? Status { get; set; }
         public int? CensorId { get; set; }
         public DateTime? CensorDate { get; set; }
+        public string? Reason { get; set; }
         public bool? IsUrgentRecruitment { get; set; }
         public int? JobCategoryId { get; set; }
         public int? Time { get; set; }
@@ -40,7 +40,6 @@ namespace VJN.Models
         public virtual JobCategory? JobCategory { get; set; }
         public virtual SalaryType? SalaryTypes { get; set; }
         public virtual ICollection<ApplyJob> ApplyJobs { get; set; }
-        public virtual ICollection<BanLogPostJob> BanLogPostJobs { get; set; }
         public virtual ICollection<ImagePostJob> ImagePostJobs { get; set; }
         public virtual ICollection<JobPostDate> JobPostDates { get; set; }
         public virtual ICollection<Report> Reports { get; set; }

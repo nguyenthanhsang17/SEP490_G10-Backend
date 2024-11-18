@@ -55,7 +55,7 @@ namespace VJN.Repositories
             {
                 sql = sql + $" and dbo.RemoveDiacritics(fl.Description)  LIKE '%'+ dbo.RemoveDiacritics(N'{s.Description}')+'%'";
             }
-            sql = sql + " GROUP BY u.User_Id, u.Email, u.Avatar, u.FullName, u.Password, u.Age, u.Phonenumber, u.CurrentJob, u.Description, u.Address,  u.Balance, u.Status, u.Gender, u.SendCodeTime, u.VerifyCode, u.Role_Id ";
+            sql = sql + " GROUP BY u.User_Id, u.Email, u.Avatar, u.FullName, u.Password, u.Age, u.Phonenumber, u.CurrentJob, u.Description, u.Address, u.Balance, u.Status, u.Gender, u.SendCodeTime, u.VerifyCode, u.Role_Id ";
             if (s.sort.HasValue && s.sort == 1) //sort ==0 ko con sỏrt == 1 
             {
                 sql = sql + " order by COUNT(aj.id) desc";
@@ -122,7 +122,7 @@ namespace VJN.Repositories
             }
 
 
-            sql = sql + " GROUP BY u.User_Id, u.Email, u.Avatar, u.FullName, u.Password, u.Age, \r\n         u.Phonenumber, u.CurrentJob, u.Description, u.Address, \r\n         u.Balance, u.Status, u.Gender, u.SendCodeTime, \r\n         u.VerifyCode, u.Role_Id";
+            sql = sql + " GROUP BY u.User_Id, u.Email, u.Avatar, u.FullName, u.Password, u.Age, u.Phonenumber, u.CurrentJob, u.Description, u.Address, u.Balance, u.Status, u.Gender, u.SendCodeTime, u.VerifyCode, u.Role_Id ";
 
             if (s.sort == 1 && string.IsNullOrEmpty(s.keyword))
             {

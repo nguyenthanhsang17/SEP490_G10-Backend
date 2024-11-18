@@ -12,10 +12,8 @@ namespace VJN.Models
 
         public int SlotId { get; set; }
         public int? PostId { get; set; }
-        public int? UserId { get; set; }
 
         public virtual PostJob? Post { get; set; }
-        public virtual User? User { get; set; }
         public virtual ICollection<JobSchedule> JobSchedules { get; set; }
     }
 }

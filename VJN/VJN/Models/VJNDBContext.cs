@@ -17,7 +17,6 @@ namespace VJN.Models
         }
 
         public virtual DbSet<ApplyJob> ApplyJobs { get; set; } = null!;
-        public virtual DbSet<BanLogPostJob> BanLogPostJobs { get; set; } = null!;
         public virtual DbSet<BanUserLog> BanUserLogs { get; set; } = null!;
         public virtual DbSet<Blog> Blogs { get; set; } = null!;
         public virtual DbSet<Chat> Chats { get; set; } = null!;
@@ -39,12 +38,14 @@ namespace VJN.Models
         public virtual DbSet<ReportMedium> ReportMedia { get; set; } = null!;
         public virtual DbSet<Role> Roles { get; set; } = null!;
         public virtual DbSet<SalaryType> SalaryTypes { get; set; } = null!;
+        public virtual DbSet<Service> Services { get; set; } = null!;
         public virtual DbSet<ServicePriceList> ServicePriceLists { get; set; } = null!;
         public virtual DbSet<ServicePriceLog> ServicePriceLogs { get; set; } = null!;
         public virtual DbSet<Slot> Slots { get; set; } = null!;
         public virtual DbSet<User> Users { get; set; } = null!;
         public virtual DbSet<WishJob> WishJobs { get; set; } = null!;
         public virtual DbSet<WorkingHour> WorkingHours { get; set; } = null!;
+
         private string getConnectionString()
         {
             string connectionString;
@@ -83,47 +84,23 @@ namespace VJN.Models
                 entity.HasOne(d => d.Cv)
                     .WithMany(p => p.ApplyJobs)
                     .HasForeignKey(d => d.CvId)
-                    .HasConstraintName("FK__ApplyJob__cv_ID__5BE2A6F2");
+                    .HasConstraintName("FK__ApplyJob__cv_ID__693CA210");
 
                 entity.HasOne(d => d.JobSeeker)
                     .WithMany(p => p.ApplyJobs)
                     .HasForeignKey(d => d.JobSeekerId)
-                    .HasConstraintName("FK__ApplyJob__JobSee__5CD6CB2B");
+                    .HasConstraintName("FK__ApplyJob__JobSee__68487DD7");
 
                 entity.HasOne(d => d.Post)
                     .WithMany(p => p.ApplyJobs)
                     .HasForeignKey(d => d.PostId)
-                    .HasConstraintName("FK__ApplyJob__Post_I__5DCAEF64");
-            });
-
-            modelBuilder.Entity<BanLogPostJob>(entity =>
-            {
-                entity.HasKey(e => e.BanLogPostJob1)
-                    .HasName("PK__BanLogPo__8801D8C9F098CBFF");
-
-                entity.ToTable("BanLogPostJob");
-
-                entity.Property(e => e.BanLogPostJob1).HasColumnName("BanLogPostJob");
-
-                entity.Property(e => e.Reason).HasColumnName("reason");
-
-                entity.Property(e => e.Status).HasColumnName("status");
-
-                entity.HasOne(d => d.Admin)
-                    .WithMany(p => p.BanLogPostJobs)
-                    .HasForeignKey(d => d.AdminId)
-                    .HasConstraintName("FK__BanLogPos__Admin__5EBF139D");
-
-                entity.HasOne(d => d.Post)
-                    .WithMany(p => p.BanLogPostJobs)
-                    .HasForeignKey(d => d.PostId)
-                    .HasConstraintName("FK__BanLogPos__PostI__5FB337D6");
+                    .HasConstraintName("FK__ApplyJob__Post_I__6754599E");
             });
 
             modelBuilder.Entity<BanUserLog>(entity =>
             {
                 entity.HasKey(e => e.BanId)
-                    .HasName("PK__BanUserL__FD9DEB4A930ABE18");
+                    .HasName("PK__BanUserL__FD9DEB4A06DC873E");
 
                 entity.ToTable("BanUserLog");
 
@@ -140,12 +117,12 @@ namespace VJN.Models
                 entity.HasOne(d => d.Admin)
                     .WithMany(p => p.BanUserLogAdmins)
                     .HasForeignKey(d => d.AdminId)
-                    .HasConstraintName("FK__BanUserLo__Admin__60A75C0F");
+                    .HasConstraintName("FK__BanUserLo__Admin__6EF57B66");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.BanUserLogUsers)
                     .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK__BanUserLo__UserI__619B8048");
+                    .HasConstraintName("FK__BanUserLo__UserI__6E01572D");
             });
 
             modelBuilder.Entity<Blog>(entity =>
@@ -167,12 +144,12 @@ namespace VJN.Models
                 entity.HasOne(d => d.Author)
                     .WithMany(p => p.Blogs)
                     .HasForeignKey(d => d.AuthorId)
-                    .HasConstraintName("FK__Blog__Author_Id__628FA481");
+                    .HasConstraintName("FK__Blog__Author_Id__6383C8BA");
 
                 entity.HasOne(d => d.ThumbnailNavigation)
                     .WithMany(p => p.Blogs)
                     .HasForeignKey(d => d.Thumbnail)
-                    .HasConstraintName("FK__Blog__thumbnail__6383C8BA");
+                    .HasConstraintName("FK__Blog__thumbnail__6477ECF3");
             });
 
             modelBuilder.Entity<Chat>(entity =>
@@ -190,12 +167,12 @@ namespace VJN.Models
                 entity.HasOne(d => d.SendFrom)
                     .WithMany(p => p.ChatSendFroms)
                     .HasForeignKey(d => d.SendFromId)
-                    .HasConstraintName("FK__Chat__SendFrom_I__656C112C");
+                    .HasConstraintName("FK__Chat__SendFrom_I__72C60C4A");
 
                 entity.HasOne(d => d.SendTo)
                     .WithMany(p => p.ChatSendTos)
                     .HasForeignKey(d => d.SendToId)
-                    .HasConstraintName("FK__Chat__SendTo_Id__66603565");
+                    .HasConstraintName("FK__Chat__SendTo_Id__73BA3083");
             });
 
             modelBuilder.Entity<CurrentJob>(entity =>
@@ -216,7 +193,7 @@ namespace VJN.Models
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Cvs)
                     .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK__Cv__UserId__6477ECF3");
+                    .HasConstraintName("FK__Cv__UserId__7C4F7684");
             });
 
             modelBuilder.Entity<FavoriteList>(entity =>
@@ -228,18 +205,18 @@ namespace VJN.Models
                 entity.HasOne(d => d.Employer)
                     .WithMany(p => p.FavoriteListEmployers)
                     .HasForeignKey(d => d.EmployerId)
-                    .HasConstraintName("FK__Favorite___Emplo__6754599E");
+                    .HasConstraintName("FK__Favorite___Emplo__7F2BE32F");
 
                 entity.HasOne(d => d.JobSeeker)
                     .WithMany(p => p.FavoriteListJobSeekers)
                     .HasForeignKey(d => d.JobSeekerId)
-                    .HasConstraintName("FK__Favorite___JobSe__68487DD7");
+                    .HasConstraintName("FK__Favorite___JobSe__00200768");
             });
 
             modelBuilder.Entity<ImagePostJob>(entity =>
             {
                 entity.HasKey(e => e.ImageJobId)
-                    .HasName("PK__ImagePos__94211786A2ED28C2");
+                    .HasName("PK__ImagePos__942117869B3201AD");
 
                 entity.ToTable("ImagePostJob");
 
@@ -252,12 +229,12 @@ namespace VJN.Models
                 entity.HasOne(d => d.Image)
                     .WithMany(p => p.ImagePostJobs)
                     .HasForeignKey(d => d.ImageId)
-                    .HasConstraintName("FK__ImagePost__Image__693CA210");
+                    .HasConstraintName("FK__ImagePost__Image__66603565");
 
                 entity.HasOne(d => d.Post)
                     .WithMany(p => p.ImagePostJobs)
                     .HasForeignKey(d => d.PostId)
-                    .HasConstraintName("FK__ImagePost__Post___6A30C649");
+                    .HasConstraintName("FK__ImagePost__Post___656C112C");
             });
 
             modelBuilder.Entity<ItemOfCv>(entity =>
@@ -269,7 +246,7 @@ namespace VJN.Models
                 entity.HasOne(d => d.Cv)
                     .WithMany(p => p.ItemOfCvs)
                     .HasForeignKey(d => d.CvId)
-                    .HasConstraintName("FK__ItemOfCv__CvId__6B24EA82");
+                    .HasConstraintName("FK__ItemOfCv__CvId__7D439ABD");
             });
 
             modelBuilder.Entity<JobCategory>(entity =>
@@ -284,7 +261,7 @@ namespace VJN.Models
             modelBuilder.Entity<JobPostDate>(entity =>
             {
                 entity.HasKey(e => e.EventDateId)
-                    .HasName("PK__JobPostD__C24CACCE0FC7AE4E");
+                    .HasName("PK__JobPostD__C24CACCE0DFF3E05");
 
                 entity.Property(e => e.EventDateId).HasColumnName("EventDate_Id");
 
@@ -295,13 +272,13 @@ namespace VJN.Models
                 entity.HasOne(d => d.Post)
                     .WithMany(p => p.JobPostDates)
                     .HasForeignKey(d => d.PostId)
-                    .HasConstraintName("FK__JobPostDa__Post___6C190EBB");
+                    .HasConstraintName("FK__JobPostDa__Post___7E37BEF6");
             });
 
             modelBuilder.Entity<JobSchedule>(entity =>
             {
                 entity.HasKey(e => e.ScheduleId)
-                    .HasName("PK__JobSched__8C4D3C5B82A444D7");
+                    .HasName("PK__JobSched__8C4D3C5B859F491C");
 
                 entity.ToTable("JobSchedule");
 
@@ -310,7 +287,7 @@ namespace VJN.Models
                 entity.HasOne(d => d.Slot)
                     .WithMany(p => p.JobSchedules)
                     .HasForeignKey(d => d.SlotId)
-                    .HasConstraintName("FK__JobSchedu__SlotI__6D0D32F4");
+                    .HasConstraintName("FK__JobSchedu__SlotI__778AC167");
             });
 
             modelBuilder.Entity<Log>(entity =>
@@ -332,7 +309,7 @@ namespace VJN.Models
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Logs)
                     .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK__log__User_Id__6E01572D");
+                    .HasConstraintName("FK__log__User_Id__7B5B524B");
             });
 
             modelBuilder.Entity<MediaItem>(entity =>
@@ -345,7 +322,7 @@ namespace VJN.Models
             modelBuilder.Entity<Notification>(entity =>
             {
                 entity.HasKey(e => e.NotifycationId)
-                    .HasName("PK__Notifica__391E35C893919F5B");
+                    .HasName("PK__Notifica__391E35C86D22170F");
 
                 entity.ToTable("Notification");
 
@@ -358,13 +335,13 @@ namespace VJN.Models
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Notifications)
                     .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK__Notificat__User___6EF57B66");
+                    .HasConstraintName("FK__Notificat__User___7A672E12");
             });
 
             modelBuilder.Entity<PostJob>(entity =>
             {
                 entity.HasKey(e => e.PostId)
-                    .HasName("PK__PostJob__5875F7AD517FE5B4");
+                    .HasName("PK__PostJob__5875F7ADF01ABFEA");
 
                 entity.ToTable("PostJob");
 
@@ -401,22 +378,22 @@ namespace VJN.Models
                 entity.HasOne(d => d.Author)
                     .WithMany(p => p.PostJobAuthors)
                     .HasForeignKey(d => d.AuthorId)
-                    .HasConstraintName("FK__PostJob__AuthorI__6FE99F9F");
+                    .HasConstraintName("FK__PostJob__AuthorI__5EBF139D");
 
                 entity.HasOne(d => d.Censor)
                     .WithMany(p => p.PostJobCensors)
                     .HasForeignKey(d => d.CensorId)
-                    .HasConstraintName("FK__PostJob__censor___70DDC3D8");
+                    .HasConstraintName("FK__PostJob__censor___5FB337D6");
 
                 entity.HasOne(d => d.JobCategory)
                     .WithMany(p => p.PostJobs)
                     .HasForeignKey(d => d.JobCategoryId)
-                    .HasConstraintName("FK__PostJob__JobCate__71D1E811");
+                    .HasConstraintName("FK__PostJob__JobCate__60A75C0F");
 
                 entity.HasOne(d => d.SalaryTypes)
                     .WithMany(p => p.PostJobs)
                     .HasForeignKey(d => d.SalaryTypesId)
-                    .HasConstraintName("FK__PostJob__salary___72C60C4A");
+                    .HasConstraintName("FK__PostJob__salary___5DCAEF64");
             });
 
             modelBuilder.Entity<RegisterEmployer>(entity =>
@@ -434,13 +411,13 @@ namespace VJN.Models
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.RegisterEmployers)
                     .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK__RegisterE__User___73BA3083");
+                    .HasConstraintName("FK__RegisterE__User___6FE99F9F");
             });
 
             modelBuilder.Entity<RegisterEmployerMedium>(entity =>
             {
                 entity.HasKey(e => e.RegisterEmployerMedia)
-                    .HasName("PK__Register__AA6A3626D85004FD");
+                    .HasName("PK__Register__AA6A36269A834539");
 
                 entity.Property(e => e.MediaId).HasColumnName("Media_Id");
 
@@ -449,12 +426,12 @@ namespace VJN.Models
                 entity.HasOne(d => d.Media)
                     .WithMany(p => p.RegisterEmployerMedia)
                     .HasForeignKey(d => d.MediaId)
-                    .HasConstraintName("FK__RegisterE__Media__74AE54BC");
+                    .HasConstraintName("FK__RegisterE__Media__71D1E811");
 
                 entity.HasOne(d => d.RegisterEmployer)
                     .WithMany(p => p.RegisterEmployerMedia)
                     .HasForeignKey(d => d.RegisterEmployerId)
-                    .HasConstraintName("FK__RegisterE__Regis__75A278F5");
+                    .HasConstraintName("FK__RegisterE__Regis__70DDC3D8");
             });
 
             modelBuilder.Entity<Report>(entity =>
@@ -472,18 +449,18 @@ namespace VJN.Models
                 entity.HasOne(d => d.JobSeeker)
                     .WithMany(p => p.Reports)
                     .HasForeignKey(d => d.JobSeekerId)
-                    .HasConstraintName("FK__Report__JobSeeke__76969D2E");
+                    .HasConstraintName("FK__Report__JobSeeke__6A30C649");
 
                 entity.HasOne(d => d.Post)
                     .WithMany(p => p.Reports)
                     .HasForeignKey(d => d.PostId)
-                    .HasConstraintName("FK__Report__Post_Id__778AC167");
+                    .HasConstraintName("FK__Report__Post_Id__6B24EA82");
             });
 
             modelBuilder.Entity<ReportMedium>(entity =>
             {
                 entity.HasKey(e => e.ReportImageId)
-                    .HasName("PK__ReportMe__585F554B1D99ED18");
+                    .HasName("PK__ReportMe__585F554BFE4668E1");
 
                 entity.Property(e => e.ReportImageId).HasColumnName("ReportImage_Id");
 
@@ -494,12 +471,12 @@ namespace VJN.Models
                 entity.HasOne(d => d.Image)
                     .WithMany(p => p.ReportMedia)
                     .HasForeignKey(d => d.ImageId)
-                    .HasConstraintName("FK__ReportMed__Image__787EE5A0");
+                    .HasConstraintName("FK__ReportMed__Image__6D0D32F4");
 
                 entity.HasOne(d => d.Report)
                     .WithMany(p => p.ReportMedia)
                     .HasForeignKey(d => d.ReportId)
-                    .HasConstraintName("FK__ReportMed__Repor__797309D9");
+                    .HasConstraintName("FK__ReportMed__Repor__6C190EBB");
             });
 
             modelBuilder.Entity<Role>(entity =>
@@ -514,7 +491,7 @@ namespace VJN.Models
             modelBuilder.Entity<SalaryType>(entity =>
             {
                 entity.HasKey(e => e.SalaryTypesId)
-                    .HasName("PK__salary_t__0CA27F7857E73B78");
+                    .HasName("PK__salary_t__0CA27F78210D261C");
 
                 entity.ToTable("salary_types");
 
@@ -525,10 +502,31 @@ namespace VJN.Models
                     .HasColumnName("type_name");
             });
 
+            modelBuilder.Entity<Service>(entity =>
+            {
+                entity.ToTable("Service");
+
+                entity.HasIndex(e => e.UserId, "UQ__Service__206D917101B604E3")
+                    .IsUnique();
+
+                entity.Property(e => e.ServiceId).HasColumnName("Service_id");
+
+                entity.Property(e => e.ExpirationDate)
+                    .HasColumnType("datetime")
+                    .HasColumnName("Expiration_Date");
+
+                entity.Property(e => e.UserId).HasColumnName("User_Id");
+
+                entity.HasOne(d => d.User)
+                    .WithOne(p => p.Service)
+                    .HasForeignKey<Service>(d => d.UserId)
+                    .HasConstraintName("FK__Service__User_Id__76969D2E");
+            });
+
             modelBuilder.Entity<ServicePriceList>(entity =>
             {
                 entity.HasKey(e => e.ServicePriceId)
-                    .HasName("PK__Service___59C7673B9CED2379");
+                    .HasName("PK__Service___59C7673BBF563471");
 
                 entity.ToTable("Service_price_list");
 
@@ -545,27 +543,23 @@ namespace VJN.Models
 
                 entity.Property(e => e.ServicePriceLogId).HasColumnName("Service_price_Log_Id");
 
-                entity.Property(e => e.DurationsMonth).HasColumnName("durationsMonth");
-
                 entity.Property(e => e.RegisterDate)
                     .HasColumnType("datetime")
                     .HasColumnName("Register_Date");
 
                 entity.Property(e => e.ServicePriceId).HasColumnName("Service_price_id");
 
-                entity.Property(e => e.Status).HasColumnName("status");
-
                 entity.Property(e => e.UserId).HasColumnName("User_Id");
 
                 entity.HasOne(d => d.ServicePrice)
                     .WithMany(p => p.ServicePriceLogs)
                     .HasForeignKey(d => d.ServicePriceId)
-                    .HasConstraintName("FK__Service_p__Servi__7A672E12");
+                    .HasConstraintName("FK__Service_p__Servi__75A278F5");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.ServicePriceLogs)
                     .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK__Service_p__User___7B5B524B");
+                    .HasConstraintName("FK__Service_p__User___74AE54BC");
             });
 
             modelBuilder.Entity<Slot>(entity =>
@@ -576,17 +570,10 @@ namespace VJN.Models
 
                 entity.Property(e => e.PostId).HasColumnName("Post_Id");
 
-                entity.Property(e => e.UserId).HasColumnName("User_Id");
-
                 entity.HasOne(d => d.Post)
                     .WithMany(p => p.Slots)
                     .HasForeignKey(d => d.PostId)
-                    .HasConstraintName("FK__Slot__Post_Id__7C4F7684");
-
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.Slots)
-                    .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("FK__Slot__User_Id__7D439ABD");
+                    .HasConstraintName("FK__Slot__Post_Id__797309D9");
             });
 
             modelBuilder.Entity<User>(entity =>
@@ -620,17 +607,17 @@ namespace VJN.Models
                 entity.HasOne(d => d.AvatarNavigation)
                     .WithMany(p => p.Users)
                     .HasForeignKey(d => d.Avatar)
-                    .HasConstraintName("FK__User__Avatar__7E37BEF6");
+                    .HasConstraintName("FK__User__Avatar__5AEE82B9");
 
                 entity.HasOne(d => d.CurrentJobNavigation)
                     .WithMany(p => p.Users)
                     .HasForeignKey(d => d.CurrentJob)
-                    .HasConstraintName("FK__User__CurrentJob__7F2BE32F");
+                    .HasConstraintName("FK__User__CurrentJob__5BE2A6F2");
 
                 entity.HasOne(d => d.Role)
                     .WithMany(p => p.Users)
                     .HasForeignKey(d => d.RoleId)
-                    .HasConstraintName("FK__User__Role_Id__00200768");
+                    .HasConstraintName("FK__User__Role_Id__5CD6CB2B");
             });
 
             modelBuilder.Entity<WishJob>(entity =>
@@ -646,12 +633,12 @@ namespace VJN.Models
                 entity.HasOne(d => d.JobSeeker)
                     .WithMany(p => p.WishJobs)
                     .HasForeignKey(d => d.JobSeekerId)
-                    .HasConstraintName("FK__WishJob__JobSeek__01142BA1");
+                    .HasConstraintName("FK__WishJob__JobSeek__628FA481");
 
                 entity.HasOne(d => d.PostJob)
                     .WithMany(p => p.WishJobs)
                     .HasForeignKey(d => d.PostJobId)
-                    .HasConstraintName("FK__WishJob__PostJob__02084FDA");
+                    .HasConstraintName("FK__WishJob__PostJob__619B8048");
             });
 
             modelBuilder.Entity<WorkingHour>(entity =>
@@ -665,7 +652,7 @@ namespace VJN.Models
                 entity.HasOne(d => d.Schedule)
                     .WithMany(p => p.WorkingHours)
                     .HasForeignKey(d => d.ScheduleId)
-                    .HasConstraintName("FK__WorkingHo__Sched__02FC7413");
+                    .HasConstraintName("FK__WorkingHo__Sched__787EE5A0");
             });
 
             OnModelCreatingPartial(modelBuilder);

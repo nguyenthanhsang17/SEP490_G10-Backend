@@ -10,6 +10,7 @@ namespace VJN.Models
         public int? JobSeekerId { get; set; }
         public int? CvId { get; set; }
         public DateTime? ApplyDate { get; set; }
+        public string? Reason { get; set; }
         public int? Status { get; set; }
 
         public virtual Cv? Cv { get; set; }

@@ -73,9 +73,12 @@ namespace VJN.Controllers
             {
                 return Unauthorized(new { Message = "Tài khoản của bạn hiện chưa được xác thực." });
             }
-
+            bool haveProfile = false;
+            if (st.Age.HasValue)
+            {
+                haveProfile = true;
+            }
             var token = _jwtTokenGenerator.GenerateJwtToken(st);
-
             return Ok(new
             {
                 Message = "Đăng nhập thành công",
@@ -83,7 +86,8 @@ namespace VJN.Controllers
                 st.FullName,
                 st.RoleId,
                 st.Status,
-                st.AvatarURL
+                st.AvatarURL,
+                haveProfile,
             });
         }
 
