@@ -159,6 +159,10 @@ namespace VJN
             builder.Services.AddScoped<IReportMediaServices, ReportMediaServices>();
             builder.Services.AddScoped<IServicePriceLogService, ServicePriceLogService>();
 
+            builder.Services.AddScoped<IEmployerService, EmployerService>();
+            builder.Services.AddScoped<IServicePriceListRepository, ServicePriceListRepository>();
+            builder.Services.AddScoped<IServicePriceListService, ServicePriceListService>();
+
             // Register services and repositories
             var app = builder.Build();
             // Configure the HTTP request pipeline.

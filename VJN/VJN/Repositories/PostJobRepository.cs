@@ -396,5 +396,14 @@ namespace VJN.Repositories
             }
             return 0;
         }
+
+        public async Task<IEnumerable<PostJob>> GetPostJobBuAuthorid(int authorid)
+        {
+            
+            var postjob = await _context.PostJobs.Where(pj=>pj.AuthorId == authorid&&pj.Status==2)
+                .Include(j => j.Author).Include(j => j.JobCategory).Include(j => j.SalaryTypes).Include(j => j.ImagePostJobs).ThenInclude(img => img.Image).Include(j => j.ApplyJobs).Include(j => j.WishJobs).ToListAsync();
+
+            return postjob;
+        }
     }
 }
