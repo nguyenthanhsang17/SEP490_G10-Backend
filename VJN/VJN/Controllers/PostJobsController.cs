@@ -237,7 +237,7 @@ namespace VJN.Controllers
             {
 
                 var userid = postJob.AuthorId;
-                var user = await _context.Users.FindAsync(id);
+                var user = await _context.Users.FindAsync(userid);
                 string body = $"Chào {user.FullName},\n\n" +
                       "Bài đăng của bạn đã được duyệt thành công!\n\n" +
                       "Chi tiết bài đăng:\n" +
