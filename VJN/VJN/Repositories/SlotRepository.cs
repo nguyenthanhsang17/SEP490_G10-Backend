@@ -41,7 +41,6 @@ namespace VJN.Repositories
                 var slot = new Slot
                 {
                     PostId = slotDTO.PostId.Value,
-                    UserId = null,
                 };
 
                 _context.Slots.Add(slot);
@@ -93,7 +92,6 @@ namespace VJN.Repositories
                 var slot = new Slot
                 {
                     PostId = postid,
-                    UserId = null,
                 };
 
                 _context.Slots.Add(slot);
