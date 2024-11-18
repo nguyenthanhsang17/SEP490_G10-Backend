@@ -92,7 +92,7 @@ namespace VJN.Repositories
             }
             if (s.SortNumberApplied != 0)
             {
-                sql = sql + " p.Post_Id, p.JobTitle, p.JobDescription, p.salary_types_id, p.Salary, p.NumberPeople, p.Address, p.latitude, p.longitude, p.AuthorId, p.CreateDate, p.ExpirationDate, p.Status, p.censor_Id, p.censor_Date, p.Reason, p.IsUrgentRecruitment, p.JobCategory_Id, p.time ";
+                sql = sql + " GROUP BY p.Post_Id, p.JobTitle, p.JobDescription, p.salary_types_id, p.Salary, p.NumberPeople, p.Address, p.latitude, p.longitude, p.AuthorId, p.CreateDate, p.ExpirationDate, p.Status, p.censor_Id, p.censor_Date, p.Reason, p.IsUrgentRecruitment, p.JobCategory_Id, p.time ";
                 if (s.SortNumberApplied > 0)
                 {
                     sql = sql + " order by COUNT(aj.id) ";

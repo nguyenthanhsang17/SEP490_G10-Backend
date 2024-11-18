@@ -20,5 +20,7 @@
         public string? VerifyCode { get; set; }
         public int? RoleId { get; set; }
         public string RoleName { get; set; }
+        public int? RegisterEmployerStatus {  get; set; }
+        public string? Reason {  get; set; } 
     }
 }

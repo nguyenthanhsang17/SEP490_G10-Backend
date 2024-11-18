@@ -49,5 +49,7 @@ namespace UnitTests
             var id = await jobSeekerRespository.GetAllJobSeeker(s, 2);
             Assert.AreEqual(1, id.Count(), "result ");
         }
+
+        
     }
 }
