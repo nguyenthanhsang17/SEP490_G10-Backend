@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore.Internal;
 using VJN.Authenticate;
 using VJN.Models;
 using VJN.ModelsDTO.UserDTOs;
@@ -10,11 +11,13 @@ namespace VJN.Services
     public class UserService : IUserService
     {
         public readonly IUserRepository _userRepository;
+        public readonly IRegisterEmployerRepository _registerEmployer;
         private readonly IMapper _mapper;
 
-        public UserService(IUserRepository userRepository, IMapper mapper) {
+        public UserService(IUserRepository userRepository, IMapper mapper, IRegisterEmployerRepository registerEmployer) {
             _userRepository = userRepository;
             _mapper = mapper;
+            _registerEmployer = registerEmployer;
         }
 
         public async Task<int> ChangePassword(string OldPassword, string NewPassword, string ConfirmPassword, int userid)
@@ -82,6 +85,12 @@ namespace VJN.Services
         {
             var user = await _userRepository.findById(id);
             var userdto = _mapper.Map<UserDTO>(user);
+            var register = await _registerEmployer.GetRegisterEmployerByUserID(id);
+            if (register != null)
+            {
+                userdto.RegisterEmployerStatus = register.Status;
+                userdto.Reason = register.Reason;
+            }
             return userdto;
         }
 

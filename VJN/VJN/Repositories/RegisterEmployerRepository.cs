@@ -18,11 +18,12 @@ namespace VJN.Repositories
         {
 
             var c = await _context.RegisterEmployers.Where(re=>re.UserId==employer.UserId&&re.Status==0).AnyAsync();
-            var c1 = await _context.RegisterEmployers.Where(re => re.UserId == employer.UserId && re.Status == 2).AnyAsync();
+            var c1 = await _context.RegisterEmployers.Where(re => re.UserId == employer.UserId && re.Status == 1).AnyAsync();
+            var c2 = await _context.Users.Where(re => re.UserId == employer.UserId).Where(u => u.RoleId == 2).AnyAsync();
             if (c) {
                 return -1;
             }
-            else if(c1)
+            else if(c1||c2)
             {
                 return -2;
             }
@@ -49,12 +50,12 @@ namespace VJN.Repositories
             var _user = await _context.Users.FindAsync(re.UserId);
             if (_user != null)
             {
-                _user.RoleId = 3;
+                _user.RoleId = 2;
                 _context.Users.Update(_user);
                 await _context.SaveChangesAsync();
                 return true;
             }
-
+             
             // Return false if user was not found
             return false;
         }
@@ -100,6 +101,12 @@ namespace VJN.Repositories
                 .Include(rg => rg.RegisterEmployerMedia).ThenInclude(rgm => rgm.Media)
                 .Include(rg => rg.User).ThenInclude(u => u.AvatarNavigation)
                 .FirstOrDefaultAsync(rg => rg.RegisterEmployerId == id);
+        }
+
+        public async Task<RegisterEmployer> GetRegisterEmployerByUserID(int id)
+        {
+            var register = await _context.RegisterEmployers.OrderByDescending(re=>re.CreateDate).Where(re=>re.UserId==id).FirstOrDefaultAsync();
+            return register;
         }
     }
 }

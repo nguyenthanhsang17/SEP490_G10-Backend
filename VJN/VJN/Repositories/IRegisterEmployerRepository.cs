@@ -9,5 +9,6 @@ namespace VJN.Repositories
         public Task<RegisterEmployer> getRegisterEmployerByid(int id);
         public Task<bool> AcceptRegisterEmployer(int status);
         public Task<bool> RejectRegisterEmployer(int status, string reason);
+        public Task<RegisterEmployer> GetRegisterEmployerByUserID(int id);
     }
 }
