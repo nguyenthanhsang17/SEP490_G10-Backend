@@ -92,7 +92,7 @@ namespace VJN.Repositories
             }
             if (s.SortNumberApplied != 0)
             {
-                sql = sql + " GROUP BY p.Post_Id, p.JobTitle, p.JobDescription, p.salary_types_id, p.Salary, p.NumberPeople, p.Address, p.latitude, p.longitude, p.AuthorId, p.CreateDate, p.ExpirationDate, p.Status, p.censor_Id, p.censor_Date, p.IsUrgentRecruitment, p.JobCategory_Id, p.time ";
+                sql = sql + " p.Post_Id, p.JobTitle, p.JobDescription, p.salary_types_id, p.Salary, p.NumberPeople, p.Address, p.latitude, p.longitude, p.AuthorId, p.CreateDate, p.ExpirationDate, p.Status, p.censor_Id, p.censor_Date, p.Reason, p.IsUrgentRecruitment, p.JobCategory_Id, p.time ";
                 if (s.SortNumberApplied > 0)
                 {
                     sql = sql + " order by COUNT(aj.id) ";
@@ -255,7 +255,7 @@ namespace VJN.Repositories
             }
             if (s.SortNumberApplied != 0)
             {
-                sql = sql + " GROUP BY p.Post_Id, p.JobTitle, p.JobDescription, p.salary_types_id, p.Salary, p.NumberPeople, p.Address, p.latitude, p.longitude, p.AuthorId, p.CreateDate, p.ExpirationDate, p.Status, p.censor_Id, p.censor_Date, p.IsUrgentRecruitment, p.JobCategory_Id, p.time ";
+                sql = sql + " GROUP BY p.Post_Id, p.JobTitle, p.JobDescription, p.salary_types_id, p.Salary, p.NumberPeople, p.Address, p.latitude, p.longitude, p.AuthorId, p.CreateDate, p.ExpirationDate, p.Status, p.censor_Id, p.censor_Date, p.Reason, p.IsUrgentRecruitment, p.JobCategory_Id, p.time ";
                 if (s.SortNumberApplied > 0)
                 {
                     sql = sql + " order by COUNT(aj.id) ";
@@ -316,7 +316,7 @@ namespace VJN.Repositories
 
         public async Task<IEnumerable<int>> getJobIdInWishList(PostJobSearchWishList s, int userid)
         {
-            string sql = $"select p.* from WishJob wj join PostJob p on wj.PostJob_Id = p.Post_Id and wj.JobSeeker_Id = {userid}\r\nleft join ApplyJob aj on aj.Post_Id = p.Post_Id\r\ngroup by  p.Post_Id, p.JobTitle, p.JobDescription, p.salary_types_id, p.Salary, p.NumberPeople, p.Address, p.latitude, p.longitude, p.AuthorId, p.CreateDate, p.ExpirationDate, p.Status, p.censor_Id, p.censor_Date, p.IsUrgentRecruitment, p.JobCategory_Id, p.time ";
+            string sql = $"select p.* from WishJob wj join PostJob p on wj.PostJob_Id = p.Post_Id and wj.JobSeeker_Id = {userid}\r\nleft join ApplyJob aj on aj.Post_Id = p.Post_Id\r\ngroup by p.Post_Id, p.JobTitle, p.JobDescription, p.salary_types_id, p.Salary, p.NumberPeople, p.Address, p.latitude, p.longitude, p.AuthorId, p.CreateDate, p.ExpirationDate, p.Status, p.censor_Id, p.censor_Date, p.Reason, p.IsUrgentRecruitment, p.JobCategory_Id, p.time ";
 
             if (s.sort == 0)/// uu tien xong viec pho bien
             {
