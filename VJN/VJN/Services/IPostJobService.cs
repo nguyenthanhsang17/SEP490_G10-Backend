@@ -24,6 +24,8 @@ namespace VJN.Services
         public Task<int> ReportJob(ReportCreateDTO report, int userid);
         public Task<PostJobDetailForUpdate> GetJobByIDForUpdate(int id, int userid);
         public Task<int> UpdatePostJob(PostJobDetailUpdate post);
+        public Task<PagedResult<JobSearchResult>> ViewRecommendedJobs(int userid, int pagenumber, decimal? userLatitude, decimal? userLongitude);
+        public Task<PostJobDetailForUpdate> GetJobByIDForReCreate(int id, int userid);
 
     }
 }

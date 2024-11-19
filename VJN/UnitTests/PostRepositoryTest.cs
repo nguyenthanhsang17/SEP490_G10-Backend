@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.CodeAnalysis.Recommendations;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -36,6 +37,18 @@ namespace UnitTests
             };
             var user = await repository.SearchJobPopular(c);
             Assert.AreEqual(user.Count(), 1);
+        }
+
+        [Test]
+        public async Task TestView_Recommended_Jobs()
+        {
+            
+            var ids = await repository.ViewRecommendedJobs(1, null, null);
+            foreach (var id in ids)
+            {
+                Console.WriteLine(id.ToString());
+            }
+            Assert.AreEqual(ids.Count(), 4);
         }
     }
 }

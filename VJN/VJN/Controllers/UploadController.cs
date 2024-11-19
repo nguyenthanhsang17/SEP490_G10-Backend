@@ -225,7 +225,65 @@ namespace VJN.Controllers
                 var c = await _imagepostJobService.DeleteImagePost(differentNumbers.ToList(), imageupdate.postid.Value);
             }
 
-            
+
+
+            if (imageupdate.files == null || !imageupdate.files.Any())
+            {
+                return Ok(true);
+            }
+            else
+            {
+                var mediaIds = new List<int>();
+
+                var uploadTasks = imageupdate.files.Select(async file =>
+                {
+                    if (file.Length == 0)
+                        throw new ArgumentException("One or more files are empty.");
+
+                    using (var memoryStream = new System.IO.MemoryStream())
+                    {
+                        await file.CopyToAsync(memoryStream);
+                        byte[] fileBytes = memoryStream.ToArray();
+
+                        FileCreateRequest uploadRequest = new FileCreateRequest
+                        {
+                            file = fileBytes,
+                            fileName = file.FileName
+                        };
+
+                        Result result = _imagekitClient.Upload(uploadRequest);
+                        var media = new MediaItemDTO
+                        {
+                            Url = result.url,
+                            Status = true
+                        };
+                        return await _mediaItemService.CreateMediaItem(media);
+                    }
+                });
+
+                try
+                {
+                    mediaIds = (await Task.WhenAll(uploadTasks)).ToList();
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode((int)HttpStatusCode.InternalServerError, $"Upload failed: {ex.Message}");
+                }
+                Console.WriteLine(mediaIds.Count());
+                var result = await _imagepostJobService.createImagePostJob(imageupdate.postid.Value, mediaIds);
+                return Ok(result);
+            }
+
+        }
+
+        [HttpPut("UpdateImagePostjobReuse")]
+        public async Task<ActionResult<bool>> UpdateImagePostjobReuse([FromForm] ImagePostJobForUpdateDTO imageupdate)
+        {
+            Console.WriteLine("====================================================================");
+            if (imageupdate.imageIds != null || imageupdate.imageIds.Count() != 0)
+            {
+                await _imagepostJobService.createImagePostJob(imageupdate.postid.Value, imageupdate.imageIds);
+            }
 
             if (imageupdate.files == null || !imageupdate.files.Any())
             {
