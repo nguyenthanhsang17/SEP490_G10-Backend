@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using VJN.ModelsDTO.BlogDTOs;
+using VJN.Paging;
 using VJN.Repositories;
 
 namespace VJN.Services
@@ -8,6 +9,7 @@ namespace VJN.Services
     {
         private readonly IBlogRepository _blogRepository;
         private IMapper _mapper;
+        int pagesize = 10;
 
         public BlogService(IBlogRepository blogRepository, IMapper mapper)
         {
@@ -15,11 +17,12 @@ namespace VJN.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<BlogDTO>> GetAllBlog()
+        public async Task<PagedResult<BlogDTO>> GetAllBlog(int pagenumber)
         {
             var blog = await _blogRepository.GetAllBlog();    
             var blogdto =_mapper.Map<IEnumerable< BlogDTO>>(blog);
-            return blogdto;
+            var blg = PaginationHelper.GetPaged<BlogDTO>(blogdto, pagenumber, pagesize);
+            return blg;
         }
 
         public async Task<BlogDTO> GetBlogDetail(int id)

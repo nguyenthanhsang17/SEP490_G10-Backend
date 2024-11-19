@@ -1,5 +1,7 @@
-﻿using VJN.Models;
+﻿using Microsoft.CodeAnalysis.Recommendations;
+using VJN.Models;
 using VJN.ModelsDTO.PostJobDTOs;
+using VJN.Paging;
 
 namespace VJN.Repositories
 {
@@ -34,5 +36,10 @@ namespace VJN.Repositories
         public Task<bool> CheckJobByIDAndUserid(int id, int userid);
         public Task<int> UpdatePostJob(PostJob postJob);
         public Task<IEnumerable<PostJob>> GetPostJobBuAuthorid(int authorid);
+
+        public Task<IEnumerable<int>> ViewRecommendedJobs(int userid, decimal? userLatitude, decimal? userLongitude);
+
+        public Task<PostJob> GetJobByIDForReCreate(int id);
+        public Task<bool> CheckJobByIDAndUseridForCreate(int id, int userid);
     }
 }

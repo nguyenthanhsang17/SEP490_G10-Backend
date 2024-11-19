@@ -403,5 +403,96 @@ namespace VJN.Services
             var c = await _postJobRepository.UpdatePostJob(postjob);
             return c;
         }
+
+        public async Task<PagedResult<JobSearchResult>> ViewRecommendedJobs(int userid, int pagenumber, decimal? userLatitude, decimal? userLongitude)
+        {
+
+            int numperpaged_size = 3;
+            var ids = await _postJobRepository.ViewRecommendedJobs(userid, userLatitude, userLongitude);
+            var idsPaged = PaginationHelper.GetPaged<int>(ids, pagenumber, numperpaged_size);
+            var jobs = await _postJobRepository.jobSearchResults(idsPaged.Items);
+
+            var jobSearchResultTasks = jobs.Select(async j => new JobSearchResult
+            {
+                PostId = j.PostId,
+                thumbnail = j.ImagePostJobs.Count() == 0 || j.ImagePostJobs == null ? "" : j.ImagePostJobs.ElementAt(0).Image.Url,
+                JobTitle = j.JobTitle,
+                Salary = j.Salary,
+                NumberPeople = j.NumberPeople,
+                Address = j.Address,
+                Latitude = j.Latitude,
+                Longitude = j.Longitude,
+                distance = CalculateDistance(userLatitude, userLongitude, j.Latitude, j.Longitude),
+                AuthorName = j.Author.FullName,
+                SalaryTypeName = j.SalaryTypes.TypeName,
+                JobCategoryName = j.JobCategory.JobCategoryName,
+                ExpirationDate = j.ExpirationDate,
+                IsUrgentRecruitment = j.IsUrgentRecruitment,
+                NumberOfApplicants = j.ApplyJobs.Count(),
+                isWishlist = j.WishJobs.Where(wj => userid != 0 && wj.JobSeekerId == userid && wj.PostJobId == j.PostId).Count(),
+            }).ToList();
+
+            var jobSearchResult = await Task.WhenAll(jobSearchResultTasks);
+            var page = new PagedResult<JobSearchResult>(jobSearchResult, ids.Count(), pagenumber, numperpaged_size);
+            return page;
+        }
+
+        public async Task<PostJobDetailForUpdate> GetJobByIDForReCreate(int id, int userid)
+        {
+            var check = await _postJobRepository.CheckJobByIDAndUseridForCreate(id, userid);
+            if (check == false)
+            {
+                return null;
+            }
+            var postjob = await _postJobRepository.GetJobByIDForReCreate(id);
+            var postjobdetailUpdate = new PostJobDetailForUpdate()
+            {
+                PostId = postjob.PostId,
+                JobTitle = postjob.JobTitle,
+                JobDescription = postjob.JobDescription,
+                SalaryTypesId = postjob.SalaryTypesId,
+                Salary = postjob.Salary,
+                NumberPeople = postjob.NumberPeople,
+                Address = postjob.Address,
+                Latitude = postjob.Latitude,
+                Longitude = postjob.Longitude,
+                Status = postjob.Status,
+                IsUrgentRecruitment = postjob.IsUrgentRecruitment,
+                JobCategoryId = postjob.JobCategoryId,
+                ImagesURL = (await _postJobRepository.getAllImageJobByJobId(postjob.PostId)).ToList(),
+                ImagesURLIds = postjob.ImagePostJobs.Select(x => x.ImageId.Value).ToList(),
+                Time = postjob.Time
+            };
+
+            var slot = await _slotRepository.GetSlotByPostjobId(postjob.PostId);
+            if (slot != null && slot.Count() > 0)
+            {
+                var slotDTO = _mapper.Map<IEnumerable<SlotDTO>>(slot);
+
+                foreach (SlotDTO dTO in slotDTO)
+                {
+                    var Js = await _slotRepository.GetJobScheduleBySlotID(dTO.SlotId);
+                    var jsdto = _mapper.Map<IEnumerable<JobScheduleDTO>>(Js);
+                    foreach (JobScheduleDTO dTO1 in jsdto)
+                    {
+                        var wh = await _slotRepository.GetWorkingHoursByJobSchedule(dTO1.ScheduleId);
+                        var whDTO = _mapper.Map<IEnumerable<WorkingHourDTO>>(wh);
+                        dTO1.workingHourDTOs = whDTO;
+                    }
+                    dTO.jobScheduleDTOs = jsdto;
+                }
+                postjobdetailUpdate.slotDTOs = slotDTO;
+                postjobdetailUpdate.isLongterm = true;
+                return postjobdetailUpdate;
+            }
+            var jobPostDate = await _jobPostDateRepository.GetPostJobByPostID(postjob.PostId);
+            if (jobPostDate != null)
+            {
+                postjobdetailUpdate.jobPostDateDTOs = _mapper.Map<IEnumerable<JobPostDateDTO>>(jobPostDate);
+                postjobdetailUpdate.isLongterm = false;
+                return postjobdetailUpdate;
+            }
+            return null;
+        }
     }
 }

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VJN.Models;
 using VJN.ModelsDTO.BlogDTOs;
+using VJN.Paging;
 using VJN.Services;
 
 namespace VJN.Controllers
@@ -22,10 +23,10 @@ namespace VJN.Controllers
             _blogService = blogService;
         }
 
-        [HttpGet("GetAllBlog")]
-        public async Task<ActionResult< IEnumerable<BlogDTO>>> GetAllBlog()
+        [HttpGet("GetAllBlog/{pagenumber}")]
+        public async Task<ActionResult<PagedResult<BlogDTO>>> GetAllBlog(int pagenumber)
         {
-            var blog =  await _blogService.GetAllBlog();
+            var blog =  await _blogService.GetAllBlog(pagenumber);
             return Ok(blog);    
         }
 
