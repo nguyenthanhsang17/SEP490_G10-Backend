@@ -15,6 +15,20 @@ namespace VJN.Services
             _mapper = mapper;
         }
 
+        public async Task<IEnumerable<BlogDTO>> GetAllBlog()
+        {
+            var blog = await _blogRepository.GetAllBlog();    
+            var blogdto =_mapper.Map<IEnumerable< BlogDTO>>(blog);
+            return blogdto;
+        }
+
+        public async Task<BlogDTO> GetBlogDetail(int id)
+        {
+            var blog = await _blogRepository.GetBlogDetail(id);
+            var blogdto = _mapper.Map<BlogDTO>(blog);
+            return blogdto;
+        }
+
         public async Task<IEnumerable<BlogDTO>> getThreeBlogNews()
         {
             var blog = await _blogRepository.getThreeBlogNews();

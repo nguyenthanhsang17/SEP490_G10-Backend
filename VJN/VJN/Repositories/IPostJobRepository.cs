@@ -33,5 +33,6 @@ namespace VJN.Repositories
         public Task<PostJob> GetJobByIDForUpdate(int id);
         public Task<bool> CheckJobByIDAndUserid(int id, int userid);
         public Task<int> UpdatePostJob(PostJob postJob);
+        public Task<IEnumerable<PostJob>> GetPostJobBuAuthorid(int authorid);
     }
 }

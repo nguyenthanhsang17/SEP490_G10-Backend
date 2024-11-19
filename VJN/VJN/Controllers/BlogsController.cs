@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VJN.Models;
+using VJN.ModelsDTO.BlogDTOs;
+using VJN.Services;
 
 namespace VJN.Controllers
 {
@@ -13,44 +15,25 @@ namespace VJN.Controllers
     [ApiController]
     public class BlogsController : ControllerBase
     {
-        private readonly VJNDBContext _context;
+        private readonly IBlogService _blogService;
 
-        public BlogsController(VJNDBContext context)
+        public BlogsController(IBlogService blogService)
         {
-            _context = context;
+            _blogService = blogService;
         }
 
-        // GET: api/Blogs
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Blog>>> GetBlogs()
+        [HttpGet("GetAllBlog")]
+        public async Task<ActionResult< IEnumerable<BlogDTO>>> GetAllBlog()
         {
-            return null;
+            var blog =  await _blogService.GetAllBlog();
+            return Ok(blog);    
         }
 
-        // GET: api/Blogs/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Blog>> GetBlog(int id)
+        [HttpGet("GetDetailBlog/{id}")]
+        public async Task<ActionResult<BlogDTO>> GetDetailBlog(int id)
         {
-          if (_context.Blogs == null)
-          {
-              return NotFound();
-          }
-            var blog = await _context.Blogs.FindAsync(id);
-
-            if (blog == null)
-            {
-                return NotFound();
-            }
-
-            return blog;
-        }
-
-        // PUT: api/Blogs/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutBlog(int id, Blog blog)
-        {
-            return null;
+            var blog = _blogService.GetBlogDetail(id);
+            return Ok(blog);
         }
     }
 }

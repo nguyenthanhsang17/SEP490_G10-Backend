@@ -1,4 +1,6 @@
-﻿namespace VJN.Repositories
+﻿using VJN.Models;
+
+namespace VJN.Repositories
 {
     public interface IServicePriceLogRepository
     {
@@ -7,5 +9,6 @@
         public Task<int> GetNumberPosts(int userid);
         public Task<int> NumberPostsUrgentRecruitment(int userid);
         public Task<bool> CheckIsViewAllJobSeeker(int userid);
+        public Task<IEnumerable<ServicePriceLog>> GetPaymentHistory(int userid);
     }
 }
