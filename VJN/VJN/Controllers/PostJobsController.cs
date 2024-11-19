@@ -467,5 +467,9 @@ namespace VJN.Controllers
             var c = await _postJobService.UpdatePostJob(postJobDetailForUpdate);
             return Ok(c);
         }
+
+        [Authorize]
+        [HttpGet]
+        public Task<ActionResult<JobSearchResult>>
     }
 }
