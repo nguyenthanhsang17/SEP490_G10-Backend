@@ -18,7 +18,7 @@ namespace VJN.Repositories
 
         public async Task<Blog> GetBlogDetail(int id)
         {
-            var blog = await _context.Blogs.FindAsync(id);
+            var blog = await _context.Blogs.Include(bl=>bl.ThumbnailNavigation).Where(bl=>bl.BlogId == id).SingleOrDefaultAsync();
             return blog;
         }
 
