@@ -33,7 +33,7 @@ namespace VJN.Controllers
         [HttpGet("GetDetailBlog/{id}")]
         public async Task<ActionResult<BlogDTO>> GetDetailBlog(int id)
         {
-            var blog = _blogService.GetBlogDetail(id);
+            var blog = await _blogService.GetBlogDetail(id);
             return Ok(blog);
         }
     }
