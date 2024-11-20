@@ -43,7 +43,7 @@ namespace VJN.Map
 
             CreateMap<User, UserDTOdetail>().ForMember(dest => dest.AvatarURL, opt => opt.MapFrom(src => src.AvatarNavigation.Url));
 
-            CreateMap<User, EmployerDTO>();
+            CreateMap<User, EmployerDTO>().ForMember(dest => dest.PostJobAuthors, opt => opt.Ignore()); ;
 
             //Mapper for user
             //Mapper for Blog

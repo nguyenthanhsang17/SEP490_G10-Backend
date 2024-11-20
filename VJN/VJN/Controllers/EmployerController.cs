@@ -26,7 +26,7 @@ namespace VJN.Controllers
             {
                 userid = int.Parse(id_str);
             }
-            var employer = await _employerService.GetEmployerByUserId(callAPI.Authorid.Value, userid, callAPI.Latitude, callAPI.Longitude);
+            var employer = await _employerService.GetEmployerByUserId(callAPI.Authorid.Value, userid, callAPI.Latitude, callAPI.Longitude, callAPI.pagnumber);
             return Ok(employer);
         }
 
