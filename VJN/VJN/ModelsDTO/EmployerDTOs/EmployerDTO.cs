@@ -12,6 +12,7 @@ namespace VJN.ModelsDTO.EmployerDTOs
         public string? Description { get; set; }
         public string? Address { get; set; }
         public bool? Gender { get; set; }
+        public string ? avatarURL { get; set; }
         public PagedResult<JobSearchResult> PostJobAuthors { get; set; }
     }
 }
