@@ -2,6 +2,7 @@
 using VJN.Models;
 using VJN.ModelsDTO.EmployerDTOs;
 using VJN.ModelsDTO.PostJobDTOs;
+using VJN.Paging;
 using VJN.Repositories;
 
 namespace VJN.Services
@@ -46,13 +47,19 @@ namespace VJN.Services
             return Math.Round(result, 2);
         }
 
-        public async Task<EmployerDTO> GetEmployerByUserId(int id, int? userid, decimal? Latitude, decimal? Longitude)
+        public async Task<EmployerDTO> GetEmployerByUserId(int id, int? userid, decimal? Latitude, decimal? Longitude, int pagenumber)
         {
+            int pagesize = 6;
             var user = await _userRepository.findById(id);
             var employerdto = _mapper.Map<EmployerDTO>(user);
+
+
             var postjob = await _postJobRepository.GetPostJobBuAuthorid(id);
 
-            var jobSearchResultTasks = postjob.Select(async j => new JobSearchResult
+            PagedResult<PostJob> postjobPage = PaginationHelper.GetPaged<PostJob>(postjob, pagenumber, pagesize);
+
+
+            var jobSearchResultTasks = postjobPage.Items.Select(async j => new JobSearchResult
             {
                 PostId = j.PostId,
                 thumbnail = j.ImagePostJobs.Count() == 0 || j.ImagePostJobs == null ? "" : j.ImagePostJobs.ElementAt(0).Image.Url,
@@ -73,7 +80,7 @@ namespace VJN.Services
             }).ToList();
 
             var jobSearchResult = await Task.WhenAll(jobSearchResultTasks);
-            employerdto.PostJobAuthors = jobSearchResult.ToList();
+            employerdto.PostJobAuthors = new PagedResult<JobSearchResult>(jobSearchResult.ToList(), postjob.Count(), pagenumber, pagesize);
 
             return employerdto;
         }
