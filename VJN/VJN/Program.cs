@@ -162,6 +162,8 @@ namespace VJN
             builder.Services.AddScoped<IEmployerService, EmployerService>();
             builder.Services.AddScoped<IServicePriceListRepository, ServicePriceListRepository>();
             builder.Services.AddScoped<IServicePriceListService, ServicePriceListService>();
+            builder.Services.AddScoped<IDashBoardRepository, DashBoardRepository>();
+            builder.Services.AddScoped<IDashBoardService, DashBoardService>();
 
             // Register services and repositories
             var app = builder.Build();
