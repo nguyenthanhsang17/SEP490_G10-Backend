@@ -60,7 +60,7 @@ namespace VJN.Controllers
         }
 
         [HttpGet("GetAllBlog")]
-        public async Task<ActionResult<PagedResult<BlogDTO>>> GetAllBlog(int pageNumber = 1,int pageSize = 10,string? title = "",int? status = null,string sortOrder = "desc") 
+        public async Task<ActionResult<PagedResult<BlogDTO>>> GetAllBlogs(int pageNumber = 1, int pageSize = 10, string? title = "", int? status = null, string sortOrder = "desc")
         {
             if (_context.Blogs == null)
             {
@@ -84,11 +84,11 @@ namespace VJN.Controllers
 
             if (sortOrder == "asc")
             {
-                query = query.OrderBy(b => b.CreateDate); 
+                query = query.OrderBy(b => b.CreateDate);
             }
             else
             {
-                query = query.OrderByDescending(b => b.CreateDate); 
+                query = query.OrderByDescending(b => b.CreateDate);
             }
 
             var totalCount = await query.CountAsync();
@@ -112,6 +112,13 @@ namespace VJN.Controllers
             var pagedResult = new PagedResult<BlogDTO>(blogDTOs, totalCount, pageNumber, pageSize);
 
             return Ok(pagedResult);
+        }
+
+        [HttpGet("GetAllBlog/{pagenumber}")]
+        public async Task<ActionResult<PagedResult<BlogDTO>>> GetAllBlog(int pagenumber)
+        {
+            var blog =  await _blogService.GetAllBlog(pagenumber);
+            return Ok(blog);    
         }
 
 
@@ -223,8 +230,14 @@ namespace VJN.Controllers
 
             return userIdClaim.Value;
         }
+            [HttpGet("GetDetailBlog/{id}")]
+            public async Task<ActionResult<BlogDTO>> GetDetailBlog(int id)
+            {
+                var blog = await _blogService.GetBlogDetail(id);
+                return Ok(blog);
+            }
 
-        [HttpPut("show")]
+            [HttpPut("show")]
         public async Task<IActionResult> ShowBlog(int blogId)
         {
             int status = 0;

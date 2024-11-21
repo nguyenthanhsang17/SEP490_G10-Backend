@@ -59,6 +59,13 @@ namespace VJN.Repositories
             return sum.Value;
         }
 
+        public async Task<IEnumerable<ServicePriceLog>> GetPaymentHistory(int userid)
+        {
+            var register = await _context.ServicePriceLogs.Where(sp=>sp.UserId==userid).ToListAsync();
+            Console.WriteLine("register: "+register.Count());
+            return register;
+        }
+
         public async Task<int> NumberPostsUrgentRecruitment(int userid)
         {
             var sum = await _context.Services.Where(sp => sp.UserId == userid).SumAsync(sp => sp.NumberPostsUrgentRecruitment);

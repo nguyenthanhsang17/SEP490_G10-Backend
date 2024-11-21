@@ -401,12 +401,12 @@ namespace VJN.Controllers
             var id = int.Parse(id_str);
             Console.WriteLine(id);
             int Registerid = await _registerEmployerService.RegisterEmployer(dto, id);
-
-            if (id == -1)
+            Console.WriteLine($"Register {id_str}");
+            if (Registerid == -1)
             {
                 return BadRequest("Đã đăng ký để trở thành nhà tuyển dụng, đợi duyệt");
             }
-            if (id == -2)
+            if (Registerid == -2)
             {
                 return BadRequest("Đã đăng ký để trở thành nhà tuyển dụng");
             }

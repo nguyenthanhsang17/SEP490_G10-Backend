@@ -9,6 +9,7 @@ using Imagekit.Sdk;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Recommendations;
 using Microsoft.EntityFrameworkCore;
 using NuGet.Protocol.Plugins;
 using VJN.Models;
@@ -468,8 +469,34 @@ namespace VJN.Controllers
             return Ok(c);
         }
 
+        [Authorize]
+        [HttpGet("ViewRecommendedJobs")]
+        public async Task<ActionResult<PagedResult<JobSearchResult>>> ViewRecommendedJobs([FromQuery] ViewRecommendedJobsDTO view)
+        {
+            var id_str = GetUserIdFromToken();
+            int userid = 0;
+            if (!string.IsNullOrEmpty(id_str))
+            {
+                userid = int.Parse(id_str);
+            }
+
+            var result = await _postJobService.ViewRecommendedJobs(userid, view.pagenumber, view.userLatitude, view.userLongitude);
+            return Ok(result);
+        }
+
+        [Authorize]
+        [HttpGet("GetPostJobReCreate/{id}")]
+        public async Task<ActionResult<PostJobDetailForUpdate>> GetPostJobReCreate(int id)
+        {
+            var idUser_str = GetUserIdFromToken();
+            var IdUser = int.Parse(idUser_str);
+            var postJobDetailForUpdate = await _postJobService.GetJobByIDForReCreate(id, IdUser);
+            return postJobDetailForUpdate != null ? Ok(postJobDetailForUpdate) : BadRequest(new { Message = "Bạn không được phép sử dụng công việc này !!!" });
+        }
+
+        [Authorize]
         [HttpGet("GetAllPostByAuthorId")]
-        public async Task<ActionResult<PagedResult<JobSearchResultEmployer>>> GetAllPostByAuthorId(int id,[FromQuery] PostJobSearchEmployer s)
+        public async Task<ActionResult<PagedResult<JobSearchResultEmployer>>> GetAllPostByAuthorId(int id, [FromQuery] PostJobSearchEmployer s)
         {
             var page = await _postJobService.GetJobListByEmployerID(id, s);
             return Ok(page);

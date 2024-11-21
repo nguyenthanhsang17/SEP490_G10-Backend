@@ -15,6 +15,10 @@ using VJN.ModelsDTO.WishJob;
 using VJN.ModelsDTO.FavoriteListDTOs;
 using VJN.ModelsDTO.JobSeekerDTOs;
 using VJN.ModelsDTO.JobPostDateDTOs;
+using VJN.ModelsDTO.EmployerDTOs;
+using VJN.ModelsDTO.ServicePriceLogDTOs;
+using VJN.ModelsDTO.ServicePriceListDTOs;
+using VJN.ModelsDTO.ChatDTOs;
 
 namespace VJN.Map
 {
@@ -37,8 +41,13 @@ namespace VJN.Map
 
             CreateMap<User, UserDTOdetail>();
 
+            CreateMap<User, ChatListDTO>();
+
 
             CreateMap<User, UserDTOdetail>().ForMember(dest => dest.AvatarURL, opt => opt.MapFrom(src => src.AvatarNavigation.Url));
+
+            CreateMap<User, EmployerDTO>().ForMember(dest => dest.PostJobAuthors, opt => opt.Ignore())
+                                          .ForMember(dest=>dest.avatarURL, opt=>opt.MapFrom(src=>src.AvatarNavigation.Url)); 
 
             //Mapper for user
             //Mapper for Blog
@@ -88,6 +97,12 @@ namespace VJN.Map
             
             CreateMap<JobPostDate, JobPostDateDTO>();
             CreateMap<PostJobDetailUpdate, PostJob>();
+
+            CreateMap<ServicePriceLog, PaymentHistory>();
+            CreateMap<ServicePriceList, ServicePriceListDTO>();
+
+            CreateMap<Chat, ChatDTO>();
+            CreateMap<SendChat, Chat>().ForMember(dest => dest.SendTime, otp => otp.MapFrom(src => DateTime.Now));
         }
     }
 }

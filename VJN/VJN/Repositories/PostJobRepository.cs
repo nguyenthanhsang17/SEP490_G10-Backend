@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using VJN.Models;
 using VJN.ModelsDTO.PostJobDTOs;
+using VJN.Paging;
 
 namespace VJN.Repositories
 {
@@ -92,7 +93,7 @@ namespace VJN.Repositories
             }
             if (s.SortNumberApplied != 0)
             {
-                sql = sql + " p.Post_Id, p.JobTitle, p.JobDescription, p.salary_types_id, p.Salary, p.NumberPeople, p.Address, p.latitude, p.longitude, p.AuthorId, p.CreateDate, p.ExpirationDate, p.Status, p.censor_Id, p.censor_Date, p.Reason, p.IsUrgentRecruitment, p.JobCategory_Id, p.time ";
+                sql = sql + " GROUP BY p.Post_Id, p.JobTitle, p.JobDescription, p.salary_types_id, p.Salary, p.NumberPeople, p.Address, p.latitude, p.longitude, p.AuthorId, p.CreateDate, p.ExpirationDate, p.Status, p.censor_Id, p.censor_Date, p.Reason, p.IsUrgentRecruitment, p.JobCategory_Id, p.time ";
                 if (s.SortNumberApplied > 0)
                 {
                     sql = sql + " order by COUNT(aj.id) ";
@@ -135,7 +136,7 @@ namespace VJN.Repositories
                 var job = await _context.PostJobs.Include(j => j.Author).
                     Include(j => j.JobCategory).Include(j => j.SalaryTypes).
                     Include(j => j.ImagePostJobs).ThenInclude(img => img.Image).
-                    Where(u => u.PostId == id).Include(j => j.ApplyJobs).Include(j=>j.WishJobs).SingleOrDefaultAsync();
+                    Where(u => u.PostId == id).Include(j => j.ApplyJobs).Include(j => j.WishJobs).SingleOrDefaultAsync();
                 postJobs.Add(job);
             }
             return postJobs;
@@ -330,7 +331,7 @@ namespace VJN.Repositories
             {
                 sql = sql + "order by p.IsUrgentRecruitment desc";
             }
-            else if(s.Longitude.HasValue&&s.Latitude.HasValue&&s.sort==3) // sort == 3 // uu tien khoangr cach
+            else if (s.Longitude.HasValue && s.Latitude.HasValue && s.sort == 3) // sort == 3 // uu tien khoangr cach
             {
                 sql = sql + $"order by (6371 * ACOS(COS(RADIANS({s.Latitude})) * COS(RADIANS(p.latitude)) * COS(RADIANS(p.longitude) - RADIANS({s.Longitude})) +SIN(RADIANS({s.Latitude})) * SIN(RADIANS(p.latitude)))) asc";
             }
@@ -350,7 +351,7 @@ namespace VJN.Repositories
             var reportCount = await _context.Reports
             .Where(r => r.JobSeekerId == report.JobSeekerId && r.CreateDate >= startOfDay && r.CreateDate <= endOfDay)
             .CountAsync();
-            if (reportCount >=3 )
+            if (reportCount >= 3)
             {
                 return -1;
             }
@@ -361,20 +362,20 @@ namespace VJN.Repositories
 
         public async Task<bool> CheckJobByIDAndUserid(int id, int userid)
         {
-            var c  = await _context.PostJobs.Where(pj=>pj.PostId==id&&pj.AuthorId==userid&&pj.Status==0).AnyAsync();
+            var c = await _context.PostJobs.Where(pj => pj.PostId == id && pj.AuthorId == userid && pj.Status == 0).AnyAsync();
             return c;
         }
 
         public async Task<PostJob> GetJobByIDForUpdate(int id)
         {
-            var postjob = await _context.PostJobs.Where(pj=>pj.PostId==id).Include(pj=>pj.ImagePostJobs).SingleOrDefaultAsync();
+            var postjob = await _context.PostJobs.Where(pj => pj.PostId == id).Include(pj => pj.ImagePostJobs).SingleOrDefaultAsync();
             return postjob;
         }
 
         public async Task<int> UpdatePostJob(PostJob postJob)
         {
             var postjobAfter = await _context.PostJobs.Where(pj => pj.PostId == postJob.PostId).SingleOrDefaultAsync();
-            if(postjobAfter != null)
+            if (postjobAfter != null)
             {
 
                 postjobAfter.JobTitle = postJob.JobTitle;
@@ -389,12 +390,128 @@ namespace VJN.Repositories
                 postjobAfter.IsUrgentRecruitment = postJob.IsUrgentRecruitment;
                 postjobAfter.JobCategoryId = postJob.JobCategoryId;
                 postjobAfter.Time = postJob.Time;
-                
+
                 _context.Entry(postjobAfter).State = EntityState.Modified;
                 int i = await _context.SaveChangesAsync();
                 return postJob.PostId;
             }
             return 0;
+        }
+
+        public async Task<IEnumerable<PostJob>> GetPostJobBuAuthorid(int authorid)
+        {
+
+            var postjob = await _context.PostJobs.Where(pj => pj.AuthorId == authorid && pj.Status == 2)
+                .Include(j => j.Author).Include(j => j.JobCategory).Include(j => j.SalaryTypes).Include(j => j.ImagePostJobs).ThenInclude(img => img.Image).Include(j => j.ApplyJobs).Include(j => j.WishJobs).ToListAsync();
+
+            return postjob;
+        }
+
+        public async Task<IEnumerable<int>> ViewRecommendedJobs(int userid, decimal? userLatitude, decimal? userLongitude)
+        {
+            var query = @"
+                    
+                    WITH UserCVString AS (
+    SELECT 
+        cv.UserId,
+        STRING_AGG(ic.ItemDescription, ' ') AS CVText
+    FROM Cv cv
+    INNER JOIN ItemOfCv ic ON ic.CvId = cv.CvId
+    WHERE cv.UserId = @UserId
+    GROUP BY cv.UserId
+),
+CVSimilarity AS (
+    SELECT 
+        pj.Post_Id,
+        dbo.CalculateSimilarity(pj.JobDescription, ucv.CVText) AS CVScore
+    FROM PostJob pj
+    CROSS JOIN UserCVString ucv
+    WHERE pj.ExpirationDate >= GETDATE()
+),
+CategoryRank AS (
+    SELECT 
+        pj.Post_Id,
+        pj.JobCategory_Id,
+        COUNT(*) OVER (PARTITION BY pj.JobCategory_Id) AS RankCategory
+    FROM ApplyJob aj
+    INNER JOIN PostJob pj ON aj.Post_Id = pj.Post_Id
+    WHERE aj.Status IN (3, 4) AND aj.JobSeeker_Id = @UserId
+),
+WishJobMatch AS (
+    SELECT 
+        pj.Post_Id,
+        MAX(dbo.CalculateSimilarity(pj.JobDescription, wj_pj.JobDescription)) AS WishScore
+    FROM PostJob pj
+    INNER JOIN WishJob wj ON pj.Post_Id = wj.PostJob_Id
+    INNER JOIN PostJob wj_pj ON wj.PostJob_Id = wj_pj.Post_Id
+    WHERE wj.JobSeeker_Id = @UserId
+    GROUP BY pj.Post_Id
+),
+DistanceCalculation AS (
+    SELECT 
+        pj.Post_Id,
+        pj.latitude,
+        pj.longitude,
+        CASE 
+            WHEN @UserLatitude IS NOT NULL AND @UserLongitude IS NOT NULL THEN
+                6371 * ACOS(
+                    COS(RADIANS(@UserLatitude)) * COS(RADIANS(pj.latitude)) *
+                    COS(RADIANS(pj.longitude) - RADIANS(@UserLongitude)) +
+                    SIN(RADIANS(@UserLatitude)) * SIN(RADIANS(pj.latitude))
+                )
+            ELSE NULL
+        END AS DistanceKm
+    FROM PostJob pj
+    WHERE pj.ExpirationDate >= GETDATE()
+)
+SELECT *
+FROM (
+    SELECT 
+        pj.*,
+        COALESCE(cr.RankCategory, 0) AS CategoryPriority,
+        COALESCE(cs.CVScore, 0) AS CVMatch,
+        COALESCE(wm.WishScore, 0) AS WishMatch,
+        COALESCE(dc.DistanceKm, 0) AS DistanceKm
+    FROM PostJob pj
+    LEFT JOIN CategoryRank cr ON pj.Post_Id = cr.Post_Id
+    LEFT JOIN CVSimilarity cs ON pj.Post_Id = cs.Post_Id
+    LEFT JOIN WishJobMatch wm ON pj.Post_Id = wm.Post_Id
+    LEFT JOIN DistanceCalculation dc ON pj.Post_Id = dc.Post_Id
+    WHERE pj.ExpirationDate >= GETDATE() AND pj.Status = 2
+) AS OrderedResults
+ORDER BY 
+    CASE 
+        WHEN @UserLatitude IS NOT NULL AND @UserLongitude IS NOT NULL THEN DistanceKm 
+        ELSE NULL 
+    END ASC, -- Gần nhất lên đầu nếu có tọa độ
+    CategoryPriority DESC,
+    CVMatch DESC,
+    WishMatch DESC;
+
+                    ";
+            var parameters = new List<SqlParameter>
+    {
+        new SqlParameter("@UserId", userid),
+        new SqlParameter("@UserLatitude", (object?)userLatitude ?? DBNull.Value),
+        new SqlParameter("@UserLongitude", (object?)userLongitude ?? DBNull.Value)
+    };
+
+            var result = _context.PostJobs.FromSqlRaw(query, parameters.ToArray());
+            var results = await result.ToListAsync();
+            var id = results.Select(u => u.PostId);
+            return id;
+        }
+
+        public async Task<PostJob> GetJobByIDForReCreate(int id)
+        {
+            var postjob = await _context.PostJobs.Where(pj => pj.PostId == id).Include(pj => pj.ImagePostJobs).SingleOrDefaultAsync();
+            return postjob;
+        }
+
+        public async Task<bool> CheckJobByIDAndUseridForCreate(int id, int userid)
+        {
+            var c = await _context.PostJobs.Where(pj => pj.PostId == id && pj.AuthorId == userid).AnyAsync();
+            return c;
         }
     }
 }
