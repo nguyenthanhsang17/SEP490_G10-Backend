@@ -493,5 +493,13 @@ namespace VJN.Controllers
             var postJobDetailForUpdate = await _postJobService.GetJobByIDForReCreate(id, IdUser);
             return postJobDetailForUpdate != null ? Ok(postJobDetailForUpdate) : BadRequest(new { Message = "Bạn không được phép sử dụng công việc này !!!" });
         }
+
+        [Authorize]
+        [HttpGet("GetAllPostByAuthorId")]
+        public async Task<ActionResult<PagedResult<JobSearchResultEmployer>>> GetAllPostByAuthorId(int id, [FromQuery] PostJobSearchEmployer s)
+        {
+            var page = await _postJobService.GetJobListByEmployerID(id, s);
+            return Ok(page);
+        }
     }
 }

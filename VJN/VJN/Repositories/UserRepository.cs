@@ -68,7 +68,7 @@ namespace VJN.Repositories
 
         public async Task<IEnumerable<User>> getAllUser()
         {
-            var users = await _context.Users.Include(u => u.Role).ToListAsync();
+            var users = await _context.Users.Include(u => u.Role).Include(u => u.AvatarNavigation).Include(u => u.CurrentJobNavigation).ToListAsync();
             return users;
         }
 
