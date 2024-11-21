@@ -22,5 +22,13 @@ namespace VJN.Services
             var pricesDTO = _mapper.Map<IEnumerable<ServicePriceListDTO>>(prices);
             return pricesDTO;
         }
+
+        public async Task<ServicePriceListDTO> GetServicePriceById(int id)
+        {
+            var prices = await _servicePriceListRepository.GetAllServicePriceList();
+            var pricesDTO = _mapper.Map<IEnumerable<ServicePriceListDTO>>(prices);
+            var result = pricesDTO.FirstOrDefault(r=>r.ServicePriceId == id);
+            return result;
+        }
     }
 }

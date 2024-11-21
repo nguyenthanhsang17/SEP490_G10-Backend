@@ -1,4 +1,6 @@
 ﻿using VJN.Models;
+using VJN.ModelsDTO.ServicePriceListDTOs;
+using VJN.ModelsDTO.UserDTOs;
 
 namespace VJN.ModelsDTO.ServicePriceLogDTOs
 {
@@ -8,5 +10,7 @@ namespace VJN.ModelsDTO.ServicePriceLogDTOs
         public int? UserId { get; set; }
         public int? ServicePriceId { get; set; }
         public DateTime? RegisterDate { get; set; }
+        public UserDTOdetail user {  get; set; }
+        public ServicePriceListDTO servicePrice {  get; set; }
     }
 }

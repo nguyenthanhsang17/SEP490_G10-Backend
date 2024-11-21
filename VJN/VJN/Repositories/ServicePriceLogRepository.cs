@@ -62,7 +62,12 @@ namespace VJN.Repositories
         public async Task<IEnumerable<ServicePriceLog>> GetPaymentHistory(int userid)
         {
             var register = await _context.ServicePriceLogs.Where(sp=>sp.UserId==userid).ToListAsync();
-            Console.WriteLine("register: "+register.Count());
+            return register;
+        }
+
+        public async Task<IEnumerable<ServicePriceLog>> GetAllPaymentHistory()
+        {
+            var register = await _context.ServicePriceLogs.ToListAsync();
             return register;
         }
 

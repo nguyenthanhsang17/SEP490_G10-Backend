@@ -1,5 +1,6 @@
 ﻿
 using AutoMapper;
+using VJN.Models;
 using VJN.ModelsDTO.ServicePriceLogDTOs;
 using VJN.Repositories;
 
@@ -31,6 +32,17 @@ namespace VJN.Services
             }
             var ph = _mapper.Map<IEnumerable<PaymentHistory>>(spl);
             return ph;
+        }
+
+        public async Task<IEnumerable<PaymentHistory>> GetAllPaymentHistory()
+        {
+            var spl = await _servicePriceLogRepository.GetAllPaymentHistory();
+            if (spl == null || spl.Count() == 0 || !spl.Any())
+            {
+                return null;
+            }
+            var pa = _mapper.Map<IEnumerable<PaymentHistory>>(spl);
+            return pa;
         }
 
         public Task<ServicePriceLogDTO> GetPriced(int userid)
