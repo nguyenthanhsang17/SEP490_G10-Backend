@@ -83,6 +83,7 @@ namespace VJN.Controllers
             {
                 Message = "Đăng nhập thành công",
                 token,
+                st.UserId,
                 st.FullName,
                 st.RoleId,
                 st.Status,
