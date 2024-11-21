@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using NuGet.Protocol.Plugins;
 using System.IdentityModel.Tokens.Jwt;
 using VJN.ModelsDTO.ServicePriceLogDTOs;
+using VJN.Paging;
 using VJN.Services;
 
 namespace VJN.Controllers
@@ -13,15 +14,19 @@ namespace VJN.Controllers
     public class PaymentController : ControllerBase
     {
         private readonly IServicePriceLogService _servicePriceLogService;
-
-        public PaymentController(IServicePriceLogService servicePriceLogService)
+        private readonly IUserService _userService;
+        private readonly IServicePriceListService _servicePriceListService;
+        public PaymentController(IServicePriceLogService servicePriceLogService, IUserService userService, IServicePriceListService servicePriceListService)
         {
             _servicePriceLogService = servicePriceLogService;
+            _userService = userService;
+            _servicePriceListService = servicePriceListService;
         }
 
         [Authorize]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PaymentHistory>>> GetHistoryPayment() {
+        public async Task<ActionResult<IEnumerable<PaymentHistory>>> GetHistoryPayment(int pageNumber = 1, int pageSize = 5)
+        {
             var id_str = GetUserIdFromToken();
             int userid = 0;
             if (!string.IsNullOrEmpty(id_str))
@@ -29,13 +34,77 @@ namespace VJN.Controllers
                 userid = int.Parse(id_str);
             }
             Console.WriteLine("Userid: " + userid);
+
             var phe = await _servicePriceLogService.GetPaymentHistory(userid);
-            if( phe == null || !phe.Any()|| phe.Count() == 0 )
+
+            if (phe == null || !phe.Any() || phe.Count() == 0)
             {
                 return BadRequest(new { Message = "Không có giao dịch" });
             }
-            return Ok(phe);
+
+            var totalCount = phe.Count(); 
+            var pagedData = phe.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+
+            foreach (var item in pagedData)
+            {
+                int prid = (int)item.ServicePriceId;
+                item.servicePrice = await _servicePriceListService.GetServicePriceById(prid);
+
+                int useid = (int)item.UserId;
+                item.user = await _userService.GetUserDetail(useid);
+            }
+
+            return Ok(new
+            {
+                items = pagedData,
+                totalCount = totalCount
+            });
         }
+
+
+        [HttpGet("GetallHistoryPayment")]
+        public async Task<ActionResult<PagedResult<PaymentHistory>>> GetAllHistoryPayment(
+        int pageNumber = 1,int pageSize = 10,int daysFilter = 0, // 0: Lấy tất cả
+        int? servicePriceId = null) 
+        {
+
+            var phe = await _servicePriceLogService.GetAllPaymentHistory();
+            if (phe == null || !phe.Any())
+            {
+                return BadRequest(new { Message = "Không có giao dịch" });
+            }
+
+
+            if (daysFilter > 0)
+            {
+                var filterDate = DateTime.UtcNow.AddDays(-daysFilter);
+                phe = phe.Where(x => x.RegisterDate >= filterDate).ToList();
+            }
+            if (servicePriceId.HasValue)
+            {
+                phe = phe.Where(x => x.ServicePriceId == servicePriceId.Value).ToList();
+            }
+
+            if (!phe.Any())
+            {
+                return BadRequest(new { Message = "Không có giao dịch khớp với điều kiện" });
+            }
+
+            foreach (var item in phe)
+            {
+                int prid = (int)item.ServicePriceId;
+                item.servicePrice = await _servicePriceListService.GetServicePriceById(prid);
+
+                int useid = (int)item.UserId;
+                item.user = await _userService.GetUserDetail(useid);
+            }
+
+            // Phân trang
+            var pagedResult = phe.GetPaged(pageNumber, pageSize);
+            return Ok(pagedResult);
+        }
+
+
 
 
 

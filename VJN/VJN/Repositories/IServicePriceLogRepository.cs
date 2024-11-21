@@ -10,5 +10,6 @@ namespace VJN.Repositories
         public Task<int> NumberPostsUrgentRecruitment(int userid);
         public Task<bool> CheckIsViewAllJobSeeker(int userid);
         public Task<IEnumerable<ServicePriceLog>> GetPaymentHistory(int userid);
+        public  Task<IEnumerable<ServicePriceLog>> GetAllPaymentHistory();
     }
 }
