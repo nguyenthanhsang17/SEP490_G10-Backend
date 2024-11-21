@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.WebSockets;
 using System.Text;
@@ -66,44 +67,56 @@ namespace VJN.Controllers
 
         private static List<WebSocket> _clients = new List<WebSocket>();
 
-        private static async Task HandleWebSocketConnectionAsync(WebSocket webSocket)
+        private async Task HandleWebSocketConnectionAsync(WebSocket webSocket)
         {
             if (!_clients.Contains(webSocket))
             {
                 _clients.Add(webSocket);
             }
+            Console.WriteLine("So luong client "+_clients.Count());
 
             var buffer = new byte[1024 * 4];
-            WebSocketReceiveResult result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
-
-            while (!result.CloseStatus.HasValue)
+            try
             {
-                var clientMessage = Encoding.UTF8.GetString(buffer, 0, result.Count);
-                Console.WriteLine("Received: " + clientMessage);
+                WebSocketReceiveResult result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
 
-                // Gửi thông điệp đến các client khác
-                Console.WriteLine($"Current connected clients: {_clients.Count}");
-
-                foreach (var client in _clients)
+                while (!result.CloseStatus.HasValue)
                 {
-                    if (client.State == WebSocketState.Open && client != webSocket)
+                    var clientMessage = Encoding.UTF8.GetString(buffer, 0, result.Count);
+                    var message = JsonConvert.DeserializeObject<SendChat>(clientMessage);
+
+                    await _chatService.SendMessage(message);
+
+                    // Gửi thông điệp đến các client khác
+                    foreach (var client in _clients.ToList()) // Tạo bản sao để tránh lỗi sửa danh sách khi đang duyệt
                     {
-                        await client.SendAsync(
-                            new ArraySegment<byte>(Encoding.UTF8.GetBytes(clientMessage)),
-                            WebSocketMessageType.Text,
-                            true,
-                            CancellationToken.None);
-                        Console.WriteLine("gưi thanh cong");
+                        if (client.State == WebSocketState.Open && client != webSocket)
+                        {
+                            await client.SendAsync(
+                                new ArraySegment<byte>(Encoding.UTF8.GetBytes(clientMessage)),
+                                WebSocketMessageType.Text,
+                                true,
+                                CancellationToken.None);
+                        }
                     }
+
+                    result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
                 }
-
-                result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
             }
-
-            // Loại bỏ kết nối khi client đóng
-            _clients.Remove(webSocket);
-            await webSocket.CloseAsync(result.CloseStatus.Value, result.CloseStatusDescription, CancellationToken.None);
+            catch (WebSocketException ex)
+            {
+                Console.WriteLine($"WebSocket error: {ex.Message}");
+            }
+            finally
+            {
+                _clients.Remove(webSocket); // Loại bỏ kết nối
+                if (webSocket.State != WebSocketState.Closed)
+                {
+                    await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closed by server", CancellationToken.None);
+                }
+            }
         }
+
 
 
         private string GetUserIdFromToken()
