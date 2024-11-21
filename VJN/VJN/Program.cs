@@ -169,6 +169,8 @@ namespace VJN
 
             // Register services and repositories
             var app = builder.Build();
+            //wweb socket
+            app.UseWebSockets();
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
