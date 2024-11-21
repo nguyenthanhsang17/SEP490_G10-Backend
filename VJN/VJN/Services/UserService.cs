@@ -159,6 +159,17 @@ namespace VJN.Services
             return i;
         }
 
+        public async Task<int> Ban_Unbanuser(int uid, bool ban) // neu ban thi ban == true unban thi ban ==flase
+        {
+            int status = 1;
+            if (ban)
+            {
+                status = 3;
+            }
+            var i = await _userRepository.UpdateStatus(uid, status);
+            return i;
+        }
+
         public async Task<bool> Verifycode(string Email, string Otp)
         {
             var user = await _userRepository.GetUserByEmail(Email);

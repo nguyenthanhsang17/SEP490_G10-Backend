@@ -1,5 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MessagePack.Formatters;
+using Microsoft.EntityFrameworkCore;
 using VJN.Models;
+using VJN.ModelsDTO.BlogDTOs;
 
 namespace VJN.Repositories
 {
@@ -17,5 +19,50 @@ namespace VJN.Repositories
             .ToListAsync();
             return latestBlogs;
         }
+
+        public async Task<bool> CreateBlog(string title, string description, int thumbnailId, int authorId)
+        {
+            try
+            {
+                Blog newBlog = new Blog
+                {
+                    BlogTitle = title,
+                    BlogDescription = description,
+                    Thumbnail = thumbnailId,
+                    AuthorId = authorId,
+                    Status = 0, 
+                    CreateDate = DateTime.Now 
+                };
+
+                _context.Blogs.Add(newBlog);
+                await _context.SaveChangesAsync();
+
+                return true; 
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error creating blog: {ex.Message}");
+
+                return false; 
+            }
+        }
+
+        public async Task<bool> ChangeStatusBlog(int blogId, int newStatus)
+        {
+            // Tìm blog theo ID
+            var blog = await _context.Blogs.FindAsync(blogId);
+
+            // Kiểm tra nếu blog không tồn tại
+            if (blog == null)
+            {
+                return false;
+            }
+            blog.Status = newStatus;
+            _context.Blogs.Update(blog);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+
     }
 }

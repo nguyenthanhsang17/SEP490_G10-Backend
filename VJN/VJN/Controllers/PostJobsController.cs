@@ -467,5 +467,12 @@ namespace VJN.Controllers
             var c = await _postJobService.UpdatePostJob(postJobDetailForUpdate);
             return Ok(c);
         }
+
+        [HttpGet("GetAllPostByAuthorId")]
+        public async Task<ActionResult<PagedResult<JobSearchResultEmployer>>> GetAllPostByAuthorId(int id,[FromQuery] PostJobSearchEmployer s)
+        {
+            var page = await _postJobService.GetJobListByEmployerID(id, s);
+            return Ok(page);
+        }
     }
 }
