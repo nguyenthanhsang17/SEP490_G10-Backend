@@ -164,9 +164,13 @@ namespace VJN
             builder.Services.AddScoped<IServicePriceListService, ServicePriceListService>();
             builder.Services.AddScoped<IDashBoardRepository, DashBoardRepository>();
             builder.Services.AddScoped<IDashBoardService, DashBoardService>();
+            builder.Services.AddScoped<IChatRepository, ChatRepository>();
+            builder.Services.AddScoped<IChatService, ChatService>();
 
             // Register services and repositories
             var app = builder.Build();
+            //wweb socket
+            app.UseWebSockets();
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
