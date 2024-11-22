@@ -174,7 +174,7 @@ namespace VJN
             builder.Services.AddScoped<IChatRepository, ChatRepository>();
             builder.Services.AddScoped<IChatService, ChatService>();
             builder.Services.AddScoped<IVnPayService, VnPayService>();
-
+            builder.Services.AddHttpContextAccessor();
             // Register services and repositories
             var app = builder.Build();
             //wweb socket
