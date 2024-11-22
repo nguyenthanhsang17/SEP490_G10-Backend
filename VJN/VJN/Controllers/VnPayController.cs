@@ -67,15 +67,10 @@ namespace VJN.Controllers
             {
                 userid = int.Parse(id_str);
             }
-            var result = _vnPayService.PaymentExecute(Request.Query);
-
-            if (result == null || result.VnPayResponseCode != "00" || result.Success == false) {
-                return BadRequest(new { message = "Giao dịch thất bại"});
-            }
 
             var check =  await _servicePriceLogService.CreateServicePriceLog(id, userid);
             Console.WriteLine(check);
-            return Ok(result);
+            return Ok(true);
 
         }
 
