@@ -93,13 +93,45 @@ namespace VJN.Controllers
         }
 
         // GET: api/Users
-        [Authorize]
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
             var userdto = await _userService.getAllUser();
             return Ok(userdto);
         }
+
+        [HttpGet("GetAllUsers")]
+        public async Task<ActionResult<PagedResult<UserDTO>>> GetAllUsers([FromQuery] int pageNumber = 1,[FromQuery] int pageSize = 10,[FromQuery] string? name = null,[FromQuery] int? role = null,[FromQuery] int? status = null)
+        {
+            // Lấy danh sách tất cả người dùng từ service
+            var users = await _userService.getAllUser();
+
+            if (users == null || !users.Any())
+            {
+                return NotFound("No users found.");
+            }
+
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                users = users.Where(u => u.FullName.Contains(name, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            if (role.HasValue)
+            {
+                users = users.Where(u => u.RoleId == role.Value).ToList();
+            }
+
+            if (status.HasValue)
+            {
+                users = users.Where(u => u.Status == status.Value).ToList();
+            }
+
+            var pagedResult = users.GetPaged(pageNumber, pageSize);
+
+            return Ok(pagedResult);
+        }
+
 
         // GET: api/Users/5
         [Authorize]
@@ -109,6 +141,13 @@ namespace VJN.Controllers
             string id_str = GetUserIdFromToken();
             int id = int.Parse(id_str);
             Console.WriteLine(id);
+            var user = await _userService.findById(id);
+            return Ok(user);
+        }
+
+        [HttpGet("GetUserDetail")]
+        public async Task<ActionResult<UserDTO>> ViewUserdetail(int id)
+        {
             var user = await _userService.findById(id);
             return Ok(user);
         }
@@ -556,6 +595,25 @@ namespace VJN.Controllers
             return BadRequest(new { message = "Không tìm thấy nhà tuyển dụng hoặc có lỗi xảy ra." });
         }
 
+        [HttpPost("Ban_Unban_user/{id}")]
+        public async Task<IActionResult> ban_unban(int id, [FromBody] string reason, bool ban)
+        {
+            if (ban && string.IsNullOrEmpty(reason))
+            {
+                return BadRequest(new { message = "Vui lòng nhập lý do cấm." });
+            }
+            string msg = "Đã cấm người dùng.";
+            if (!ban) 
+            {
+                msg = "đã gỡ cấm người dùng ";
+            }
+            var result = await _userService.Ban_Unbanuser(id,ban);
+            if (result==1)
+            {
+                return Ok(new { message = msg });
+            }
+            return BadRequest(new { message = "Không tìm thấy người dùng hoặc có lỗi xảy ra." });
+        }
 
     }
 }

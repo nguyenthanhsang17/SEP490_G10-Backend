@@ -11,6 +11,7 @@ using VJN.Services;
 using VJN.ModelsDTO.Imagekit;
 using VJN.ModelsDTO.EmailDTOs;
 using System.Text.Json.Serialization;
+using Imagekit.Sdk;
 
 namespace VJN
 {
@@ -110,6 +111,12 @@ namespace VJN
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Scoped);
 
             builder.Services.AddAutoMapper(typeof(Program));
+
+            builder.Services.AddSingleton(new ImagekitClient(
+            "public_Q+yi7A0O9A+joyXIoqM4TpVqOrQ=",
+            "private_e2V3fNLKwK0pGwSrEmFH+iKQtks=",
+            "https://ik.imagekit.io/ryf3sqxfn"
+            ));
             // Register services and repositories
             builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings")); //add email
             builder.Services.AddScoped<IUserRepository, UserRepository>();

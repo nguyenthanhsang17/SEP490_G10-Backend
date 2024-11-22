@@ -38,5 +38,25 @@ namespace VJN.Services
             var blogdto = _mapper.Map<IEnumerable<BlogDTO>>(blog);
             return blogdto;
         }
+
+        public async Task<bool> CreateBlog(string title, string description, int thumbnailId, int authorId)
+        {
+            if (_blogRepository == null)
+            {
+                return false; 
+            }
+
+            return await _blogRepository.CreateBlog(title, description, thumbnailId, authorId);
+        }
+
+        public async Task<bool> ChangeStatusBlog(int blogId, int newStatus)
+        {
+            if (_blogRepository == null)
+            {
+                return false;
+            }
+            return await _blogRepository.ChangeStatusBlog(blogId, newStatus);
+        }
+
     }
 }

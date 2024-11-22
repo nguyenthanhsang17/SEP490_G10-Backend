@@ -20,6 +20,7 @@ namespace VJN.Services
         public Task<UserDTO> GetUserByEmail(string Email);
         public Task<bool> UpdatePassword(int userid, string password);
         public Task<bool> CheckOtpExits(string otp);
-       public Task<UserDTOdetail> GetUserDetail(int id);
+        public Task<UserDTOdetail> GetUserDetail(int id);
+        public Task<int> Ban_Unbanuser(int uid, bool ban);
     }
 }
