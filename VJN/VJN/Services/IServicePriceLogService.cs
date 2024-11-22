@@ -12,5 +12,7 @@ namespace VJN.Services
         public Task<IEnumerable<PaymentHistory>> GetPaymentHistory(int userid);
 
         public  Task<IEnumerable<PaymentHistory>> GetAllPaymentHistory();
+
+        public Task<bool> CreateServicePriceLog(int Serviceid, int uid);
     }
 }

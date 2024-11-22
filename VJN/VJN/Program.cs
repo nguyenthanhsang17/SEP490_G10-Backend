@@ -173,6 +173,7 @@ namespace VJN
             builder.Services.AddScoped<IDashBoardService, DashBoardService>();
             builder.Services.AddScoped<IChatRepository, ChatRepository>();
             builder.Services.AddScoped<IChatService, ChatService>();
+            builder.Services.AddScoped<IVnPayService, VnPayService>();
 
             // Register services and repositories
             var app = builder.Build();
