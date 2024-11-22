@@ -1,4 +1,5 @@
-﻿using VJN.ModelsDTO.VnPayDTO;
+﻿using System.Web;
+using VJN.ModelsDTO.VnPayDTO;
 using VJN.Repositories;
 
 namespace VJN.Services
@@ -20,21 +21,25 @@ namespace VJN.Services
             vnpay.AddRequestData("vnp_Version", _config["VnPay:Version"]);
             vnpay.AddRequestData("vnp_Command", _config["VnPay:Command"]);
             vnpay.AddRequestData("vnp_TmnCode", _config["VnPay:TmnCode"]);
-            vnpay.AddRequestData("vnp_Amount", (model.Amount * 100).ToString());
+            vnpay.AddRequestData("vnp_Amount", ((long)(model.Amount * 100)).ToString()); // Ensure valid amount format
             vnpay.AddRequestData("vnp_CreateDate", model.CreatedDate.Value.ToString("yyyyMMddHHmmss"));
             vnpay.AddRequestData("vnp_CurrCode", _config["VnPay:CurrCode"]);
             vnpay.AddRequestData("vnp_IpAddr", Repositories.Utils.GetIpAddress(context));
             vnpay.AddRequestData("vnp_Locale", _config["VnPay:Locale"]);
 
-            vnpay.AddRequestData("vnp_OrderInfo", "Thanh toán gói "+model.ServiceName);
-            vnpay.AddRequestData("vnp_OrderType", "other"); //default value: other
+            // Encode order info to avoid special character issues
+            vnpay.AddRequestData("vnp_OrderInfo", HttpUtility.UrlEncode($"Thanh toán gói {model.ServiceName}"));
+            vnpay.AddRequestData("vnp_OrderType", "other");
             vnpay.AddRequestData("vnp_ReturnUrl", _config["VnPay:PaymentBackReturnUrl"]);
 
-            vnpay.AddRequestData("vnp_TxnRef", $"{model.ServiceId}_{tick}");
-            var paymentUrl = vnpay.CreateRequestUrl(_config["VnPay:BaseUrl"], _config["VnPay:HashSecret"]);
+            // Use unique reference without special characters
+            vnpay.AddRequestData("vnp_TxnRef", tick);
 
+            // Generate the payment URL
+            var paymentUrl = vnpay.CreateRequestUrl(_config["VnPay:BaseUrl"], _config["VnPay:HashSecret"]);
             return paymentUrl;
         }
+
 
         public VnPaymentResponseModel PaymentExecute(IQueryCollection collections)
         {
