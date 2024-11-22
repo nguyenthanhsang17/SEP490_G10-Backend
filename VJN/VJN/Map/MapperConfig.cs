@@ -103,6 +103,7 @@ namespace VJN.Map
 
             CreateMap<Chat, ChatDTO>();
             CreateMap<SendChat, Chat>().ForMember(dest => dest.SendTime, otp => otp.MapFrom(src => DateTime.Now));
+            CreateMap<ServicePriceLogForCreateDTO, ServicePriceLog>().ForMember(dest => dest.RegisterDate, otp => otp.MapFrom(src => DateTime.Now));
         }
     }
 }
