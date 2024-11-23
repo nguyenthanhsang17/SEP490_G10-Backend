@@ -86,7 +86,7 @@ namespace VJN.Controllers
             var postdto = await _postJobService.getJostJobByID(id, iduser);
 
             var slotDTO = await _slotService.GetSlotByPostjobId(id);
-            if(slotDTO == null|| !slotDTO.Any() || slotDTO.Count() == 0)
+            if (slotDTO == null || !slotDTO.Any() || slotDTO.Count() == 0)
             {
                 postdto.slotDTOs = null;
                 var postjobdto = await _jobPostDateService.GetPostJobByPostID(id);
@@ -258,96 +258,147 @@ namespace VJN.Controllers
         [HttpPut("Accept/{id}")]
         public async Task<IActionResult> AcceptPostJob(int id)
         {
-            var c = await _postJobService.ChangeStatusPostJob(id, 2);
-            var postJob = await _context.PostJobs.FindAsync(id);
-            if (c)
-            {
-                var user = await _context.Users.FindAsync(postJob.AuthorId);
-                string body = $"Chào {user.FullName},\n\n" +
-                      "Bài đăng của bạn đã được duyệt thành công!\n\n" +
-                      "Chi tiết bài đăng:\n" +
-                      $"Tiêu đề: {postJob.JobTitle}\n" +
-                      $"Mô tả: {postJob.JobDescription}\n" +
-                      "Trạng thái: Đã duyệt\n\n" +
-                      "Chúng tôi sẽ thông báo khi có những cập nhật tiếp theo.\n\n" +
-                      "Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.\n\n" +
-                      "Trân trọng,\n" +
-                      "Đội ngũ hỗ trợ";
-                await _emailService.SendEmailAsync(user.Email, "Bài đăng của bạn đã được duyệt", body);
-                return Ok(c);
-            }
-            else
+            var isStatusChanged = await _postJobService.ChangeStatusPostJob(id, 2);
+            if (!isStatusChanged)
             {
                 return BadRequest(new { Message = "Duyệt bài đăng thất bại" });
             }
+
+            string id_str = GetUserIdFromToken();
+            int staffID = 0;
+            if (!string.IsNullOrEmpty(id_str))
+            {
+                staffID = int.Parse(id_str);
+            }
+
+            var postJob = await _context.PostJobs.FindAsync(id);
+            if (postJob == null)
+            {
+                return NotFound(new { Message = "Không tìm thấy bài đăng" });
+            }
+
+            postJob.CensorDate = DateTime.Now;
+            postJob.ExpirationDate = DateTime.Now.AddDays((int)postJob.Time * 14);
+            postJob.CensorId = staffID;
+
+            _context.PostJobs.Update(postJob);
+            await _context.SaveChangesAsync();
+
+            var user = await _context.Users.FindAsync(postJob.AuthorId);
+
+            string body = $"Chào {user.FullName},\n\n" +
+                "Bài đăng của bạn đã được duyệt thành công!\n\n" +
+                "Chi tiết bài đăng:\n" +
+                $"Tiêu đề: {postJob.JobTitle}\n" +
+                $"Mô tả: {postJob.JobDescription}\n" +
+                "Trạng thái: Đã duyệt\n\n" +
+                "Chúng tôi sẽ thông báo khi có những cập nhật tiếp theo.\n\n" +
+                "Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.\n\n" +
+                "Trân trọng,\n" +
+                "Đội ngũ hỗ trợ";
+
+            await _emailService.SendEmailAsync(user.Email, "Bài đăng của bạn đã được duyệt", body);
+
+            return Ok(new { Message = "Bài đăng đã được duyệt thành công", ExpirationDate = postJob.ExpirationDate });
         }
+
 
         [HttpPut("Reject/{id}")]
         public async Task<IActionResult> RejectPostJob(int id, string reasonRejecr)
         {
-            var c = await _postJobService.ChangeStatusPostJob(id, 3);
+            var isStatusChanged = await _postJobService.ChangeStatusPostJob(id, 3);
+            if (!isStatusChanged)
+            {
+                return BadRequest(new { Message = "Duyệt bài đăng thất bại" });
+            }
+
+            string id_str = GetUserIdFromToken();
+            int staffID = 0;
+            if (!string.IsNullOrEmpty(id_str))
+            {
+                staffID = int.Parse(id_str);
+            }
+
             var postJob = await _context.PostJobs.FindAsync(id);
-            if (c)
+            if (postJob == null)
             {
-                var user = await _context.Users.FindAsync(postJob.AuthorId);
-                string body = $"Chào {user.FullName},\n\n" +
-                      "Bài đăng của bạn đã bị từ chối!\n\n" +
-                      "Chi tiết bài đăng:\n" +
-                      $"Tiêu đề: {postJob.JobTitle}\n" +
-                      $"Mô tả: {postJob.JobDescription}\n" +
-                      "Trạng thái: Bị từ chối\n\n" +
-                      $"Lý do : {reasonRejecr}.\n\n" +
-                      "Hãy xem lại điều khoản về bài đăng.\n\n" +
-                      "Nếu có thắc mắc gì hãy liên hệ ngay với chúng tôi.\n\n" +
-                      "Trân trọng,\n" +
-                      "Đội ngũ hỗ trợ";
-                await _emailService.SendEmailAsync(user.Email, "Bài đăng của bạn đã bị từ chối", body);
-                return Ok(c);
+                return NotFound(new { Message = "Không tìm thấy bài đăng" });
             }
-            else
+
+            postJob.CensorDate = DateTime.Now;
+            postJob.CensorId = staffID;
+            postJob.Reason = reasonRejecr;
+            _context.PostJobs.Update(postJob);
+
+            var user = await _context.Users.FindAsync(postJob.AuthorId);
+
+            var serviec = await _context.Services.Where(s => s.UserId == user.UserId).FirstOrDefaultAsync();
+            serviec.NumberPosts = serviec.NumberPosts + postJob.Time;
+            if ((bool)postJob.IsUrgentRecruitment)
             {
-                return BadRequest(new { Message = "Từ chối bài đăng thất bại" });
+                serviec.NumberPostsUrgentRecruitment = serviec.NumberPostsUrgentRecruitment + 1;
             }
+            _context.Services.Update(serviec);
+            await _context.SaveChangesAsync();
+
+
+            string body = $"Chào {user.FullName},\n\n" +
+                  "Bài đăng của bạn đã bị từ chối!\n\n" +
+                  "Chi tiết bài đăng:\n" +
+                  $"Tiêu đề: {postJob.JobTitle}\n" +
+                  $"Mô tả: {postJob.JobDescription}\n" +
+                  "Trạng thái: Bị từ chối\n\n" +
+                  $"Lý do : {reasonRejecr}.\n\n" +
+                  "Hãy xem lại điều khoản về bài đăng.\n\n" +
+                  "Nếu có thắc mắc gì hãy liên hệ ngay với chúng tôi.\n\n" +
+                  "Trân trọng,\n" +
+                  "Đội ngũ hỗ trợ";
+            await _emailService.SendEmailAsync(user.Email, "Bài đăng của bạn đã bị từ chối", body);
+            return Ok(new { Message = "Từ chối bài đăng  thành công" });
+
         }
 
         [HttpPut("Ban/{id}")]
         public async Task<IActionResult> BanPostJob(int id, string reasonBan)
         {
-            var c = await _postJobService.ChangeStatusPostJob(id, 6);
+            var isStatusChanged = await _postJobService.ChangeStatusPostJob(id, 6);
+            if (!isStatusChanged)
+            {
+                return BadRequest(new { Message = "Cấm bài đăng thất bại" });
+            }
+
+
             var postJob = await _context.PostJobs.FindAsync(id);
-            if (c)
+            if (postJob == null)
             {
-                var banlog = new BanLogPostJob
-                {
-                    Reason = reasonBan,
-                    PostId = id,
-                    AdminId = 1
-                };
-                //_context.BanLogPostJobs.Add(banlog);
-                await _context.SaveChangesAsync();
-                var user = await _context.Users.FindAsync(postJob.AuthorId);
-                string body = $"Chào {user.FullName},\n\n" +
-                      "Bài đăng của bạn đã bị cấm !\n\n" +
-                      "Chi tiết bài đăng:\n" +
-                      $"Tiêu đề: {postJob.JobTitle}\n" +
-                      $"Mô tả: {postJob.JobDescription}\n" +
-                      "Trạng thái: Bị Cấm\n\n" +
-                      $"Lý do : {reasonBan}.\n\n" +
-                      "Hãy xem lại điều khoản về bài đăng.\n\n" +
-                      "Nếu có thắc mắc gì hãy liên hệ ngay với chúng tôi.\n\n" +
-                      "Trân trọng,\n" +
-                      "Đội ngũ hỗ trợ";
-                await _emailService.SendEmailAsync(user.Email, "Bài đăng của bạn đã bị cấm", body);
-                return Ok(c);
+                return NotFound(new { Message = "Không tìm thấy bài đăng" });
             }
-            else
-            {
-                return BadRequest(new { Message = "Cấm bài viết thất bại " });
-            }
-            return null;
+
+            postJob.Reason=reasonBan;
+            _context.PostJobs.Update(postJob);
+
+            await _context.SaveChangesAsync();
+            var user = await _context.Users.FindAsync(postJob.AuthorId);
+            string body = $"Chào {user.FullName},\n\n" +
+                  "Bài đăng của bạn đã bị cấm !\n\n" +
+                  "Chi tiết bài đăng:\n" +
+                  $"Tiêu đề: {postJob.JobTitle}\n" +
+                  $"Mô tả: {postJob.JobDescription}\n" +
+                  "Trạng thái: Bị Cấm\n\n" +
+                  $"Lý do : {reasonBan}.\n\n" +
+                  "Hãy xem lại điều khoản về bài đăng.\n\n" +
+                  "Nếu có thắc mắc hãy liên hệ ngay với chúng tôi.\n\n" +
+                  "Trân trọng,\n" +
+                  "Đội ngũ hỗ trợ";
+            await _emailService.SendEmailAsync(user.Email, "Bài đăng của bạn đã bị cấm", body);
+            return Ok(new { Message = "Bài đăng đã bị cấm " });
+
+
         }
+
+
         [Authorize]
-        [HttpPost("ReportJob")] 
+        [HttpPost("ReportJob")]
         public async Task<ActionResult<int>> ReportJob([FromForm] ReportCreateDTO model)
         {
             var id_str = GetUserIdFromToken();
@@ -355,10 +406,10 @@ namespace VJN.Controllers
 
             var reportid = await _postJobService.ReportJob(model, userid);
 
-            if(reportid<=0)
+            if (reportid <= 0)
             {
                 return BadRequest(new { Message = "Bạn đã Report 3 lần trong ngày" });
-            }           
+            }
 
             if (model.files == null || !model.files.Any())
                 return BadRequest("No files provided.");
@@ -448,7 +499,7 @@ namespace VJN.Controllers
             //    // Lấy tất cả các bài đăng theo trang thai khac
             //    postJobs = await _postJobService.GetAllPostJobByStatus(stt);
             //}
-            else 
+            else
             {
                 // Lấy các bài đăng có báo cáo (Reports)
                 postJobs = (await _postJobService.GetAllPostJobByStatus(-1))
@@ -458,13 +509,13 @@ namespace VJN.Controllers
 
             return Ok(pagedResult);
         }
-        
+
 
         [HttpGet("GetPostDetailForStaff")]
         public async Task<IActionResult> GetPostDetailForStaff(int id)
         {
             var post = await _postJobService.GetPostByIDForStaff(id);
-            if (post!=null)
+            if (post != null)
             {
                 return Ok(post);
             }

@@ -100,7 +100,6 @@ namespace VJN.Controllers
                 // Lấy danh sách CV của job seeker
                 var cvs = await _context.Cvs
                     .Include(c => c.ItemOfCvs)
-                    .Where(c => c.UserId == jobseeker.UserId)
                     .ToListAsync();
 
                 // Lọc CV chỉ lấy CV có ID bằng applyjob.CvId
