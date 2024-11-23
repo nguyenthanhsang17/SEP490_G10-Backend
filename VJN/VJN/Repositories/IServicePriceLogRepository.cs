@@ -1,4 +1,5 @@
 ﻿using VJN.Models;
+using VJN.ModelsDTO.ServicePriceLogDTOs;
 
 namespace VJN.Repositories
 {
@@ -11,5 +12,7 @@ namespace VJN.Repositories
         public Task<bool> CheckIsViewAllJobSeeker(int userid);
         public Task<IEnumerable<ServicePriceLog>> GetPaymentHistory(int userid);
         public  Task<IEnumerable<ServicePriceLog>> GetAllPaymentHistory();
+        public Task<bool> CreateServicePriceLog(ServicePriceLog model);
+        public Task<bool> AddService(int userid, int ServicePriceID);
     }
 }

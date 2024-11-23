@@ -18,5 +18,11 @@ namespace VJN.Repositories
             var prices  = await _context.ServicePriceLists.ToListAsync();
             return prices;
         }
+
+        public async Task<ServicePriceList> GetServicePriceList(int servicePriceListId)
+        {
+            var spl = await _context.ServicePriceLists.Where(spl=>spl.ServicePriceId==servicePriceListId).SingleOrDefaultAsync();
+            return spl;
+        }
     }
 }
