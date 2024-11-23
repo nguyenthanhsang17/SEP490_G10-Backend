@@ -16,6 +16,7 @@ using VJN.Models;
 using VJN.ModelsDTO.MediaItemDTOs;
 using VJN.ModelsDTO.PostJobDTOs;
 using VJN.ModelsDTO.ReportDTO;
+using VJN.ModelsDTO.SlotDTOs;
 using VJN.Paging;
 using VJN.Repositories;
 using VJN.Services;
@@ -186,10 +187,35 @@ namespace VJN.Controllers
                 var c = await _priceLogService.subtraction(uid, check, postJobCreateDTO.Time.Value);
                 if (!c)
                 {
-                    return BadRequest(new { Message = "Bạn đã hết số lượt đăng bài" });
+                    if (postJobCreateDTO.IsUrgentRecruitment.Value)
+                    {
+                        return BadRequest(new { Message = "Bạn đã hết số lượt đăng bài nổi bật" });
+                    }
+                    else
+                    {
+                        return BadRequest(new { Message = "Bạn đã hết số lượt đăng bài" });
+                    }
+                    
                 }
             }
             var id = await _postJobService.CreatePostJob(postJobCreateDTO, uid);
+            if (postJobCreateDTO.isLongTerm)
+            {
+                foreach (var item in postJobCreateDTO.slotDTOs)
+                {
+                    item.PostId = id;
+                }
+                var createdSlotIds = await _slotService.CreateSlotsWithSchedules(postJobCreateDTO.slotDTOs);
+            }
+            else
+            {
+                foreach (var item in postJobCreateDTO.jobPostDates)
+                {
+                    item.PostId = id;
+                }
+                var c = await _jobPostDateService.CreateJobPostDate(postJobCreateDTO.jobPostDates);
+            }
+            
             if (id <= 0)
             {
                 return BadRequest(new { Message = "Lỗi Tạo Công Việc" });
@@ -287,37 +313,37 @@ namespace VJN.Controllers
         [HttpPut("Ban/{id}")]
         public async Task<IActionResult> BanPostJob(int id, string reasonBan)
         {
-            //var c = await _postJobService.ChangeStatusPostJob(id, 6);
-            //var postJob = await _context.PostJobs.FindAsync(id);
-            //if (c)
-            //{
-            //    var banlog = new BanLogPostJob
-            //    {
-            //        Reason = reasonBan,
-            //        PostId = id,
-            //        AdminId = 1
-            //    };
-            //    _context.BanLogPostJobs.Add(banlog);
-            //     await _context.SaveChangesAsync();
-            //    var user = await _context.Users.FindAsync(postJob.AuthorId);
-            //    string body = $"Chào {user.FullName},\n\n" +
-            //          "Bài đăng của bạn đã bị cấm !\n\n" +
-            //          "Chi tiết bài đăng:\n" +
-            //          $"Tiêu đề: {postJob.JobTitle}\n" +
-            //          $"Mô tả: {postJob.JobDescription}\n" +
-            //          "Trạng thái: Bị Cấm\n\n" +
-            //          $"Lý do : {reasonBan}.\n\n" +
-            //          "Hãy xem lại điều khoản về bài đăng.\n\n" +
-            //          "Nếu có thắc mắc gì hãy liên hệ ngay với chúng tôi.\n\n" +
-            //          "Trân trọng,\n" +
-            //          "Đội ngũ hỗ trợ";
-            //    await _emailService.SendEmailAsync(user.Email, "Bài đăng của bạn đã bị cấm", body);
-            //    return Ok(c);
-            //}
-            //else
-            //{
-            //    return BadRequest(new { Message = "Cấm bài viết thất bại " });
-            //}
+            var c = await _postJobService.ChangeStatusPostJob(id, 6);
+            var postJob = await _context.PostJobs.FindAsync(id);
+            if (c)
+            {
+                var banlog = new BanLogPostJob
+                {
+                    Reason = reasonBan,
+                    PostId = id,
+                    AdminId = 1
+                };
+                //_context.BanLogPostJobs.Add(banlog);
+                await _context.SaveChangesAsync();
+                var user = await _context.Users.FindAsync(postJob.AuthorId);
+                string body = $"Chào {user.FullName},\n\n" +
+                      "Bài đăng của bạn đã bị cấm !\n\n" +
+                      "Chi tiết bài đăng:\n" +
+                      $"Tiêu đề: {postJob.JobTitle}\n" +
+                      $"Mô tả: {postJob.JobDescription}\n" +
+                      "Trạng thái: Bị Cấm\n\n" +
+                      $"Lý do : {reasonBan}.\n\n" +
+                      "Hãy xem lại điều khoản về bài đăng.\n\n" +
+                      "Nếu có thắc mắc gì hãy liên hệ ngay với chúng tôi.\n\n" +
+                      "Trân trọng,\n" +
+                      "Đội ngũ hỗ trợ";
+                await _emailService.SendEmailAsync(user.Email, "Bài đăng của bạn đã bị cấm", body);
+                return Ok(c);
+            }
+            else
+            {
+                return BadRequest(new { Message = "Cấm bài viết thất bại " });
+            }
             return null;
         }
         [Authorize]
