@@ -55,5 +55,20 @@ namespace VJN.Services
             var c = await _servicePriceLogRepository.subtraction(userid, check, time);
             return c;
         }
+
+        public async Task<bool> CreateServicePriceLog(int serviceid, int u)
+        {
+            var model = new ServicePriceLog
+            {
+                UserId = u,
+                ServicePriceId = serviceid,
+                RegisterDate = DateTime.Now,
+            };
+            var i = await _servicePriceLogRepository.CreateServicePriceLog(model);
+
+            var i1 = await _servicePriceLogRepository.AddService(u, serviceid);
+
+            return i&&i1;
+        }
     }
 }

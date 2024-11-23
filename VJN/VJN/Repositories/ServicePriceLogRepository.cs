@@ -61,7 +61,7 @@ namespace VJN.Repositories
 
         public async Task<IEnumerable<ServicePriceLog>> GetPaymentHistory(int userid)
         {
-            var register = await _context.ServicePriceLogs.Where(sp=>sp.UserId==userid).ToListAsync();
+            var register = await _context.ServicePriceLogs.Where(sp => sp.UserId == userid).ToListAsync();
             return register;
         }
 
@@ -95,7 +95,7 @@ namespace VJN.Repositories
             {
                 if (check)
                 {
-                    if (servicePriceLog.NumberPostsUrgentRecruitment >= time )
+                    if (servicePriceLog.NumberPostsUrgentRecruitment >= time)
                     {
                         servicePriceLog.NumberPostsUrgentRecruitment = servicePriceLog.NumberPostsUrgentRecruitment - time;
                         _context.Entry(servicePriceLog).State = EntityState.Modified;
@@ -125,6 +125,83 @@ namespace VJN.Repositories
             else
             {
                 return false;
+            }
+
+        }
+
+        public async Task<bool> CreateServicePriceLog(ServicePriceLog model)
+        {
+            _context.ServicePriceLogs.Add(model);
+            int a = await _context.SaveChangesAsync();
+            if (a > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> AddService(int userid, int ServicePriceID)
+        {
+            var ServicePrice = await _context.ServicePriceLists.Where(sp => sp.ServicePriceId == ServicePriceID).SingleOrDefaultAsync();
+
+            int NumberPosts = ServicePrice.NumberPosts ?? 0;
+            int NumberPostsUrgentRecruitment = ServicePrice.NumberPostsUrgentRecruitment ?? 0;
+            int IsFindJobseekers = ServicePrice.IsFindJobseekers ?? 0;
+            int DurationsMonth = ServicePrice.DurationsMonth ?? 0;
+            DateTime currentDate = DateTime.Now;
+            var userService = await _context.Services.Where(us => us.UserId == userid).SingleOrDefaultAsync();
+            if (userService != null)
+            {
+                userService.NumberPosts = userService.NumberPosts + NumberPosts;
+                userService.NumberPostsUrgentRecruitment = userService.NumberPostsUrgentRecruitment + NumberPostsUrgentRecruitment;
+
+                if (IsFindJobseekers == 1)
+                {
+                    if (userService.IsFindJobseekers == 0)
+                    {
+                        userService.ExpirationDate = currentDate.AddMonths(DurationsMonth);
+                        userService.IsFindJobseekers = IsFindJobseekers;
+                    }
+                    else
+                    {
+                        userService.IsFindJobseekers = IsFindJobseekers;
+                        if (currentDate > userService.ExpirationDate)
+                        {
+                            userService.ExpirationDate = currentDate.AddMonths(DurationsMonth);
+                        }
+                        else
+                        {
+                            userService.ExpirationDate = userService.ExpirationDate.Value.AddMonths(DurationsMonth);
+                        }
+                    }
+                }
+                _context.Entry(userService).State = EntityState.Modified;
+                int i= await _context.SaveChangesAsync();
+                return i > 0;
+            }
+            else
+            {
+                var service = new Service()
+                {
+                    UserId = userid,
+                    NumberPosts = NumberPosts,
+                    NumberPostsUrgentRecruitment = NumberPostsUrgentRecruitment,
+                    IsFindJobseekers = IsFindJobseekers,
+                    ExpirationDate = currentDate.AddMonths(DurationsMonth),
+                };
+                _context.Services.Add(service);
+                int i = await _context.SaveChangesAsync();
+                if (i > 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
 
         }
