@@ -17,5 +17,9 @@ namespace VJN.ModelsDTO.PostJobDTOs
         public bool? IsUrgentRecruitment { get; set; }
         public int? JobCategoryId { get; set; }
         public int? Time { get; set; }
+        public IEnumerable<SlotCreateDTO> slotDTOs { get; set; }
+        public IEnumerable<JobPostDateCreateDTO> jobPostDates {  get; set; }
+        public bool isLongTerm {  get; set; }
+
     }
 }
