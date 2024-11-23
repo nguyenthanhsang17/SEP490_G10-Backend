@@ -16,6 +16,7 @@ using VJN.Models;
 using VJN.ModelsDTO.MediaItemDTOs;
 using VJN.ModelsDTO.PostJobDTOs;
 using VJN.ModelsDTO.ReportDTO;
+using VJN.ModelsDTO.SlotDTOs;
 using VJN.Paging;
 using VJN.Repositories;
 using VJN.Services;
@@ -186,10 +187,35 @@ namespace VJN.Controllers
                 var c = await _priceLogService.subtraction(uid, check, postJobCreateDTO.Time.Value);
                 if (!c)
                 {
-                    return BadRequest(new { Message = "Bạn đã hết số lượt đăng bài" });
+                    if (postJobCreateDTO.IsUrgentRecruitment.Value)
+                    {
+                        return BadRequest(new { Message = "Bạn đã hết số lượt đăng bài nổi bật" });
+                    }
+                    else
+                    {
+                        return BadRequest(new { Message = "Bạn đã hết số lượt đăng bài" });
+                    }
+                    
                 }
             }
             var id = await _postJobService.CreatePostJob(postJobCreateDTO, uid);
+            if (postJobCreateDTO.isLongTerm)
+            {
+                foreach (var item in postJobCreateDTO.slotDTOs)
+                {
+                    item.PostId = id;
+                }
+                var createdSlotIds = await _slotService.CreateSlotsWithSchedules(postJobCreateDTO.slotDTOs);
+            }
+            else
+            {
+                foreach (var item in postJobCreateDTO.jobPostDates)
+                {
+                    item.PostId = id;
+                }
+                var c = await _jobPostDateService.CreateJobPostDate(postJobCreateDTO.jobPostDates);
+            }
+            
             if (id <= 0)
             {
                 return BadRequest(new { Message = "Lỗi Tạo Công Việc" });
@@ -366,6 +392,7 @@ namespace VJN.Controllers
                   "Đội ngũ hỗ trợ";
             await _emailService.SendEmailAsync(user.Email, "Bài đăng của bạn đã bị cấm", body);
             return Ok(new { Message = "Bài đăng đã bị cấm " });
+
 
         }
 

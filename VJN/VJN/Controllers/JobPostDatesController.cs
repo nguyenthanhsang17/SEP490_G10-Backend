@@ -27,7 +27,7 @@ namespace VJN.Controllers
         [HttpPost]
         public async Task<ActionResult<bool>> PostJobPostDate(IEnumerable<JobPostDateCreateDTO> jobPostDates)
         {
-            var c = _jobPostDateService.CreateJobPostDate(jobPostDates);
+            var c =await _jobPostDateService.CreateJobPostDate(jobPostDates);
             return Ok(c);
         }
 
