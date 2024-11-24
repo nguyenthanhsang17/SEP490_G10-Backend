@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting.Builder;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
 using VJN.Models;
@@ -23,13 +24,15 @@ namespace VJN.Controllers
         private readonly IUserService _userService;
         private readonly IJobSeekerService _seekerService;
         private readonly VJNDBContext _context;
-        public JobJobSeekerController(IApplyJobService applyJoBService, IPostJobService postJobService, IUserService userService, VJNDBContext context, IJobSeekerService jobSeekerService)
+        private readonly IServicePriceLogService _servicePriceLogService;
+        public JobJobSeekerController(IApplyJobService applyJoBService, IPostJobService postJobService, IUserService userService, VJNDBContext context, IJobSeekerService jobSeekerService, IServicePriceLogService servicePriceLogService)
         {
             _applyJoBService = applyJoBService;
             _postJobService = postJobService;
             _userService = userService;
             _context = context;
             _seekerService = jobSeekerService;
+            _servicePriceLogService = servicePriceLogService;
         }
 
         private string GetUserIdFromToken()
@@ -120,12 +123,20 @@ namespace VJN.Controllers
         }
         [Authorize]
         [HttpGet("GetAllJobSeeker")]
-        public async Task<PagedResult<JobSeekerForListDTO>> GetAllJobSeeker([FromQuery]JobSeekerSearchDTO s)
+        public async Task< ActionResult<PagedResult<JobSeekerForListDTO>>> GetAllJobSeeker([FromQuery]JobSeekerSearchDTO s)
         {
             var id_str = GetUserIdFromToken();
             var userid = int.Parse(id_str);
+
+            var check = await _servicePriceLogService.CheckIsViewAllJobSeeker(userid);
+            Console.WriteLine(check);
+            if (!check)
+            {
+                Console.WriteLine("sang estssaasd");
+                return Ok(new {Message="Bạn không dc phép truy cập hãy mua gói"});
+            }
             var page = await _seekerService.GetAllJobSeeker(s, userid);
-            return page;
+            return Ok(page);
         }
 
         [Authorize]
