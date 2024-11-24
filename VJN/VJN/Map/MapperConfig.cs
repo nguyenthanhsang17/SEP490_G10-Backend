@@ -19,6 +19,7 @@ using VJN.ModelsDTO.EmployerDTOs;
 using VJN.ModelsDTO.ServicePriceLogDTOs;
 using VJN.ModelsDTO.ServicePriceListDTOs;
 using VJN.ModelsDTO.ChatDTOs;
+using VJN.ModelsDTO.ServiceDTOs;
 
 namespace VJN.Map
 {
@@ -96,7 +97,7 @@ namespace VJN.Map
                                                   .ForMember(dest => dest.NumberAppliedAccept, otp => otp.MapFrom(src => src.ApplyJobs != null ? src.ApplyJobs.Count(aj => aj.Status == 3 || aj.Status == 4) : 0));
             
             CreateMap<JobPostDate, JobPostDateDTO>();
-            CreateMap<PostJobDetailUpdate, PostJob>();
+            CreateMap<PostJobDetailUpdate, PostJob>().ForMember(dest => dest.JobPostDates, opt => opt.Ignore()); 
 
             CreateMap<ServicePriceLog, PaymentHistory>();
             CreateMap<ServicePriceList, ServicePriceListDTO>();
@@ -104,6 +105,7 @@ namespace VJN.Map
             CreateMap<Chat, ChatDTO>();
             CreateMap<SendChat, Chat>().ForMember(dest => dest.SendTime, otp => otp.MapFrom(src => DateTime.Now));
             CreateMap<ServicePriceLogForCreateDTO, ServicePriceLog>().ForMember(dest => dest.RegisterDate, otp => otp.MapFrom(src => DateTime.Now));
+            CreateMap<Service, ServiceDTO>();
         }
     }
 }

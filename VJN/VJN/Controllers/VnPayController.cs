@@ -61,6 +61,7 @@ namespace VJN.Controllers
         [HttpPost("PaymentCallBack/{id}")]
         public async Task<IActionResult> PaymentCallBack(int id)
         {
+            Console.WriteLine("heheheehehheeheh");
             var id_str = GetUserIdFromToken();
             int userid = 0;
             if (!string.IsNullOrEmpty(id_str))
