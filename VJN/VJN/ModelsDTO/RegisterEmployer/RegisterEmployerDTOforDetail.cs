@@ -10,7 +10,7 @@ namespace VJN.ModelsDTO.RegisterEmployer
         public string? BussinessAddress { get; set; }
         public DateTime? CreateDate { get; set; }
         public int? Status { get; set; }
-
+        public string? reason {  get; set; }
         public  UserDTOs.UserDTOinRegisterEmployer? User { get; set; }
         public  List<String> ListIMG { get; set; }
     }

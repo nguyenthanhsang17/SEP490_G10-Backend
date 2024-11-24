@@ -467,11 +467,16 @@ namespace VJN.Controllers
                 // Lấy tất cả các bài đăng
                 postJobs = await _postJobService.GetAllPostJobByStatus(-1);
             }
-            //else if (status == 2)
-            //{
-            //    // Lấy tất cả các bài đăng theo trang thai khac
-            //    postJobs = await _postJobService.GetAllPostJobByStatus(stt);
-            //}
+            else if (status == 2)
+            {
+                // Lấy tất cả các bài đăng đã duyệt
+                postJobs = await _postJobService.GetAllPostJobByStatus(status);
+            }
+            else if (status == 6)
+            {
+                // Lấy tất cả các bài đăng bị cấm
+                postJobs = await _postJobService.GetAllPostJobByStatus(status);
+            }
             else
             {
                 // Lấy các bài đăng có báo cáo (Reports)

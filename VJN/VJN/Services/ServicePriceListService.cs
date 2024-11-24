@@ -30,5 +30,11 @@ namespace VJN.Services
             var result = pricesDTO.FirstOrDefault(r=>r.ServicePriceId == id);
             return result;
         }
+
+        public async Task<ServicePriceList> CreateServicePriceList(ServicePriceList newServicePriceList)
+        {
+            var createdServicePriceList = await _servicePriceListRepository.CreateServicePriceList(newServicePriceList);
+            return createdServicePriceList;
+        }
     }
 }

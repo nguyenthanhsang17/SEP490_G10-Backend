@@ -16,6 +16,7 @@ namespace VJN.ModelsDTO.PostJobDTOs
         public DateTime? CensorDate { get; set; }
         public bool? IsUrgentRecruitment { get; set; }
         public int? JobCategoryId { get; set; }
+        public string reason { get; set; }
 
         public  UserDTOs.UserDTOReport? Author { get; set; }
         public UserDTOs.UserDTOReport? Censor { get; set; }
