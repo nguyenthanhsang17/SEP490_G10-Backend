@@ -16,6 +16,8 @@ namespace VJN.Models
         public int? IsFindJobseekers { get; set; }
         public int? DurationsMonth { get; set; }
         public decimal? Price { get; set; }
+        public string? ServicePriceName { get; set; }
+        public int? Status { get; set; }
 
         public virtual ICollection<ServicePriceLog> ServicePriceLogs { get; set; }
     }

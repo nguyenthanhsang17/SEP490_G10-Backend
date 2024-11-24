@@ -46,22 +46,12 @@ namespace VJN.Models
         public virtual DbSet<WishJob> WishJobs { get; set; } = null!;
         public virtual DbSet<WorkingHour> WorkingHours { get; set; } = null!;
 
-        private string getConnectionString()
-        {
-            string connectionString;
-            IConfiguration config = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", true, true)
-                .Build();
-            connectionString = config["ConnectionStrings:DefaultConnection"];
-            return connectionString;
-        }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer(getConnectionString());
+                optionsBuilder.UseSqlServer("server =(local); database = VJNDB;uid=sa;pwd=123456;TrustServerCertificate =true");
             }
         }
 
@@ -535,6 +525,8 @@ namespace VJN.Models
                 entity.Property(e => e.DurationsMonth).HasColumnName("durationsMonth");
 
                 entity.Property(e => e.Price).HasColumnType("money");
+
+                entity.Property(e => e.ServicePriceName).HasColumnName("Service_price_Name");
             });
 
             modelBuilder.Entity<ServicePriceLog>(entity =>
