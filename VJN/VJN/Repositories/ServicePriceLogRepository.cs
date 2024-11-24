@@ -1,6 +1,7 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
 using VJN.Models;
+using VJN.ModelsDTO.ServiceDTOs;
 
 namespace VJN.Repositories
 {
@@ -50,7 +51,14 @@ namespace VJN.Repositories
 
         public async Task<bool> CheckIsViewAllJobSeeker(int userid)
         {
-            throw new NotImplementedException();
+            DateTime currentDate = DateTime.Now; // Hoặc DateTime.UtcNow nếu cần múi giờ chuẩn
+            var check = await _context.Services
+                .Where(sv => sv.UserId == userid
+                          && sv.IsFindJobseekers == 1
+                          && sv.ExpirationDate.HasValue // Nếu cột ExpirationDate cho phép null
+                          && sv.ExpirationDate >= currentDate)
+                .AnyAsync();
+            return check;
         }
 
         public async Task<int> GetNumberPosts(int userid)
@@ -204,6 +212,12 @@ namespace VJN.Repositories
                 }
             }
 
+        }
+
+        public async Task<Service> GetAllServiceByUserId(int userid)
+        {
+            var service  = await _context.Services.Where(sv=>sv.UserId==userid).SingleOrDefaultAsync();
+            return service;
         }
     }
 }

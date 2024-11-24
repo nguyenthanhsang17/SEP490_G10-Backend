@@ -1,4 +1,5 @@
 ﻿using VJN.Models;
+using VJN.ModelsDTO.ServiceDTOs;
 using VJN.ModelsDTO.ServicePriceLogDTOs;
 
 namespace VJN.Repositories
@@ -14,5 +15,6 @@ namespace VJN.Repositories
         public  Task<IEnumerable<ServicePriceLog>> GetAllPaymentHistory();
         public Task<bool> CreateServicePriceLog(ServicePriceLog model);
         public Task<bool> AddService(int userid, int ServicePriceID);
+        public Task<Service> GetAllServiceByUserId(int userid);
     }
 }

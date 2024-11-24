@@ -235,25 +235,41 @@ namespace VJN.Controllers
 
         private string GetUserIdFromToken()
         {
-            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-
-            if (string.IsNullOrEmpty(token))
+            try
             {
-                return null;
+                // Lấy header Authorization
+                if (!HttpContext.Request.Headers.TryGetValue("Authorization", out var authorizationHeader))
+                {
+                    return null; // Không có header Authorization
+                }
+
+                // Loại bỏ "Bearer " nếu có
+                var token = authorizationHeader.ToString().Replace("Bearer ", "").Trim();
+                if (string.IsNullOrEmpty(token))
+                {
+                    return null; // Token rỗng
+                }
+
+                // Tạo handler và kiểm tra token
+                var handler = new JwtSecurityTokenHandler();
+                if (!handler.CanReadToken(token))
+                {
+                    return null; // Token không đọc được
+                }
+
+                // Đọc token và lấy claim "nameid"
+                var jwtToken = handler.ReadJwtToken(token);
+                var userIdClaim = jwtToken.Claims.FirstOrDefault(claim => claim.Type == "nameid");
+
+                return userIdClaim?.Value; // Trả về giá trị hoặc null nếu không có claim
             }
-
-            var handler = new JwtSecurityTokenHandler();
-            var jwtToken = handler.ReadJwtToken(token);
-
-            var userIdClaim = jwtToken.Claims.FirstOrDefault(claim => claim.Type == "nameid");
-
-            if (userIdClaim == null)
+            catch (Exception ex)
             {
-                return null;
+                Console.WriteLine("Error in GetUserIdFromToken: " + ex.Message);
+                return null; // Xử lý lỗi và trả về null
             }
-
-            return userIdClaim.Value;
         }
+
 
         [HttpPut("Accept/{id}")]
         public async Task<IActionResult> AcceptPostJob(int id)
@@ -539,10 +555,31 @@ namespace VJN.Controllers
                 var c1 = await _priceLogService.subtraction(uid, check, postJobDetailForUpdate.Time.Value);
                 if (!c1)
                 {
-                    return BadRequest(new { Message = "Bạn đã hết số lượt đăng bài" });
+                    if (check)
+                    {
+                        return BadRequest(new { Message = "Bạn đã hết số lượt đăng bài nổi bật" });
+                    }
+                    else
+                    {
+                        return BadRequest(new { Message = "Bạn đã hết số lượt đăng bài" });
+                    }
                 }
             }
             var c = await _postJobService.UpdatePostJob(postJobDetailForUpdate);
+
+            if (postJobDetailForUpdate.isLongTerm)
+            {
+                var c1 = await _jobPostDateService.DeleteAllJobPostDate(postJobDetailForUpdate.PostId);
+                Console.WriteLine("delete postjob date: " + c1);
+                var c2 = await _slotService.UpadateSlot(postJobDetailForUpdate.slotDTOs, postJobDetailForUpdate.PostId);
+            }
+            else
+            {
+                var c1 = await _slotService.DeleteAllSlot(postJobDetailForUpdate.PostId);
+                Console.WriteLine("delete slot: " + c1);
+                var c2 = await _jobPostDateService.UpdateJobPostDate(postJobDetailForUpdate.PostId, postJobDetailForUpdate.jobPostDates);
+            }
+
             return Ok(c);
         }
 
