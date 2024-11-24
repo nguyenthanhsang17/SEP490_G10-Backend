@@ -553,6 +553,7 @@ namespace VJN.Controllers
                 BussinessAddress = re.BussinessAddress,
                 CreateDate = re.CreateDate,
                 Status= re.Status,
+                reason=re.Reason,
                 User = re.User != null ? new UserDTOinRegisterEmployer
                 {
                     UserId = re.User.UserId,

@@ -263,7 +263,7 @@ namespace VJN.Services
                     ExpirationDate = p.ExpirationDate,
                     Status = p.Status,
                     CensorDate = p.CensorDate,
-
+                    reason=p.Reason,
                     // Các thuộc tính từ bảng liên quan, chỉ lấy những gì cần thiết
                     Author = p.Author != null ? new UserDTOReport { UserId = p.Author.UserId, FullName = p.Author.FullName, Phonenumber = p.Author.Phonenumber, Age = p.Author.Age, Email = p.Author.Email, AvatarURL = p.Author.AvatarNavigation.Url } : null,
                     Censor = p.Censor != null ? new UserDTOReport { UserId = p.Censor.UserId, FullName = p.Censor.FullName, Phonenumber = p.Censor.Phonenumber, Age = p.Censor.Age, Email = p.Censor.Email, AvatarURL = p.Censor.AvatarNavigation.Url } : null,
