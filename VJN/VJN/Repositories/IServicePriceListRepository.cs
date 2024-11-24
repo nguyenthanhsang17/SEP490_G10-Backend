@@ -7,5 +7,6 @@ namespace VJN.Repositories
         public Task<IEnumerable<ServicePriceList>> GetAllServicePriceList();
         public Task<ServicePriceList> GetServicePriceList(int servicePriceListId);
         public  Task<ServicePriceList> CreateServicePriceList(ServicePriceList newServicePriceList);
+        public Task<bool> ChangeStatusPriceList(int id, int newStatus);
     }
 }

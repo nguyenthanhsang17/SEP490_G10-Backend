@@ -14,6 +14,10 @@ namespace VJN.Repositories
         public Task<bool> CancelApplyJob(int postjob, int userid);
 
         public Task<bool> ApplyJob(ApplyJob applyJob);
+
+        public Task<IEnumerable<ApplyJob>> GetApplyJobsByUserIdAndPostId(int JobSeekerId, int postId);
+
+        public  Task<bool> ReApplyJob(int applyjobid, int newCv);
     }
 
 }

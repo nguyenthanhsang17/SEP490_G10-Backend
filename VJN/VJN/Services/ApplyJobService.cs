@@ -44,5 +44,16 @@ namespace VJN.Services
             var applyjobs = await _applyJobRepository.getApplyJobByPostId(postId);
             return applyjobs;
         }
+
+        public async Task<IEnumerable<ApplyJob>> GetApplyJobsByUserIdAndPostId(int JobSeekerId, int postId) 
+        {
+            var applyjobs = await _applyJobRepository.GetApplyJobsByUserIdAndPostId(JobSeekerId, postId);
+            return applyjobs;
+        }
+
+        public async Task<bool> ReApplyJob(int applyjobid, int newCv) 
+        {
+            return await _applyJobRepository.ReApplyJob(applyjobid, newCv);
+        }
     }
 }

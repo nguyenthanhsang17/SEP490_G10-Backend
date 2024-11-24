@@ -33,6 +33,14 @@ namespace VJN.Controllers
             var cv = await _cvService.GetCvByUserID(int.Parse(id_str));
             return Ok(cv);
         }
+
+        [HttpGet("GetAllCV")]
+        public async Task<ActionResult<IEnumerable<CvDTODetail>>> GetAllCV()
+        {
+            var cv = await _cvService.GetCvAllcv();
+            return Ok(cv);
+        }
+
         [Authorize]
         [HttpPut("UpdateCv")]
         public async Task<ActionResult<bool>> UpdateCv([FromBody] List<CvUpdateDTO> model)

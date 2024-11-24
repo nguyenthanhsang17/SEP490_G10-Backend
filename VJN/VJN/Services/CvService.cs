@@ -32,6 +32,25 @@ namespace VJN.Services
             return cvdto;
         }
 
+        public async Task<IEnumerable<CvDTODetail>> GetCvAllcv() 
+        {
+            var cv = await _cvRepository.GetCvAllcv();
+            var cvdto = cv.Select(cv => new CvDTODetail
+            {
+                CvId = cv.CvId,
+                UserId = cv.UserId,
+                NameCv = cv.NameCv,
+                ItemOfCvs = cv.ItemOfCvs.Select(it => new ModelsDTO.ItemOfCvDTOs.ItemOfcvDTOforView
+                {
+                    ItemOfCvId = it.ItemOfCvId,
+                    CvId = cv.CvId,
+                    ItemDescription = it.ItemDescription,
+                    ItemName = it.ItemName,
+                }).ToList(),
+            }).ToList();
+            return cvdto;
+        }
+
         public async Task<bool> UpdateCV(List<CvUpdateDTO> cvsdto, int userid)
         {
             List<Cv> cvs = new List<Cv>();

@@ -15,5 +15,8 @@ namespace VJN.Services
         public Task<bool> CancelApplyJob(int postjob, int userid);
 
         public Task<bool> ApplyJob(ApplyJobCreateDTO applyJob, int uid);
+        public Task<IEnumerable<ApplyJob>> GetApplyJobsByUserIdAndPostId(int JobSeekerId, int postId);
+
+        public  Task<bool> ReApplyJob(int applyjobid, int newCv);
     }
 }
