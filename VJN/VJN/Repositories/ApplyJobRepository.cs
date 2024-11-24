@@ -13,17 +13,20 @@ namespace VJN.Repositories
 
         public async Task<bool> ApplyJob(ApplyJob applyJob)
         {
-            var c  = await _context.ApplyJobs.Where(aj=>aj.JobSeekerId==applyJob.JobSeekerId&&aj.PostId==applyJob.PostId&&aj.Status!=6).AnyAsync();
-            if(c)
-            {
-                return false;
-            }
-            else
-            {
-                _context.ApplyJobs.Add(applyJob);
-                await _context.SaveChangesAsync();
-                return true;
-            }
+            //var c  = await _context.ApplyJobs.Where(aj=>aj.JobSeekerId==applyJob.JobSeekerId&&aj.PostId==applyJob.PostId&&aj.Status!=6).AnyAsync();
+            //if(c)
+            //{
+            //    return false;
+            //}
+            //else
+            //{
+            //    _context.ApplyJobs.Add(applyJob);
+            //    await _context.SaveChangesAsync();
+            //    return true;
+            //}
+            _context.ApplyJobs.Add(applyJob);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
         public async Task<bool> CancelApplyJob(int postjob, int userid)
@@ -40,6 +43,23 @@ namespace VJN.Repositories
                 {
                     return false;
                 }
+            }
+            else
+            {
+                return false;
+            }
+            _context.Entry(aj).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> ReApplyJob(int applyjobid, int newCv)
+        {
+            var aj = await _context.ApplyJobs.FindAsync(applyjobid);
+            if (aj != null)
+            {
+                aj.CvId=newCv;
+                aj.ApplyDate=DateTime.Now;
             }
             else
             {
@@ -75,6 +95,15 @@ namespace VJN.Repositories
             var ApplyJobs = await _context.ApplyJobs.Where(aj => aj.PostId == postId).ToListAsync();
             return ApplyJobs;
         }
+
+        public async Task<IEnumerable<ApplyJob>> GetApplyJobsByUserIdAndPostId(int JobSeekerId, int postId)
+        {
+            var applyJobs = await _context.ApplyJobs
+                .Where(a => a.JobSeekerId == JobSeekerId && a.PostId == postId)
+                .ToListAsync();
+            return applyJobs; 
+        }
+
 
     }
 }

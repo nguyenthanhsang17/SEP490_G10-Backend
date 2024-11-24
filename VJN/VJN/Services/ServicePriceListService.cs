@@ -36,5 +36,10 @@ namespace VJN.Services
             var createdServicePriceList = await _servicePriceListRepository.CreateServicePriceList(newServicePriceList);
             return createdServicePriceList;
         }
+
+        public async Task<bool> ChangeStatusPriceList(int id, int newStatus) 
+        { 
+            return await _servicePriceListRepository.ChangeStatusPriceList(id, newStatus);
+        }
     }
 }

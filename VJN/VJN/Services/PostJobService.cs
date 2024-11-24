@@ -127,7 +127,19 @@ namespace VJN.Services
         public async Task<PostJobDTOForList> GetPostJobById(int id)
         {
             PostJob postJob = await _postJobRepository.GetPostJobById(id);
-            PostJobDTOForList postJobDTO = _mapper.Map<PostJobDTOForList>(postJob);
+            PostJobDTOForList postJobDTO = new PostJobDTOForList
+            {
+                PostId = postJob.PostId,
+                JobTitle = postJob.JobTitle,
+                SalaryTypesId = postJob.SalaryTypesId ?? 0, // Nếu null thì gán 0
+                FixSalary = postJob.Salary, // Hoặc sử dụng một thuộc tính khác nếu có
+                NumberPeople = postJob.NumberPeople,
+                AuthorId = postJob.AuthorId,
+                CreateDate = postJob.CreateDate,
+                ExpirationDate = postJob.ExpirationDate,
+                JobCategoryId = postJob.JobCategoryId,
+                Status = postJob.Status
+            };
             return postJobDTO;
 
         }
