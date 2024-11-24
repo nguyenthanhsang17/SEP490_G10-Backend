@@ -219,5 +219,10 @@ namespace VJN.Services
                 }
             }
         }
+
+        public async Task InsertOTP(int userid, string otp)
+        {
+            await _userRepository.InsertOTP(userid, otp);
+        }
     }
 }

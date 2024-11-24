@@ -22,5 +22,6 @@ namespace VJN.Services
         public Task<bool> CheckOtpExits(string otp);
         public Task<UserDTOdetail> GetUserDetail(int id);
         public Task<int> Ban_Unbanuser(int uid, bool ban);
+        public Task InsertOTP(int userid, string otp);
     }
 }
