@@ -14,13 +14,13 @@ namespace VJN.Repositories
 
         public async Task<IEnumerable<Blog>> GetAllBlog()
         {
-           var blog =await  _context.Blogs.ToListAsync();
+           var blog =await  _context.Blogs.Include(bl=>bl.ThumbnailNavigation).Include(bl=>bl.Author).ToListAsync();
             return blog;
         }
 
         public async Task<Blog> GetBlogDetail(int id)
         {
-            var blog = await _context.Blogs.Include(bl=>bl.ThumbnailNavigation).Where(bl=>bl.BlogId == id).SingleOrDefaultAsync();
+            var blog = await _context.Blogs.Include(bl=>bl.ThumbnailNavigation).Include(bl => bl.Author).Where(bl=>bl.BlogId == id).SingleOrDefaultAsync();
             return blog;
         }
 

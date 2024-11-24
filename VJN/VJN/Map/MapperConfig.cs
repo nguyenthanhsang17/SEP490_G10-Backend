@@ -51,7 +51,8 @@ namespace VJN.Map
 
             //Mapper for user
             //Mapper for Blog
-            CreateMap<Blog, BlogDTO>().ForMember(dest=> dest.Thumbnail, opt => opt.MapFrom(src => src.ThumbnailNavigation.Url));
+            CreateMap<Blog, BlogDTO>().ForMember(dest=> dest.Thumbnail, opt => opt.MapFrom(src => src.ThumbnailNavigation.Url))
+                                      .ForMember(dest=> dest.AuthorName, opt => opt.MapFrom(src => src.Author.FullName));
             //Mapper for Blog
 
             //Maper for Media
@@ -69,8 +70,7 @@ namespace VJN.Map
                                             .ForMember(dest => dest.JobCategoryName, opt => opt.MapFrom(src => src.JobCategory.JobCategoryName))
                                             .ForMember(dest => dest.SalaryTypeName, opt => opt.MapFrom(src => src.SalaryTypes.TypeName));
             CreateMap<Report, ReportDTO>().ForMember(dest => dest.jobseekerName, opt => opt.MapFrom(src => src.JobSeeker.FullName));
-            CreateMap<PostJobCreateDTO, PostJob>().ForMember(dest=>dest.CreateDate, opt=>opt.MapFrom(src=> DateTime.Now));
-
+            CreateMap<PostJobCreateDTO, PostJob>().ForMember(dest=>dest.CreateDate, opt=>opt.MapFrom(src=> DateTime.Now)).ForMember(dest => dest.JobPostDates, opt => opt.Ignore()); ;
             CreateMap<Cv, CvDTODetail>();
             CreateMap<ItemOfCv, ItemOfcvDTOforView>();
 

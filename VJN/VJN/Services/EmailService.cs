@@ -46,5 +46,41 @@ namespace VJN.Services
                 }
             }
         }
+
+        public async Task SendEmailAsyncWithHTML(string recipientEmail, string subject, string htmlContent)
+        {
+            var email = new MimeMessage();
+            email.From.Add(new MailboxAddress(_emailSettings.From, _emailSettings.From));
+            email.To.Add(new MailboxAddress(recipientEmail, recipientEmail));
+            email.Subject = subject;
+
+            var builder = new BodyBuilder
+            {
+                HtmlBody = htmlContent
+            };
+            email.Body = builder.ToMessageBody();
+
+            using (var smtp = new MailKit.Net.Smtp.SmtpClient())
+            {
+                try
+                {
+                    await smtp.ConnectAsync("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
+                    smtp.Timeout = 10000; // 10 giây
+                    await smtp.AuthenticateAsync(_emailSettings.Username, _emailSettings.Password);
+                    await smtp.SendAsync(email);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Gặp lỗi khi gửi email: {ex.Message}\n{ex.StackTrace}");
+                }
+                finally
+                {
+                    if (smtp.IsConnected)
+                    {
+                        await smtp.DisconnectAsync(true);
+                    }
+                }
+            }
+        }
     }
 }

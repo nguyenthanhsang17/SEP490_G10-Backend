@@ -245,7 +245,7 @@ namespace VJN.Controllers
             }
             else
             {
-                await _emailService.SendEmailAsync(model.Email, "Mã OTP của bạn để hoàn tất đăng ký", $"Cảm ơn bạn đã đăng ký tài khoản tại [Tên công ty/dịch vụ]. Để hoàn tất quá trình xác thực, vui lòng sử dụng mã OTP (One-Time Password) dưới đây:\r\n\r\nMã OTP của bạn: {otp}\r\n\r\nMã OTP này có hiệu lực trong 5 phút.\r\n\r\nNếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này. Để đảm bảo an toàn cho tài khoản của bạn, đừng chia sẻ mã OTP này với bất kỳ ai.\r\n\r\nNếu bạn cần hỗ trợ, đừng ngần ngại liên hệ với chúng tôi tại [email hỗ trợ] hoặc [số điện thoại hỗ trợ].\r\n\r\nCảm ơn bạn!");
+                await _emailService.SendEmailAsync(model.Email, "Mã OTP của bạn để hoàn tất đăng ký", $"Cảm ơn bạn đã đăng ký tài khoản tại VJN. Để hoàn tất quá trình xác thực, vui lòng sử dụng mã OTP (One-Time Password) dưới đây:\r\n\r\nMã OTP của bạn: {otp}\r\n\r\nMã OTP này có hiệu lực trong 5 phút.\r\n\r\nNếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này. Để đảm bảo an toàn cho tài khoản của bạn, đừng chia sẻ mã OTP này với bất kỳ ai.\r\n\r\nNếu bạn cần hỗ trợ, đừng ngần ngại liên hệ với chúng tôi tại [email hỗ trợ] hoặc [số điện thoại hỗ trợ].\r\n\r\nCảm ơn bạn!");
                 return Ok(new { Message = "Succesfully" });
             }
         }
@@ -398,6 +398,8 @@ namespace VJN.Controllers
         [HttpPost("VerifyEmployerAccount")]
         public async Task<IActionResult> VerifyEmployerAccount([FromForm] VerifyEmployerAccountDTO dto)
         {
+            Console.WriteLine(dto.BussinessName);
+            Console.WriteLine(dto.BussinessAddress);
             var id_str = GetUserIdFromToken();
             var id = int.Parse(id_str);
             Console.WriteLine(id);
