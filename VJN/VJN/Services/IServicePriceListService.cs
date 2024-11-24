@@ -8,5 +8,6 @@ namespace VJN.Services
         public Task<IEnumerable<ServicePriceListDTO>> GetAllServicePriceList();
         public Task<ServicePriceListDTO> GetServicePriceById(int id);
         public Task<ServicePriceList> CreateServicePriceList(ServicePriceList newServicePriceList);
+        public Task<bool> ChangeStatusPriceList(int id, int newStatus);
     }
 }

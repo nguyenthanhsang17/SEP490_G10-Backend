@@ -91,6 +91,7 @@ namespace VJN.Controllers
                     var jobcategory = await _context.JobCategories.FindAsync(postJobDTOForList.JobCategoryId);
                     string jobcategoryname = jobcategory.JobCategoryName;
 
+
                     appliedJobList.Add(new ApplyJobForListApplied
                     {
                         Id = appliedJob.Id,

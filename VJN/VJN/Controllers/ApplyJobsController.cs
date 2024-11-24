@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -41,6 +42,59 @@ namespace VJN.Controllers
             var uid= int.Parse(userid_str);
             var c = await _jobService.ApplyJob(applyJobCreateDTO, uid);
             return c ? Ok(c) : BadRequest(c);
+        }
+
+        [Authorize]
+        [HttpGet("GetApplied")]
+        public async Task<IActionResult> GetApplied( int jobid)
+        {
+            try
+            {
+                string userid_str = GetUserIdFromToken();
+                var uid = int.Parse(userid_str);
+                var appliedJobs = await _jobService.GetApplyJobsByUserIdAndPostId(uid, jobid);
+                if (appliedJobs != null && appliedJobs.Any())
+                {
+                    return Ok(appliedJobs);
+                }
+                else
+                {
+                    return NotFound("Không tìm thấy ứng tuyển phù hợp."); 
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Đã xảy ra lỗi trong quá trình xử lý.");
+            }
+        }
+
+        [Authorize]
+        [HttpPost("ReApplyJob")]
+        public async Task<IActionResult> ReApplyJob([FromBody] ApplyJobCreateDTO applyJobCreateDTO)
+        {
+            int? rs = -1;
+            string userid_str = GetUserIdFromToken();
+            var uid = int.Parse(userid_str);
+            var appliedJobs = await _jobService.GetApplyJobsByUserIdAndPostId(uid,(int) applyJobCreateDTO.PostId);
+            if (appliedJobs != null && appliedJobs.Any())
+            {
+                foreach (var item in appliedJobs)
+                {
+                    if (item.Status == 1)
+                    {
+                        rs = item.PostId;
+                        var c = await _jobService.ApplyJob(applyJobCreateDTO, uid);
+                        return c ? Ok(c) : BadRequest(c);
+                    }
+                    if (item.Status == 0)
+                    {
+                        rs = item.PostId;
+                        var c = await _jobService.ReApplyJob(item.Id,(int) applyJobCreateDTO.CvId);
+                    }
+                }
+                return Ok(rs);
+            }
+            return  BadRequest("Ứng tuyển lại thất bại");
         }
 
 

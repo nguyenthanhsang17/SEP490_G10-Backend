@@ -59,14 +59,32 @@ namespace VJN.Controllers
 
             var servicePriceList = new ServicePriceList
             {
+                ServicePriceName = newServicePrice.ServicePriceName,
                 NumberPosts = newServicePrice.NumberPosts,
                 NumberPostsUrgentRecruitment = newServicePrice.NumberPostsUrgentRecruitment,
                 IsFindJobseekers = newServicePrice.IsFindJobseekers,
                 DurationsMonth = newServicePrice.DurationsMonth,
-                Price = newServicePrice.Price
+                Price = newServicePrice.Price,
+                Status =0,
             };
             var createdService = await _servicePriceListService.CreateServicePriceList(servicePriceList);
             return Ok( new { msg = "create successfully" });
+        }
+
+        [HttpPut("UpdateStatus")]
+        public async Task<ActionResult<IEnumerable<ServicePriceList>>> UpdateStatusPriceLists(int id, int newStatus)
+        {
+            if (id <= 0 || (newStatus != 0 && newStatus != 1))
+            {
+                return BadRequest("ID hoặc trạng thái không hợp lệ.");
+            }
+            var result = await _servicePriceListService.ChangeStatusPriceList(id, newStatus);
+            if (!result)
+            {
+                return NotFound($"Không tìm thấy ServicePriceList với ID = {id}.");
+            }
+
+            return Ok($"Cập nhật trạng thái thành công cho ServicePriceList với ID = {id}.");
         }
     }
 }

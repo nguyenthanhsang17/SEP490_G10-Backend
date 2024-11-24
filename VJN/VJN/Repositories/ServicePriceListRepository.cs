@@ -32,5 +32,18 @@ namespace VJN.Repositories
             return newServicePriceList;
         }
 
+        public async Task<bool> ChangeStatusPriceList(int id, int newStatus)
+        {
+            var servicePriceList = await _context.ServicePriceLists.FindAsync(id);
+            if (servicePriceList == null)
+            {
+                return false;
+            }
+            servicePriceList.Status = newStatus;
+            _context.ServicePriceLists.Update(servicePriceList);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
     }
 }

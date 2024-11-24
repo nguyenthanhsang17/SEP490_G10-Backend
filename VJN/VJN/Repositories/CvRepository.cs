@@ -16,6 +16,12 @@ namespace VJN.Repositories
             return cvs;
         }
 
+        public async Task<IEnumerable<Cv>> GetCvAllcv()
+        {
+            var cvs = await _context.Cvs.Include(c => c.ItemOfCvs).ToListAsync();
+            return cvs;
+        }
+
         public async Task<bool> UpdateCV(List<Cv> cvs, int userid)
         {
             // Xóa liên kết UserId với các Cv hiện tại
