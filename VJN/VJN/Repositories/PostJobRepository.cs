@@ -362,7 +362,7 @@ namespace VJN.Repositories
 
         public async Task<bool> CheckJobByIDAndUserid(int id, int userid)
         {
-            var c = await _context.PostJobs.Where(pj => pj.PostId == id && pj.AuthorId == userid && pj.Status == 0).AnyAsync();
+            var c = await _context.PostJobs.Where(pj => pj.PostId == id && pj.AuthorId == userid && (pj.Status == 0|| pj.Status == 3)).AnyAsync();
             return c;
         }
 

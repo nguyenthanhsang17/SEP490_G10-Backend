@@ -46,6 +46,7 @@ namespace VJN.Models
         public virtual DbSet<WishJob> WishJobs { get; set; } = null!;
         public virtual DbSet<WorkingHour> WorkingHours { get; set; } = null!;
 
+
         private string getConnectionString()
         {
             string connectionString;
@@ -535,6 +536,8 @@ namespace VJN.Models
                 entity.Property(e => e.DurationsMonth).HasColumnName("durationsMonth");
 
                 entity.Property(e => e.Price).HasColumnType("money");
+
+                entity.Property(e => e.ServicePriceName).HasColumnName("Service_price_Name");
             });
 
             modelBuilder.Entity<ServicePriceLog>(entity =>
