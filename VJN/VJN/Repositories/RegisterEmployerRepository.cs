@@ -72,6 +72,7 @@ namespace VJN.Repositories
 
             // Set status to reject
             re.Status = 2;
+            re.Reason = reason;
             _context.RegisterEmployers.Update(re);
             await _context.SaveChangesAsync();
             return true;
