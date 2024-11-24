@@ -22,6 +22,26 @@ namespace VJN.Controllers
         }
 
         [Authorize]
+        [HttpPost("SendFisrtTime/{idto}")]
+        public async Task<ActionResult> SendFisrtTime(int idto)
+        {
+            var id_str = GetUserIdFromToken();
+            int userid = 0;
+            if (!string.IsNullOrEmpty(id_str))
+            {
+                userid = int.Parse(id_str);
+            }
+            var sc = new SendChat()
+            {
+                SendFromId = userid,
+                SendToId = idto,
+                Message = "Xin chào",
+            };
+            await _chatService.SendMessage(sc);
+            return Ok(true);
+        }
+
+        [Authorize]
         [HttpGet("GetChatUsers")]
         public async Task<ActionResult< IEnumerable<ChatListDTO>>> GetChatUsers()
         {

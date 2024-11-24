@@ -26,17 +26,23 @@ namespace VJN.Repositories
 
         public async Task<IEnumerable<User>> GetChatUsers(int userid)
         {
-            var users = await _context.Chats
-                    .Where(c => c.SendFromId == userid || c.SendToId == userid)
-                    .GroupBy(c => c.SendFromId == userid ? c.SendToId : c.SendFromId)
-                    .Select(g => g.Key)
-                    .Distinct()
-                    .Join(_context.Users,
-                            chatUserId => chatUserId,
-                            user => user.UserId,
-                            (chatUserId, user) => user)
-                    .ToListAsync();
-            return users;
+            var query = await _context.Chats
+                .Where(c => c.SendFromId == userid || c.SendToId == userid)
+                .GroupBy(c => c.SendFromId == userid ? c.SendToId : c.SendFromId)
+                .Select(g => new
+                {
+                    UserId = g.Key,
+                    LastMessageTime = g.Max(c => c.SendTime)
+                })
+                .Join(_context.Users,
+                    chatUser => chatUser.UserId,
+                    user => user.UserId,
+                    (chatUser, user) => new { User = user, LastMessageTime = chatUser.LastMessageTime })
+                .OrderByDescending(u => u.LastMessageTime)
+                .Select(u => u.User)
+                .ToListAsync();
+
+            return query;
         }
 
         public async Task SendMessage(Chat sendChat)
