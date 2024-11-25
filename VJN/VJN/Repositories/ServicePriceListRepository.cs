@@ -15,7 +15,7 @@ namespace VJN.Repositories
 
         public async Task<IEnumerable<ServicePriceList>> GetAllServicePriceList()
         {
-            var prices  = await _context.ServicePriceLists.ToListAsync();
+            var prices  = await _context.ServicePriceLists.Where(lp=>lp.Status==1).ToListAsync();
             return prices;
         }
 

@@ -54,7 +54,7 @@ namespace VJN.Controllers
                     }
                 } while (true);
                 _userService.UpdateOtpUser(model.email, opt);
-                string html = _emailService.GetEmailHTML("QuickJob", "Mã xác nhận OTP cho yêu cầu đặt lại mật khẩu", $"Chúng tôi đã nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn. Vui lòng sử dụng mã OTP dưới đây để xác thực yêu cầu của bạn:\r\n\r\n**Mã OTP: {opt} \r\n\r\nMã OTP này sẽ hết hạn sau 5 phút. Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này.");
+                string html = _emailService.GetEmailHTML("QuickJob", "Mã xác nhận OTP cho yêu cầu đặt lại mật khẩu", $"Chúng tôi đã nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn. Vui lòng sử dụng mã OTP dưới đây để xác thực yêu cầu của bạn: **Mã OTP: {opt} Mã OTP này sẽ hết hạn sau 5 phút. Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này.");
                 await _emailService.SendEmailAsyncWithHTML(model.email, "Mã xác nhận OTP cho yêu cầu đặt lại mật khẩu", html);
 
                 return Ok(new { Message = "Mã đã được gửi tới Email của bạn vui lòng kiểm tra !!!" });
