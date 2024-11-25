@@ -72,8 +72,17 @@ namespace VJN.Controllers
 
                 if (applyStatus.HasValue)
                 {
-                    userdtoforlist = userdtoforlist.Where(u => u.Apply_id == applyStatus.Value).ToList();
+                    for (int i = userdtoforlist.Count - 1; i >= 0; i--)
+                    {
+                        var item = userdtoforlist[i];
+                        var ap = await _context.ApplyJobs.FindAsync(item.Apply_id);
+                        if (ap.Status != applyStatus.Value)
+                        {
+                            userdtoforlist.RemoveAt(i);
+                        }
+                    }
                 }
+
 
 
                 var pagedResult = userdtoforlist.AsQueryable().GetPaged(pageNumber, pageSize);

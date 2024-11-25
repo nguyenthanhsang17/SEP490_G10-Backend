@@ -86,7 +86,7 @@ namespace VJN.Repositories
 
         public async Task<IEnumerable<ApplyJob>> getApplyJobByJobSeekerId(int JobSeekerId)
         {
-            var ApplyJobs = await _context.ApplyJobs.Where(aj=>aj.JobSeekerId == JobSeekerId).ToListAsync();
+            var ApplyJobs = await _context.ApplyJobs.Where(aj=>aj.JobSeekerId == JobSeekerId).Include(a=>a.Cv).ToListAsync();
             return ApplyJobs;
         }
         

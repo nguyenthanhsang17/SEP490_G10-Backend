@@ -42,6 +42,8 @@ namespace VJN.Controllers
                 return BadRequest(new { Message = "Không có giao dịch" });
             }
 
+            phe = phe.OrderByDescending(x => x.RegisterDate).ToList();
+
             var totalCount = phe.Count(); 
             var pagedData = phe.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
 
@@ -94,11 +96,10 @@ namespace VJN.Controllers
             {
                 int prid = (int)item.ServicePriceId;
                 item.servicePrice = await _servicePriceListService.GetServicePriceById(prid);
-
                 int useid = (int)item.UserId;
                 item.user = await _userService.GetUserDetail(useid);
             }
-
+            phe = phe.OrderByDescending(x => x.RegisterDate).ToList();
             // Phân trang
             var pagedResult = phe.GetPaged(pageNumber, pageSize);
             return Ok(pagedResult);

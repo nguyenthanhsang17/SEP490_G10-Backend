@@ -49,6 +49,21 @@ namespace VJN.Controllers
             }
         }
 
+        [HttpGet("GetAllServiecPriceList")]
+        public async Task<ActionResult<IEnumerable<ServicePriceListDTO>>> GetAllServicePriceListssss()
+        {
+            try
+            {
+                var servicePriceLists = await _servicePriceListService.GetAllServicePriceList();
+
+                return Ok(servicePriceLists);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = "An error occurred while fetching the service price list.", error = ex.Message });
+            }
+        }
+
         [HttpPut("CreateNewService")]
         public async Task<ActionResult<ServicePriceList>> CreateNewService([FromBody] CreateServicePriceListDTO newServicePrice)
         {
