@@ -30,7 +30,7 @@ namespace VJN.Controllers
 
         // GET: api/JobEmployer/GetAllJobseekerApply/{post_ID}
         [HttpGet("GetAllJobseekerApply/{post_ID}")]
-        public async Task<ActionResult<PagedResult<UserDTOforList>>> GetAllJobSeekerApplied(int post_ID, int pageNumber = 1, int pageSize = 4, string? gender = null, int? age = null, string? jobName = null, int? applyStatus = null)
+        public async Task<ActionResult<PagedResult<UserDTOforList>>> GetAllJobSeekerApplied(int post_ID, int pageNumber = 1, int pageSize = 4, string? gender = null, int? agemin = null, int? agemax = null, string? jobName = null, int? applyStatus = null)
         {
             try
             {
@@ -55,9 +55,14 @@ namespace VJN.Controllers
                     userdtoforlist = userdtoforlist.Where(u => u.Gender == isMale).ToList();
                 }
 
-                if (age.HasValue)
+                if (agemin.HasValue)
                 {
-                    userdtoforlist = userdtoforlist.Where(u => u.Age == age.Value).ToList();
+                    userdtoforlist = userdtoforlist.Where(u => u.Age >= agemin.Value).ToList();
+                }
+
+                if (agemax.HasValue)
+                {
+                    userdtoforlist = userdtoforlist.Where(u => u.Age <= agemax.Value).ToList();
                 }
 
                 if (!string.IsNullOrEmpty(jobName))
