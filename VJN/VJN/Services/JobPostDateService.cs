@@ -32,7 +32,8 @@ namespace VJN.Services
         {
             var pj = await _jobPostDateRepository.GetPostJobByPostID(postid);
             var pjdto = _mapper.Map<IEnumerable<JobPostDateDTO>>(pj);
-            return pjdto;   
+            var pjdto2 = pjdto.OrderBy(pj=>pj.EventDate).ThenBy(pj=>pj.StartTime);
+            return pjdto2;   
         }
 
         public async Task<bool> UpdateJobPostDate(int postid, IEnumerable<JobPostDateForUpdateDTO> jobPostDates)

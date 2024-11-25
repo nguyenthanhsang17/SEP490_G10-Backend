@@ -40,6 +40,24 @@ namespace VJN.Controllers
             var cv = await _cvService.GetCvAllcv();
             return Ok(cv);
         }
+        [HttpPut("DeleteCV/{id}")]
+        public async Task<IActionResult> DeleteCV(int id)
+        {
+            var check  =await _cvService.DeleteCV(id);
+            return Ok(check);
+        }
+
+
+        [Authorize]
+        [HttpPost("CreateCV")]
+        public async Task<IActionResult> CreateCV([FromBody] CvDTODetail model)
+        {
+            var id_str = GetUserIdFromToken();
+            var userid = int.Parse(id_str);
+            model.UserId = userid;
+            var check = await _cvService.UpdateCv(model);
+            return Ok(check);
+        }
 
         [Authorize]
         [HttpPut("UpdateCv")]
