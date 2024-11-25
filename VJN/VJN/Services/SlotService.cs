@@ -37,7 +37,8 @@ namespace VJN.Services
                 {
                     var wh = await _slotRepository.GetWorkingHoursByJobSchedule(dTO1.ScheduleId);
                     var whDTO = _mapper.Map<IEnumerable<WorkingHourDTO>>(wh);
-                    dTO1.workingHourDTOs = whDTO;
+                    var whDTO2 = whDTO.OrderBy(wh => wh.StartTime);
+                    dTO1.workingHourDTOs = whDTO2;
                 }
                 dTO.jobScheduleDTOs = jsdto;
             }

@@ -32,7 +32,7 @@ namespace VJN.Services
             return cvdto;
         }
 
-        public async Task<IEnumerable<CvDTODetail>> GetCvAllcv() 
+        public async Task<IEnumerable<CvDTODetail>> GetCvAllcv()
         {
             var cv = await _cvRepository.GetCvAllcv();
             var cvdto = cv.Select(cv => new CvDTODetail
@@ -76,6 +76,59 @@ namespace VJN.Services
             }
             var c = await _cvRepository.UpdateCV(cvs, userid);
             return c;
+        }
+
+        public async Task<bool> UpdateCv(CvDTODetail cvsdto)
+        {
+            if (cvsdto.CvId == -1)
+            {
+                var model = new Cv()
+                {
+                    NameCv = cvsdto.NameCv,
+                    UserId = cvsdto.UserId,
+                };
+                List<ItemOfCv> modelITs = new List<ItemOfCv>();
+                foreach (var item in cvsdto.ItemOfCvs)
+                {
+                    var modelIT = new ItemOfCv()
+                    {
+                        ItemName = item.ItemName,
+                        ItemDescription = item.ItemDescription,
+                    };
+                    modelITs.Add(modelIT);
+                }
+                model.ItemOfCvs = modelITs;
+
+                var check = await _cvRepository.CreateCv(model);
+                return check;
+            }
+            else
+            {
+                var model = new Cv()
+                {
+                    CvId = cvsdto.CvId,
+                    NameCv = cvsdto.NameCv,
+                    UserId = cvsdto.UserId,
+                };
+                List<ItemOfCv> modelITs = new List<ItemOfCv>();
+                foreach (var item in cvsdto.ItemOfCvs)
+                {
+                    var modelIT = new ItemOfCv()
+                    {
+                        ItemName = item.ItemName,
+                        ItemDescription = item.ItemDescription,
+                    };
+                    modelITs.Add(modelIT);
+                }
+                model.ItemOfCvs = modelITs;
+                var check = await _cvRepository.UpdateCv(model);
+                return check;
+            }
+        }
+
+        public async Task<bool> DeleteCV(int cvid)
+        {
+            var result = await _cvRepository.DeleteCv(cvid); return result;
         }
     }
 }
