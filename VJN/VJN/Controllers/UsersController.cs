@@ -583,6 +583,10 @@ namespace VJN.Controllers
             var result = await _registerEmployerService.AcceptRegisterEmployer(id);
             if (result)
             {
+                var rg = await _registerEmployerService.getRegisterEmployerByID(id);
+                var user = await _userService.findById((int)rg.UserId);
+                string html = _emailService.GetEmailHTML("Chúc mừng bạn đã trở thành nhà tuyển dụng ", $"Đơn đăng ký trở thành nhà tuyển dụng của bạn đã được xác nhận ", $"Rất nhiều ứng viên đang chờ ban . Hãy bắt đầu tạo một công việc mới ngay thôi ");
+                await _emailService.SendEmailAsyncWithHTML(user.Email, "Bạn đã trở thành nhà tuyển dụng", html);
                 return Ok(new { message = "Đã chấp thuận nhà tuyển dụng." });
             }
             return BadRequest(new { message = "Không tìm thấy nhà tuyển dụng hoặc có lỗi xảy ra." });
@@ -600,6 +604,10 @@ namespace VJN.Controllers
             var result = await _registerEmployerService.RejectRegisterEmployer(id, reason);
             if (result)
             {
+                var rg = await _registerEmployerService.getRegisterEmployerByID(id);
+                var user = await _userService.findById((int)rg.UserId);
+                string html = _emailService.GetEmailHTML("Bạn đã bị từ chối trở thânhf nahf tuyển dụng", $"Đơn đăng ký trở thành nhà tuyển dụng của bạn đã bị từ chối ", $" Lý do từ chối : {reason}");
+                await _emailService.SendEmailAsyncWithHTML(user.Email, "Yêu cầu trở thành nhà tuyển dụng của bạn đã bị từ chối ", html);
                 return Ok(new { message = "Đã từ chối nhà tuyển dụng." });
             }
             return BadRequest(new { message = "Không tìm thấy nhà tuyển dụng hoặc có lỗi xảy ra." });
@@ -613,9 +621,20 @@ namespace VJN.Controllers
                 return BadRequest(new { message = "Vui lòng nhập lý do cấm." });
             }
             string msg = "Đã cấm người dùng.";
-            if (!ban) 
+            if (!ban)
             {
                 msg = "đã gỡ cấm người dùng ";
+
+                var user = await _userService.findById(id);
+                string html = _emailService.GetEmailHTML("Tài khoản của bạn đã được gỡ cấm ", $"Lưu ý chấp hành nghiêm chỉnh các quy tắc của chúng tôi ", $" Chúc bạn ngày mới tốt lạnh");
+                await _emailService.SendEmailAsyncWithHTML(user.Email, "Tài khoản của bạn đã được gỡ cấm", html);
+            }
+            else {
+
+                var user = await _userService.findById(id);
+                string html = _emailService.GetEmailHTML("Tài khoản của bạn đã bị gỡ cấm ", $"Lý do cấm {reason} ", $" Nếu có bất kỳ thắc mắc nào hãy liên hệ với chúng tôi ");
+                await _emailService.SendEmailAsyncWithHTML(user.Email, "Tài khoản của bạn đã Bị cấm ", html);
+
             }
             var result = await _userService.Ban_Unbanuser(id,ban);
             if (result==1)
