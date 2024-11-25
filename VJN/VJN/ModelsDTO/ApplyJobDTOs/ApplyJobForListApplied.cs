@@ -17,5 +17,6 @@
         public int StatusApplyJob { get; set; }
         public int StatusJob { get; set; }
         public string JobCategory { get; set; }
+        public string ? CVname { get; set; }
     }
 }
