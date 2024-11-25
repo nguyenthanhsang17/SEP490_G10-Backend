@@ -27,9 +27,9 @@ namespace VJN.Controllers
 
         // GET: api/ServicePriceLists
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ServicePriceList>>> GetServicePriceLists()
+        public async Task<ActionResult<IEnumerable<ServicePriceListDTO>>> GetServicePriceLists()
         {
-            var pr = await _servicePriceListService.GetAllServicePriceList();
+            var pr = await _servicePriceListService.GetAllServicePriceListWithStatus1();
             return Ok(pr);
         }
 

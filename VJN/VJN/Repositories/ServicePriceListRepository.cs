@@ -15,7 +15,7 @@ namespace VJN.Repositories
 
         public async Task<IEnumerable<ServicePriceList>> GetAllServicePriceList()
         {
-            var prices  = await _context.ServicePriceLists.Where(lp=>lp.Status==1).ToListAsync();
+            var prices  = await _context.ServicePriceLists.ToListAsync();
             return prices;
         }
 
@@ -45,5 +45,10 @@ namespace VJN.Repositories
             return true;
         }
 
+        public async Task<IEnumerable<ServicePriceList>> GetAllServicePriceListWithStatus1()
+        {
+            var spl = await _context.ServicePriceLists.Where(spl=>spl.Status==1).ToListAsync();
+            return spl;
+        }
     }
 }
