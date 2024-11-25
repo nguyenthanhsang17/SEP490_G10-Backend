@@ -161,7 +161,21 @@ namespace VJN.Services
                 postdto.isWishJob = false;
             }
             postdto.NumberAppliedUser = await _postJobRepository.CountApplyJob(postdto.PostId);
-
+            if (userid.HasValue)
+            {
+                if (userid.Value == postdto.AuthorId)
+                {
+                    postdto.Owner = 1;
+                }
+                else
+                {
+                    postdto.Owner = 0;
+                }
+            }
+            else
+            {
+                postdto.Owner = 0;
+            }
             return postdto;
         }
 

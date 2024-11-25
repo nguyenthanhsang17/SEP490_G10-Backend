@@ -41,5 +41,12 @@ namespace VJN.Services
         { 
             return await _servicePriceListRepository.ChangeStatusPriceList(id, newStatus);
         }
+
+        public async Task<IEnumerable<ServicePriceListDTO>> GetAllServicePriceListWithStatus1()
+        {
+            var spl = await _servicePriceListRepository.GetAllServicePriceListWithStatus1();
+            var pricesDTO = _mapper.Map<IEnumerable<ServicePriceListDTO>>(spl);
+            return pricesDTO;
+        }
     }
 }

@@ -27,14 +27,14 @@ namespace VJN.Controllers
 
         // GET: api/ServicePriceLists
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ServicePriceList>>> GetServicePriceLists()
+        public async Task<ActionResult<IEnumerable<ServicePriceListDTO>>> GetServicePriceLists()
         {
-            var pr = await _servicePriceListService.GetAllServicePriceList();
+            var pr = await _servicePriceListService.GetAllServicePriceListWithStatus1();
             return Ok(pr);
         }
 
         [HttpGet("GetAll")]
-        public async Task<ActionResult<IEnumerable<ServicePriceList>>> GetAllServicePriceLists([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        public async Task<ActionResult<IEnumerable<ServicePriceListDTO>>> GetAllServicePriceLists([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
             try
             {
@@ -65,7 +65,7 @@ namespace VJN.Controllers
                 IsFindJobseekers = newServicePrice.IsFindJobseekers,
                 DurationsMonth = newServicePrice.DurationsMonth,
                 Price = newServicePrice.Price,
-                Status =0,
+                Status = newServicePrice.Status,
             };
             var createdService = await _servicePriceListService.CreateServicePriceList(servicePriceList);
             return Ok( new { msg = "create successfully" });
