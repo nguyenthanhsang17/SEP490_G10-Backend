@@ -21,5 +21,7 @@ namespace VJN.Repositories
         public Task<bool> CheckOtpExits(string otp);
         public Task<User> GetUserByOtp(string otp);
 
+        public Task InsertOTP(int userid, string otp);
+
     }
 }

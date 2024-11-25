@@ -273,5 +273,14 @@ namespace VJN.Repositories
                 throw new Exception(ex.Message);
             }
         }
+
+        public async Task InsertOTP(int userid, string otp)
+        {
+            var user = await _context.Users.Where(u=>u.UserId==userid).SingleOrDefaultAsync();
+            user.VerifyCode = otp;
+            user.SendCodeTime = DateTime.Now;
+            _context.Entry(user).State = EntityState.Modified;
+            var i = await _context.SaveChangesAsync();
+        }
     }
 }
