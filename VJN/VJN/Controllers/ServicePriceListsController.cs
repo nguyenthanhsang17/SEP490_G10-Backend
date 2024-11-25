@@ -34,7 +34,7 @@ namespace VJN.Controllers
         }
 
         [HttpGet("GetAll")]
-        public async Task<ActionResult<IEnumerable<ServicePriceList>>> GetAllServicePriceLists([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        public async Task<ActionResult<IEnumerable<ServicePriceListDTO>>> GetAllServicePriceLists([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
             try
             {

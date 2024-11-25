@@ -36,5 +36,6 @@ namespace VJN.ModelsDTO.PostJobDTOs
         public int NumberAppliedUser { get; set;}
         public int? Time { get; set; }
         public string? Reason { get; set; }
+        public int Owner { get; set; }
     }
 }
