@@ -91,6 +91,7 @@ namespace VJN.Controllers
                     var jobcategory = await _context.JobCategories.FindAsync(postJobDTOForList.JobCategoryId);
                     string jobcategoryname = jobcategory.JobCategoryName;
 
+                    string cvname = appliedJob.Cv.NameCv;
 
                     appliedJobList.Add(new ApplyJobForListApplied
                     {
@@ -108,7 +109,8 @@ namespace VJN.Controllers
                         ExpirationDate = postJobDTOForList?.ExpirationDate,
                         StatusApplyJob = (int)appliedJob.Status,
                         StatusJob = (int)postJobDTOForList.Status,
-                        JobCategory = jobcategoryname
+                        JobCategory = jobcategoryname,
+                        CVname=cvname,
                     });
                 }
 
