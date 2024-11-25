@@ -65,7 +65,7 @@ namespace VJN.Controllers
                 IsFindJobseekers = newServicePrice.IsFindJobseekers,
                 DurationsMonth = newServicePrice.DurationsMonth,
                 Price = newServicePrice.Price,
-                Status =0,
+                Status = newServicePrice.Status,
             };
             var createdService = await _servicePriceListService.CreateServicePriceList(servicePriceList);
             return Ok( new { msg = "create successfully" });
