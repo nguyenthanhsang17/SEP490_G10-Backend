@@ -9,5 +9,7 @@ namespace VJN.Services
         public Task<bool> UpdateCV(List<CvUpdateDTO> cvs, int userid);
 
         public  Task<IEnumerable<CvDTODetail>> GetCvAllcv();
+        public Task<bool> UpdateCv(CvDTODetail cv);
+        public Task<bool> DeleteCV(int cvid);
     }
 }
