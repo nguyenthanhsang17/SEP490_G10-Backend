@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using VJN.Models;
 
 namespace VJN.Repositories
 {
@@ -15,6 +16,7 @@ namespace VJN.Repositories
         public Task<int> GetNumberSoldById(int id);
         public Task<decimal> GetRevenueByPackageIdAsync(int id);
 
-        public Task<IEnumerable<int>> GetAllIdPrice();
+        public Task<IEnumerable<ServicePriceList>> GetAllIdPrice();
+        public Task<int> GetTotalEmployer();
     }
 }

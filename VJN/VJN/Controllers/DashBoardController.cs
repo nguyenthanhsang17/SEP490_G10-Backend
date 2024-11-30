@@ -17,19 +17,17 @@ namespace VJN.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<DashBoardDTO>> DashBoard()
+        public async Task<ActionResult<DashBoardDTO>> DashBoard([FromQuery] DashBoardSearchDTO model)
         {
             // tong
             var DashBoardDTO = new DashBoardDTO();
             int TotalUser = await _dashboardService.GetTotalUser();
             UserStatistics UserStatistics = new UserStatistics();
-            double JobSeekersPercentage = await _dashboardService.GetJobSeekersPercentage();
-            double EmployersPercentage = await _dashboardService.GetEmployersPercentage();
-
-            UserStatistics.JobSeekersPercentage = JobSeekersPercentage;
-            UserStatistics.EmployersPercentage = EmployersPercentage;
-            RevenueStatistics RevenueStatistics = await _dashboardService.GetRevenueStatistics();
-            PackageStatistics PackageStatistics =  await _dashboardService.GetPackageStatistics();
+            double EmployersNumber = await _dashboardService.GetTotalEmployer();
+            UserStatistics.EmployersNumber = EmployersNumber;
+            //------------------------------------------------------------------------------------
+            RevenueStatistics RevenueStatistics = await _dashboardService.GetRevenueStatistics(model);
+            PackageStatistics PackageStatistics =  await _dashboardService.GetPackageStatistics(model);
             DashBoardDTO.TotalUser = TotalUser;
             DashBoardDTO.UserStatistics = UserStatistics;
             DashBoardDTO.RevenueStatistics = RevenueStatistics;

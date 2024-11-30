@@ -28,11 +28,10 @@ namespace VJN.Repositories
             return revenue.Value;
         }
 
-        public async Task<IEnumerable<int>> GetAllIdPrice()
+        public async Task<IEnumerable<ServicePriceList>> GetAllIdPrice()
         {
             var ids  = await _context.ServicePriceLists.ToListAsync();
-            var idss = ids.Select(spl => spl.ServicePriceId).ToList();
-            return idss;
+            return ids;
         }
 
         public async Task<double> GetEmployersPercentage()
@@ -109,6 +108,17 @@ namespace VJN.Repositories
         {
             var i = await _context.Users.CountAsync();
             return i;
+        }
+
+        public async Task<int> GetTotalEmployer()
+        {
+            var totalUsers = await _context.Users.CountAsync();
+
+            var usersWithPostJob = await _context.Users
+                .Where(user => _context.PostJobs.Any(post => post.AuthorId == user.UserId))
+                .CountAsync();
+
+            return totalUsers;
         }
 
 

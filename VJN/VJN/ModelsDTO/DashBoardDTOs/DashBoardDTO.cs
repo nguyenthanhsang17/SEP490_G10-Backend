@@ -9,8 +9,7 @@
     }
     public class UserStatistics
     {
-        public double JobSeekersPercentage { get; set; }
-        public double EmployersPercentage { get; set; }
+        public double EmployersNumber { get; set; }
     }
 
     public class RevenueStatistics

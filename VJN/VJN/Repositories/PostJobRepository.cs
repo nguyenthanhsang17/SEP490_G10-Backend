@@ -466,7 +466,7 @@ DistanceCalculation AS (
 )
 SELECT *
 FROM (
-    SELECT 
+    SELECT top 10
         pj.*,
         COALESCE(cr.RankCategory, 0) AS CategoryPriority,
         COALESCE(cs.CVScore, 0) AS CVMatch,
@@ -480,12 +480,12 @@ FROM (
     WHERE pj.ExpirationDate >= GETDATE() AND pj.Status = 2
 ) AS OrderedResults
 ORDER BY 
+    CVMatch DESC,
+    CategoryPriority DESC,
     CASE 
         WHEN @UserLatitude IS NOT NULL AND @UserLongitude IS NOT NULL THEN DistanceKm 
         ELSE NULL 
     END ASC, -- Gần nhất lên đầu nếu có tọa độ
-    CategoryPriority DESC,
-    CVMatch DESC,
     WishMatch DESC;
 
                     ";

@@ -604,7 +604,7 @@ namespace VJN.Controllers
                 userid = int.Parse(id_str);
             }
 
-            var result = await _postJobService.ViewRecommendedJobs(userid, view.pagenumber, view.userLatitude, view.userLongitude);
+            var result = await _postJobService.ViewRecommendedJobs(userid, 1, view.userLatitude, view.userLongitude);
             return Ok(result);
         }
 
