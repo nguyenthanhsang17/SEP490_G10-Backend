@@ -1,6 +1,7 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
 using VJN.Models;
+using VJN.ModelsDTO.DashBoardDTOs;
 
 namespace VJN.Repositories
 {
@@ -28,11 +29,10 @@ namespace VJN.Repositories
             return revenue.Value;
         }
 
-        public async Task<IEnumerable<int>> GetAllIdPrice()
+        public async Task<IEnumerable<ServicePriceList>> GetAllIdPrice()
         {
             var ids  = await _context.ServicePriceLists.ToListAsync();
-            var idss = ids.Select(spl => spl.ServicePriceId).ToList();
-            return idss;
+            return ids;
         }
 
         public async Task<double> GetEmployersPercentage()
@@ -61,16 +61,16 @@ namespace VJN.Repositories
             return (double)jobSeekersCount / totalUsers * 100;
         }
 
-        public async Task<int> GetNumberSoldById(int id)
+        public async Task<int> GetNumberSoldById(int id, DashBoardSearchDTO m)
         {
             var salesCount = await _context.ServicePriceLogs
-            .Where(log => log.ServicePriceId == id)
+            .Where(log => log.ServicePriceId == id && log.RegisterDate >= m.StartDate.Value && log.RegisterDate <= m.EndDate.Value)
             .CountAsync();
 
             return salesCount;
         }
 
-        public async Task<decimal> GetRevenueByPackageIdAsync(int id)
+        public async Task<decimal> GetRevenueByPackageIdAsync(int id, DashBoardSearchDTO m)
         {
 
             var price = await _context.ServicePriceLists
@@ -81,7 +81,7 @@ namespace VJN.Repositories
             if (price == 0) return 0;
 
             var salesCount = await _context.ServicePriceLogs
-                .Where(log => log.ServicePriceId == id)
+                .Where(log => log.ServicePriceId == id && log.RegisterDate>=m.StartDate.Value&&log.RegisterDate<=m.EndDate.Value)
                 .CountAsync();
             var result = salesCount * price;
             return result.Value;
@@ -109,6 +109,17 @@ namespace VJN.Repositories
         {
             var i = await _context.Users.CountAsync();
             return i;
+        }
+
+        public async Task<int> GetTotalEmployer()
+        {
+            var totalUsers = await _context.Users.CountAsync();
+
+            var usersWithPostJob = await _context.Users
+                .Where(user => _context.PostJobs.Any(post => post.AuthorId == user.UserId))
+                .CountAsync();
+
+            return totalUsers;
         }
 
 

@@ -4,13 +4,10 @@
     {
         public int? TotalUser { get; set; }
         public UserStatistics UserStatistics { get; set; }
-        public RevenueStatistics RevenueStatistics { get; set; }
-        public PackageStatistics PackageStatistics { get; set; }
     }
     public class UserStatistics
     {
-        public double JobSeekersPercentage { get; set; }
-        public double EmployersPercentage { get; set; }
+        public double EmployersNumber { get; set; }
     }
 
     public class RevenueStatistics
@@ -25,17 +22,28 @@
         public decimal Revenue { get; set; }
     }
 
-    public class PackageStatistics
+    public class PackageStatisticsNumberSold
     {
         public int TotalPackagesSold { get; set; }
-        public List<PopularPackage> MostPopularPackages { get; set; }
+        public List<PopularPackageNumberSold> MostPopularPackages { get; set; }
+    }
+    public class PackageStatisticsRevenue
+    {
+        public int TotalPackagesSold { get; set; }
+        public List<PopularPackageRevenue> MostPopularPackages { get; set; }
     }
 
-    public class PopularPackage
+    public class PopularPackageNumberSold
     {
         public int PackageId { get; set; }
         public string PackageName { get; set; }
         public int NumberSold { get; set; }
+    }
+
+    public class PopularPackageRevenue
+    {
+        public int PackageId { get; set; }
+        public string PackageName { get; set; }
         public decimal TotalRevenue { get; set; }
     }
     public class MonthsYear

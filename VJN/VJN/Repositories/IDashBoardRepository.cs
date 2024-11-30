@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using VJN.Models;
+using VJN.ModelsDTO.DashBoardDTOs;
 
 namespace VJN.Repositories
 {
@@ -12,9 +14,10 @@ namespace VJN.Repositories
 
         public Task<decimal> CalculateMonthlyRevenueAsync(int month, int year);
         public Task<int> GetTotalPackagesSold();
-        public Task<int> GetNumberSoldById(int id);
-        public Task<decimal> GetRevenueByPackageIdAsync(int id);
+        public Task<int> GetNumberSoldById(int id, DashBoardSearchDTO m);
+        public Task<decimal> GetRevenueByPackageIdAsync(int id, DashBoardSearchDTO m);
 
-        public Task<IEnumerable<int>> GetAllIdPrice();
+        public Task<IEnumerable<ServicePriceList>> GetAllIdPrice();
+        public Task<int> GetTotalEmployer();
     }
 }

@@ -16,25 +16,42 @@ namespace VJN.Controllers
             _dashboardService = dashboardService;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<DashBoardDTO>> DashBoard()
+        [HttpGet("DashBoardUser")]
+        public async Task<ActionResult<DashBoardDTO>> DashBoardUser()
         {
             // tong
             var DashBoardDTO = new DashBoardDTO();
             int TotalUser = await _dashboardService.GetTotalUser();
             UserStatistics UserStatistics = new UserStatistics();
-            double JobSeekersPercentage = await _dashboardService.GetJobSeekersPercentage();
-            double EmployersPercentage = await _dashboardService.GetEmployersPercentage();
-
-            UserStatistics.JobSeekersPercentage = JobSeekersPercentage;
-            UserStatistics.EmployersPercentage = EmployersPercentage;
-            RevenueStatistics RevenueStatistics = await _dashboardService.GetRevenueStatistics();
-            PackageStatistics PackageStatistics =  await _dashboardService.GetPackageStatistics();
+            double EmployersNumber = await _dashboardService.GetTotalEmployer();
+            UserStatistics.EmployersNumber = EmployersNumber;
+            //------------------------------------------------------------------------------------
+            //RevenueStatistics RevenueStatistics = await _dashboardService.GetRevenueStatistics(model);
+            //PackageStatistics PackageStatistics =  await _dashboardService.GetPackageStatistics(model);
             DashBoardDTO.TotalUser = TotalUser;
             DashBoardDTO.UserStatistics = UserStatistics;
-            DashBoardDTO.RevenueStatistics = RevenueStatistics;
-            DashBoardDTO.PackageStatistics = PackageStatistics;
             return Ok(DashBoardDTO);
+        }
+
+        [HttpGet("DashBoardRevenueStatistics")]
+        public async Task<ActionResult<RevenueStatistics>> DashBoardRevenueStatistics([FromQuery] DashBoardSearchDTO model)
+        {
+            RevenueStatistics RevenueStatistics = await _dashboardService.GetRevenueStatistics(model);
+            return Ok(RevenueStatistics);
+        }
+
+        [HttpGet("DashBoardPackageStatisticsRevenue")]
+        public async Task<ActionResult<PackageStatisticsRevenue>> DashBoardPackageStatisticsRevenue([FromQuery] DashBoardSearchDTO model)
+        {
+            PackageStatisticsRevenue PackageStatistics = await _dashboardService.GetPackageStatisticsRevenue(model);
+            return Ok(PackageStatistics);
+        }
+
+        [HttpGet("DashBoardPackageStatisticsNumberSold")]
+        public async Task<ActionResult<PackageStatisticsNumberSold>> DashBoardPackageStatisticsNumberSold([FromQuery] DashBoardSearchDTO model)
+        {
+            PackageStatisticsNumberSold PackageStatistics = await _dashboardService.GetPackageStatisticsNumberSold(model);
+            return Ok(PackageStatistics);
         }
     }
 }
