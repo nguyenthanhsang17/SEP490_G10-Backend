@@ -514,6 +514,10 @@ namespace VJN.Controllers
             {
                 // Lấy tất cả các bài đăng đã duyệt
                 postJobs = await _postJobService.GetAllPostJobByStatus(status);
+            }else if (status == 3)
+            {
+                // Lấy tất cả các bài đăng bị từ chói
+                postJobs = await _postJobService.GetAllPostJobByStatus(status);
             }
             else if (status == 6)
             {
@@ -526,6 +530,7 @@ namespace VJN.Controllers
                 postJobs = (await _postJobService.GetAllPostJobByStatus(-1))
                             .Where(item => item.Reports != null && item.Reports.Any());
             }
+            postJobs = postJobs.Where(p=>p.Status != 0).ToList();
             var pagedResult = postJobs.GetPaged(pageNumber, pageSize);
 
             return Ok(pagedResult);

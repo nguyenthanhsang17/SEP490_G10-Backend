@@ -65,7 +65,7 @@ namespace VJN.Controllers
 
 
         [HttpGet("GetallHistoryPayment")]
-        public async Task<ActionResult<PagedResult<PaymentHistory>>> GetAllHistoryPayment(
+        public async Task<ActionResult<PagedResult<PaymentHistory>>> GetAllHistoryPayment(int? uid,
         int pageNumber = 1,int pageSize = 10,int daysFilter = 0, // 0: Lấy tất cả
         int? servicePriceId = null) 
         {
@@ -100,6 +100,10 @@ namespace VJN.Controllers
                 item.user = await _userService.GetUserDetail(useid);
             }
             phe = phe.OrderByDescending(x => x.RegisterDate).ToList();
+            if (uid.HasValue)
+            {
+                phe=phe.Where(p=>p.UserId== uid.Value).ToList();
+            }
             // Phân trang
             var pagedResult = phe.GetPaged(pageNumber, pageSize);
             return Ok(pagedResult);
