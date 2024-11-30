@@ -80,24 +80,47 @@ namespace VJN.Services
             return result;
         }
 
-        public async Task<PackageStatistics> GetPackageStatistics(DashBoardSearchDTO m)
+        public async Task<PackageStatisticsRevenue> GetPackageStatisticsRevenue(DashBoardSearchDTO m)
         {
-            var packageStatistics = new PackageStatistics();
+            var packageStatistics = new PackageStatisticsRevenue();
             var TotalPackagesSold = await _dashBoardRepository.GetTotalPackagesSold();
-            List<PopularPackage> MostPopularPackages = new List<PopularPackage>();
+            List<PopularPackageRevenue> MostPopularPackages = new List<PopularPackageRevenue>();
+
+            List<ServicePriceList> ids = (await _dashBoardRepository.GetAllIdPrice()).ToList();
+
+            foreach (var id in ids)
+            {
+                decimal TotalRevenue =  await _dashBoardRepository.GetRevenueByPackageIdAsync(id.ServicePriceId, m);
+                var pp = new PopularPackageRevenue()
+                {
+                    PackageId = id.ServicePriceId,
+                    PackageName = "Gói " + id.ServicePriceName,
+                    TotalRevenue = TotalRevenue,
+                };
+                MostPopularPackages.Add(pp);
+            }
+
+            packageStatistics.TotalPackagesSold = TotalPackagesSold;
+            packageStatistics.MostPopularPackages = MostPopularPackages;
+            return packageStatistics;
+        }
+
+        public async Task<PackageStatisticsNumberSold> GetPackageStatisticsNumberSold(DashBoardSearchDTO m)
+        {
+            var packageStatistics = new PackageStatisticsNumberSold();
+            var TotalPackagesSold = await _dashBoardRepository.GetTotalPackagesSold();
+            List<PopularPackageNumberSold> MostPopularPackages = new List<PopularPackageNumberSold>();
 
             List<ServicePriceList> ids = (await _dashBoardRepository.GetAllIdPrice()).ToList();
 
             foreach (var id in ids)
             {
                 int NumberSold = await _dashBoardRepository.GetNumberSoldById(id.ServicePriceId, m);
-                decimal TotalRevenue =  await _dashBoardRepository.GetRevenueByPackageIdAsync(id.ServicePriceId, m);
-                var pp = new PopularPackage()
+                var pp = new PopularPackageNumberSold()
                 {
                     PackageId = id.ServicePriceId,
                     PackageName = "Gói " + id.ServicePriceName,
                     NumberSold = NumberSold,
-                    TotalRevenue = TotalRevenue,
                 };
                 MostPopularPackages.Add(pp);
             }

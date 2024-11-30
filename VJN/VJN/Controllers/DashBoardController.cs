@@ -40,10 +40,17 @@ namespace VJN.Controllers
             return Ok(RevenueStatistics);
         }
 
-        [HttpGet("DashBoardPackageStatistics")]
-        public async Task<ActionResult<PackageStatistics>> DashBoardPackageStatistics([FromQuery] DashBoardSearchDTO model)
+        [HttpGet("DashBoardPackageStatisticsRevenue")]
+        public async Task<ActionResult<PackageStatisticsRevenue>> DashBoardPackageStatisticsRevenue([FromQuery] DashBoardSearchDTO model)
         {
-            PackageStatistics PackageStatistics = await _dashboardService.GetPackageStatistics(model);
+            PackageStatisticsRevenue PackageStatistics = await _dashboardService.GetPackageStatisticsRevenue(model);
+            return Ok(PackageStatistics);
+        }
+
+        [HttpGet("DashBoardPackageStatisticsNumberSold")]
+        public async Task<ActionResult<PackageStatisticsNumberSold>> DashBoardPackageStatisticsNumberSold([FromQuery] DashBoardSearchDTO model)
+        {
+            PackageStatisticsNumberSold PackageStatistics = await _dashboardService.GetPackageStatisticsNumberSold(model);
             return Ok(PackageStatistics);
         }
     }
