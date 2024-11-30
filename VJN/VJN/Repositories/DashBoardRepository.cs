@@ -63,8 +63,15 @@ namespace VJN.Repositories
 
         public async Task<int> GetNumberSoldById(int id, DashBoardSearchDTO m)
         {
+            var currentDate = new DateTime(m.StartDate.Value.Year, m.StartDate.Value.Month, 1);
+
+            // Kết thúc ở cuối tháng cuối cùng
+            var endDate = new DateTime(m.EndDate.Value.Year, m.EndDate.Value.Month, 1)
+                .AddMonths(1)
+                .AddDays(-1);
+
             var salesCount = await _context.ServicePriceLogs
-            .Where(log => log.ServicePriceId == id && log.RegisterDate >= m.StartDate.Value && log.RegisterDate <= m.EndDate.Value)
+            .Where(log => log.ServicePriceId == id && log.RegisterDate >= currentDate && log.RegisterDate <= endDate)
             .CountAsync();
 
             return salesCount;
@@ -80,8 +87,15 @@ namespace VJN.Repositories
 
             if (price == 0) return 0;
 
+            var currentDate = new DateTime(m.StartDate.Value.Year, m.StartDate.Value.Month, 1);
+
+            // Kết thúc ở cuối tháng cuối cùng
+            var endDate = new DateTime(m.EndDate.Value.Year, m.EndDate.Value.Month, 1)
+                .AddMonths(1)
+                .AddDays(-1);
+
             var salesCount = await _context.ServicePriceLogs
-                .Where(log => log.ServicePriceId == id && log.RegisterDate>=m.StartDate.Value&&log.RegisterDate<=m.EndDate.Value)
+                .Where(log => log.ServicePriceId == id && log.RegisterDate>= currentDate && log.RegisterDate<= endDate)
                 .CountAsync();
             var result = salesCount * price;
             return result.Value;
