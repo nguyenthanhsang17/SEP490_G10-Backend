@@ -10,5 +10,6 @@
         public int Age { get; set; }
         public string JobName { get; set; }
         public bool? Gender { get; set; }
+        public int ApplyStatus { get; set; }
     }
 }

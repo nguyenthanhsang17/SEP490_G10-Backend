@@ -45,6 +45,8 @@ namespace VJN.Controllers
                     {
                         UserDTOforList userDTO = _mapper.Map<UserDTOforList>(_user);
                         userDTO.Apply_id = item.Id;
+                        var app = await _context.ApplyJobs.FindAsync(userDTO.Apply_id);
+                        userDTO.ApplyStatus =(int) app.Status;
                         userdtoforlist.Add(userDTO);
                     }
                 }
