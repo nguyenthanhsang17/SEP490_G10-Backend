@@ -4,8 +4,6 @@
     {
         public int? TotalUser { get; set; }
         public UserStatistics UserStatistics { get; set; }
-        public RevenueStatistics RevenueStatistics { get; set; }
-        public PackageStatistics PackageStatistics { get; set; }
     }
     public class UserStatistics
     {

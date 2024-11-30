@@ -90,8 +90,8 @@ namespace VJN.Services
 
             foreach (var id in ids)
             {
-                int NumberSold = await _dashBoardRepository.GetNumberSoldById(id.ServicePriceId);
-                decimal TotalRevenue =  await _dashBoardRepository.GetRevenueByPackageIdAsync(id.ServicePriceId);
+                int NumberSold = await _dashBoardRepository.GetNumberSoldById(id.ServicePriceId, m);
+                decimal TotalRevenue =  await _dashBoardRepository.GetRevenueByPackageIdAsync(id.ServicePriceId, m);
                 var pp = new PopularPackage()
                 {
                     PackageId = id.ServicePriceId,
