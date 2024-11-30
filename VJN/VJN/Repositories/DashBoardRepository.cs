@@ -1,6 +1,7 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
 using VJN.Models;
+using VJN.ModelsDTO.DashBoardDTOs;
 
 namespace VJN.Repositories
 {
@@ -60,16 +61,16 @@ namespace VJN.Repositories
             return (double)jobSeekersCount / totalUsers * 100;
         }
 
-        public async Task<int> GetNumberSoldById(int id)
+        public async Task<int> GetNumberSoldById(int id, DashBoardSearchDTO m)
         {
             var salesCount = await _context.ServicePriceLogs
-            .Where(log => log.ServicePriceId == id)
+            .Where(log => log.ServicePriceId == id && log.RegisterDate >= m.StartDate.Value && log.RegisterDate <= m.EndDate.Value)
             .CountAsync();
 
             return salesCount;
         }
 
-        public async Task<decimal> GetRevenueByPackageIdAsync(int id)
+        public async Task<decimal> GetRevenueByPackageIdAsync(int id, DashBoardSearchDTO m)
         {
 
             var price = await _context.ServicePriceLists
@@ -80,7 +81,7 @@ namespace VJN.Repositories
             if (price == 0) return 0;
 
             var salesCount = await _context.ServicePriceLogs
-                .Where(log => log.ServicePriceId == id)
+                .Where(log => log.ServicePriceId == id && log.RegisterDate>=m.StartDate.Value&&log.RegisterDate<=m.EndDate.Value)
                 .CountAsync();
             var result = salesCount * price;
             return result.Value;
