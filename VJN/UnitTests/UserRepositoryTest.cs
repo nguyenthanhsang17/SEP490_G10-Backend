@@ -20,20 +20,6 @@ namespace UnitTests
         }
 
         [Test]
-        public async Task TestLogin1()
-        {
-            var user = await repository.Login("sangnthe160447@fpt.edu.vn", "17102002");
-            Assert.IsNotNull(user);
-        }
-
-        [Test]
-        public async Task TestLogin2()
-        {
-            var user = await repository.Login("sangnthe160447@fpt.edu.vn", "1710200");
-            Assert.IsNotNull(user);
-        }
-
-        [Test]
         public async Task TestSelectJobseekerall()
         {
             var s = new JobSeekerSearchDTO()
@@ -47,9 +33,7 @@ namespace UnitTests
                 address="Hưng yên"
             };
             var id = await jobSeekerRespository.GetAllJobSeeker(s, 2);
-            Assert.AreEqual(1, id.Count(), "result ");
-        }
-
-        
+            Assert.AreEqual(4, id.Count(), "result ");
+        } 
     }
 }

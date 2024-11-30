@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("VJN")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+39fabe05676c241dcfdd4706a4f00c5d78d2cb76")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1a6dea61df88f3b2c3d66a4f7eb3497059f4e3a7")]
 [assembly: System.Reflection.AssemblyProductAttribute("VJN")]
 [assembly: System.Reflection.AssemblyTitleAttribute("VJN")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
