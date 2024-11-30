@@ -436,10 +436,9 @@ namespace VJN.Services
         public async Task<PagedResult<JobSearchResult>> ViewRecommendedJobs(int userid, int pagenumber, decimal? userLatitude, decimal? userLongitude)
         {
 
-            int numperpaged_size = 3;
+            int numperpaged_size = 10;
             var ids = await _postJobRepository.ViewRecommendedJobs(userid, userLatitude, userLongitude);
-            var idsPaged = PaginationHelper.GetPaged<int>(ids, pagenumber, numperpaged_size);
-            var jobs = await _postJobRepository.jobSearchResults(idsPaged.Items);
+            var jobs = await _postJobRepository.jobSearchResults(ids);
 
             var jobSearchResultTasks = jobs.Select(async j => new JobSearchResult
             {

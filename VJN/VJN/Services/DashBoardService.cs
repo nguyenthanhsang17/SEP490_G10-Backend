@@ -1,4 +1,6 @@
-﻿using System.Xml.Schema;
+﻿using Org.BouncyCastle.Crypto;
+using System.Xml.Schema;
+using VJN.Models;
 using VJN.ModelsDTO.DashBoardDTOs;
 using VJN.Repositories;
 
@@ -25,21 +27,39 @@ namespace VJN.Services
             return percent;
         }
 
-        public async Task<RevenueStatistics> GetRevenueStatistics()
+        public async Task<RevenueStatistics> GetRevenueStatistics(DashBoardSearchDTO m)
         {
             var TotalRevenue = await _dashBoardRepository.GetTotalRevenue();
-            var currentDate = DateTime.Now;
             var lastFiveMonths = new List<MonthsYear>();
 
-            for (int i = 0; i < 5; i++)
+
+            // Bắt đầu từ ngày đầu tiên của tháng đầu tiên
+            var currentDate = new DateTime(m.StartDate.Value.Year, m.StartDate.Value.Month, 1);
+
+            // Kết thúc ở cuối tháng cuối cùng
+            var endDate = new DateTime(m.EndDate.Value.Year, m.EndDate.Value.Month, 1)
+                .AddMonths(1)
+                .AddDays(-1);
+
+            while (currentDate <= endDate)
             {
-                var date = currentDate.AddMonths(-i);
                 lastFiveMonths.Add(new MonthsYear
                 {
-                    Month = date.Month,
-                    Year = date.Year
+                    Month = currentDate.Month,
+                    Year = currentDate.Year
                 });
+                currentDate = currentDate.AddMonths(1);
             }
+
+            //for (int i = 0; i < 5; i++)
+            //{
+            //    var date = currentDate.AddMonths(-i);                                                                                                                                                                                                                          
+            //    lastFiveMonths.Add(new MonthsYear
+            //    {
+            //        Month = date.Month,
+            //        Year = date.Year
+            //    });
+            //}
             List<MonthlyRevenue> MonthlyRevenue = new List<MonthlyRevenue>();
 
             foreach (var date in lastFiveMonths)
@@ -60,22 +80,22 @@ namespace VJN.Services
             return result;
         }
 
-        public async Task<PackageStatistics> GetPackageStatistics()
+        public async Task<PackageStatistics> GetPackageStatistics(DashBoardSearchDTO m)
         {
             var packageStatistics = new PackageStatistics();
             var TotalPackagesSold = await _dashBoardRepository.GetTotalPackagesSold();
             List<PopularPackage> MostPopularPackages = new List<PopularPackage>();
 
-            List<int> ids = (await _dashBoardRepository.GetAllIdPrice()).ToList();
+            List<ServicePriceList> ids = (await _dashBoardRepository.GetAllIdPrice()).ToList();
 
             foreach (var id in ids)
             {
-                int NumberSold = await _dashBoardRepository.GetNumberSoldById(id);
-                decimal TotalRevenue =  await _dashBoardRepository.GetRevenueByPackageIdAsync(id);
+                int NumberSold = await _dashBoardRepository.GetNumberSoldById(id.ServicePriceId);
+                decimal TotalRevenue =  await _dashBoardRepository.GetRevenueByPackageIdAsync(id.ServicePriceId);
                 var pp = new PopularPackage()
                 {
-                    PackageId = id,
-                    PackageName = "Gói " + id,
+                    PackageId = id.ServicePriceId,
+                    PackageName = "Gói " + id.ServicePriceName,
                     NumberSold = NumberSold,
                     TotalRevenue = TotalRevenue,
                 };
@@ -91,6 +111,12 @@ namespace VJN.Services
         {
             var TotalUser = await _dashBoardRepository.GetTotalUser();
             return TotalUser;
+        }
+
+        public async Task<int> GetTotalEmployer()
+        {
+            var number = await _dashBoardRepository.GetTotalEmployer();
+            return number;
         }
     }
 }
