@@ -133,7 +133,7 @@ namespace VJN.Repositories
                 .Where(user => _context.PostJobs.Any(post => post.AuthorId == user.UserId))
                 .CountAsync();
 
-            return totalUsers;
+            return usersWithPostJob;
         }
 
 

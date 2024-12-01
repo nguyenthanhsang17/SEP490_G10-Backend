@@ -55,7 +55,6 @@ namespace VJN.Controllers
                 int useid = (int)item.UserId;
                 item.user = await _userService.GetUserDetail(useid);
             }
-
             return Ok(new
             {
                 items = pagedData,

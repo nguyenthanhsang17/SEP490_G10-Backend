@@ -74,7 +74,7 @@ namespace VJN.Controllers
                 var otp = _generator.GenerateOTP();
                 _userService.InsertOTP(st.UserId, otp);
 
-                string html = _emailService.GetEmailHTML("Bạn đã quay trở lại QuickJob", $"Mã OTP của bạn để hoàn tất đăng ký", $"Để hoàn tất quá trình xác thực, vui lòng sử dụng mã OTP (One-Time Password) dưới đây: Mã OTP của bạn: {otp} Mã OTP này có hiệu lực trong 5 phút. Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này. Để đảm bảo an toàn cho tài khoản của bạn, đừng chia sẻ mã OTP này với bất kỳ ai.\\r\\n\\r\\nCảm ơn bạn!\"");
+                string html = _emailService.GetEmailHTML("Bạn đã quay trở lại QuickJob", $"Mã OTP của bạn để hoàn tất đăng ký", $"Để hoàn tất quá trình xác thực, vui lòng sử dụng mã OTP (One-Time Password) dưới đây: Mã OTP của bạn: {otp} Mã OTP này có hiệu lực trong 5 phút. Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này. Để đảm bảo an toàn cho tài khoản của bạn, đừng chia sẻ mã OTP này với bất kỳ ai.Cảm ơn bạn!");
                 await _emailService.SendEmailAsyncWithHTML(st.Email, "Mã OTP của bạn để hoàn tất đăng ký", html);
                 return Unauthorized(new { Message = "Tài khoản của bạn hiện chưa được xác thực." });
             }
@@ -606,7 +606,7 @@ namespace VJN.Controllers
             {
                 var rg = await _registerEmployerService.getRegisterEmployerByID(id);
                 var user = await _userService.findById((int)rg.UserId);
-                string html = _emailService.GetEmailHTML("Bạn đã bị từ chối trở thânhf nahf tuyển dụng", $"Đơn đăng ký trở thành nhà tuyển dụng của bạn đã bị từ chối ", $" Lý do từ chối : {reason}");
+                string html = _emailService.GetEmailHTML("Bạn đã bị từ chối trở Thành tuyển dụng", $"Đơn đăng ký trở thành nhà tuyển dụng của bạn đã bị từ chối ", $" Lý do từ chối : {reason}");
                 await _emailService.SendEmailAsyncWithHTML(user.Email, "Yêu cầu trở thành nhà tuyển dụng của bạn đã bị từ chối ", html);
                 return Ok(new { message = "Đã từ chối nhà tuyển dụng." });
             }
