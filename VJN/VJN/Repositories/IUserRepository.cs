@@ -22,6 +22,7 @@ namespace VJN.Repositories
         public Task<User> GetUserByOtp(string otp);
 
         public Task InsertOTP(int userid, string otp);
+        public Task<IEnumerable<User>> GetAllUserWithoutAdmin();
 
     }
 }

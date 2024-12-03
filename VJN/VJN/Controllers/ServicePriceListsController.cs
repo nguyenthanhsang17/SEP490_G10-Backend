@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Protocol.Plugins;
 using VJN.Models;
 using VJN.ModelsDTO.ServicePriceListDTOs;
 using VJN.Paging;
@@ -100,6 +101,24 @@ namespace VJN.Controllers
             }
 
             return Ok($"Cập nhật trạng thái thành công cho ServicePriceList với ID = {id}.");
+        }
+
+        [HttpDelete("DeleteServicePriceLists/{id}")]
+        public async Task<IActionResult> DeleteServicePriceLists(int id)
+        {
+            var i = await _servicePriceListService.RemoveServicePricedList(id);
+            if (i == -1)
+            {
+                return BadRequest(new { Message = "Không thể xóa vì gói dịch vụ vẫn đnag bán" });
+            } else
+            if (i == 0)
+            {
+                return BadRequest(new { Message = "Không thể xóa vì có đã có giao dịch" });
+            }
+            else
+            {
+                return Ok(new { Message = "Xóa thành công" });
+            }
         }
     }
 }

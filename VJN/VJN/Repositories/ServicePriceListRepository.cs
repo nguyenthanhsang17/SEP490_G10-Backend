@@ -50,5 +50,22 @@ namespace VJN.Repositories
             var spl = await _context.ServicePriceLists.Where(spl=>spl.Status==1).ToListAsync();
             return spl;
         }
+
+        public async Task<int> RemoveServicePricedList(int id)
+        {
+            var check = await _context.ServicePriceLogs.Where(spl=>spl.ServicePriceId==id).AnyAsync();
+            if (check)
+            {
+                return 0;
+            }
+            var spl = await _context.ServicePriceLists.Where(_spl => _spl.ServicePriceId==id).SingleOrDefaultAsync();
+            if(spl.Status == 1)
+            {
+                return -1;
+            }
+            _context.ServicePriceLists.Remove(spl);
+            await _context.SaveChangesAsync(); 
+            return 1;
+        }
     }
 }

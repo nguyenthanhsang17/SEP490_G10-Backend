@@ -80,6 +80,11 @@ namespace VJN.Services
 
         public async Task<bool> UpdateCv(CvDTODetail cvsdto)
         {
+
+            if (cvsdto == null)
+            {
+                return false; // Trả về false nếu cvDto null
+            }
             if (cvsdto.CvId == -1)
             {
                 var model = new Cv()
