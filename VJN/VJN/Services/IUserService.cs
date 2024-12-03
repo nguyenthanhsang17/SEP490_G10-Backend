@@ -24,5 +24,7 @@ namespace VJN.Services
         public Task<int> Ban_Unbanuser(int uid, bool ban);
         public Task InsertOTP(int userid, string otp);
         public Task<IEnumerable<UserDTO>> GetAllUserWithoutAdmin();
+
+        public Task<UserDTO> LoginWithGG(UserLoginWithGG model);
     }
 }
