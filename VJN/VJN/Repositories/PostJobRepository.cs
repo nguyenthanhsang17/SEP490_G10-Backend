@@ -409,6 +409,17 @@ namespace VJN.Repositories
 
         public async Task<IEnumerable<int>> ViewRecommendedJobs(int userid, decimal? userLatitude, decimal? userLongitude)
         {
+
+            var PostAuthor = await _context.PostJobs.Where(pj=>pj.AuthorId == userid).ToListAsync();
+            var PostAuthorId = PostAuthor.Select(pj => pj.PostId).ToList();
+
+            string PostAuthorIdStr = "(-1 ";
+            foreach(var i in PostAuthorId)
+            {
+                PostAuthorIdStr = PostAuthorIdStr + ", " + i;
+            }
+            PostAuthorIdStr = PostAuthorIdStr + " )";
+
             var query = @"
                     
                     WITH UserCVString AS (
@@ -477,7 +488,7 @@ FROM (
     LEFT JOIN CVSimilarity cs ON pj.Post_Id = cs.Post_Id
     LEFT JOIN WishJobMatch wm ON pj.Post_Id = wm.Post_Id
     LEFT JOIN DistanceCalculation dc ON pj.Post_Id = dc.Post_Id
-    WHERE pj.ExpirationDate >= GETDATE() AND pj.Status = 2
+    WHERE pj.ExpirationDate >= GETDATE() AND pj.Status = 2 AND pj.Post_Id NOT IN " + PostAuthorIdStr+@"
 ) AS OrderedResults
 ORDER BY 
     CVMatch DESC,

@@ -99,7 +99,7 @@ namespace VJN.Map
             CreateMap<JobPostDate, JobPostDateDTO>();
             CreateMap<PostJobDetailUpdate, PostJob>().ForMember(dest => dest.JobPostDates, opt => opt.Ignore()); 
 
-            CreateMap<ServicePriceLog, PaymentHistory>();
+            CreateMap<ServicePriceLog, PaymentHistory>().ForMember(dest => dest.ServicePriceName, opt => opt.MapFrom(src => src.ServicePrice.ServicePriceName));
             CreateMap<ServicePriceList, ServicePriceListDTO>();
 
             CreateMap<Chat, ChatDTO>();

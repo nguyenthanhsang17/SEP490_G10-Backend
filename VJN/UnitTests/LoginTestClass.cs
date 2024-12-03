@@ -39,5 +39,24 @@ namespace UnitTests
             var user = await userServcie.Login("sangnthe160447@fpt.edu.vn", "17102002");
             Assert.IsNotNull(user);
         }
+        [Test]
+        public async Task TestLogin2()
+        {
+            var user = await userServcie.Login("sangnthe160448@fpt.edu.vn", "17102002");
+            Assert.IsNull(user);
+        }
+        [Test]
+        public async Task TestLogin3()
+        {
+            var user = await userServcie.Login("sangnthe160447@fpt.edu.vn", "17102003");
+            Assert.IsNull(user);
+        }
+
+        [Test]
+        public async Task TestLogin4()
+        {
+            var user = await userServcie.Login("sangnthe160448@fpt.edu.vn", "17102003");
+            Assert.IsNull(user);
+        }
     }
 }
