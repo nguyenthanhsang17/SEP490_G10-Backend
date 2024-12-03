@@ -23,5 +23,6 @@ namespace VJN.Services
         public Task<UserDTOdetail> GetUserDetail(int id);
         public Task<int> Ban_Unbanuser(int uid, bool ban);
         public Task InsertOTP(int userid, string otp);
+        public Task<IEnumerable<UserDTO>> GetAllUserWithoutAdmin();
     }
 }

@@ -110,7 +110,7 @@ namespace VJN.Controllers
         public async Task<ActionResult<PagedResult<UserDTO>>> GetAllUsers([FromQuery] int pageNumber = 1,[FromQuery] int pageSize = 10,[FromQuery] string? name = null,[FromQuery] int? role = null,[FromQuery] int? status = null)
         {
             // Lấy danh sách tất cả người dùng từ service
-            var users = await _userService.getAllUser();
+            var users = await _userService.GetAllUserWithoutAdmin();
 
             if (users == null || !users.Any())
             {
@@ -535,6 +535,7 @@ namespace VJN.Controllers
                 } : null,
                 ListIMG = re.RegisterEmployerMedia?.Select(media => media.Media.Url).ToList() ?? new List<string>()
             });
+
 
 
             var pagedResult = result.GetPaged(pageNumber, pageSize);

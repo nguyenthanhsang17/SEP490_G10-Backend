@@ -282,5 +282,11 @@ namespace VJN.Repositories
             _context.Entry(user).State = EntityState.Modified;
             var i = await _context.SaveChangesAsync();
         }
+
+        public async Task<IEnumerable<User>> GetAllUserWithoutAdmin()
+        {
+            var users = await _context.Users.Include(u => u.Role).Include(u => u.AvatarNavigation).Include(u => u.CurrentJobNavigation).Where(u=>u.RoleId!=4).ToListAsync();
+            return users;
+        }
     }
 }

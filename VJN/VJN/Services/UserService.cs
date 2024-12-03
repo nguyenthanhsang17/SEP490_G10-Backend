@@ -182,6 +182,10 @@ namespace VJN.Services
         public async Task<bool> Verifycode(string Email, string Otp)
         {
             var user = await _userRepository.GetUserByEmail(Email);
+            if (user == null)
+            {
+                return false;
+            }
             var diffTime = DateTime.Now - user.SendCodeTime;
             if(diffTime.HasValue && Math.Abs(diffTime.Value.TotalMinutes) >= 5)
             {
@@ -223,6 +227,13 @@ namespace VJN.Services
         public async Task InsertOTP(int userid, string otp)
         {
             await _userRepository.InsertOTP(userid, otp);
+        }
+
+        public async Task<IEnumerable<UserDTO>> GetAllUserWithoutAdmin()
+        {
+            var users = await _userRepository.GetAllUserWithoutAdmin();
+            var user = _mapper.Map<IEnumerable<UserDTO>>(users);
+            return user;
         }
     }
 }
