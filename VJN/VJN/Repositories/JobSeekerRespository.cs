@@ -97,8 +97,8 @@ namespace VJN.Repositories
 
         public async Task<IEnumerable<int>> GetAllJobSeeker(JobSeekerSearchDTO s, int userid)
         {
-            string sql = $"SELECT u.*\r\n      FROM [User] u\r\n      LEFT JOIN Cv c ON u.User_Id = c.UserId\r\n      LEFT JOIN ApplyJob a ON u.User_Id = a.JobSeeker_Id AND a.Status IN (3, 4)\r\n      LEFT JOIN ItemOfCv i ON c.CvId = i.CvId\r\n      WHERE\r\n      u.User_Id != {userid}\r\n        AND (u.Status = 1 or u.Status=2)";
-
+            string sql = $"SELECT u.*\r\n      FROM [User] u\r\n      LEFT JOIN Cv c ON u.User_Id = c.UserId\r\n      LEFT JOIN ApplyJob a ON u.User_Id = a.JobSeeker_Id AND a.Status IN (3, 4)\r\n      LEFT JOIN ItemOfCv i ON c.CvId = i.CvId\r\n      WHERE\r\n      u.User_Id != {userid}\r\n        AND (u.Status = 1 or u.Status=2) AND (u.role_id != 3 and u.role_id != 4) ";
+            s.keyword = s.keyword.Trim();
             if (s.CurrentJob.HasValue&&s.CurrentJob!=0)
             {
                 sql = sql + $" AND u.CurrentJob = {s.CurrentJob}";
@@ -136,7 +136,7 @@ namespace VJN.Repositories
 
             if(s.sort == 1 && !string.IsNullOrEmpty(s.keyword))
             {
-                sql = sql + $" having dbo.CalculateSimilarity(STRING_AGG(COALESCE(i.ItemName, '') + ': ' + COALESCE(i.ItemDescription, ''), '; '), N'{s.keyword}') >= 0.2 " +
+                sql = sql + $" having dbo.CalculateSimilarity(STRING_AGG(COALESCE(i.ItemName, '') + ': ' + COALESCE(i.ItemDescription, ''), '; '), N'{s.keyword}') >= 0.1 " +
                     $" ORDER BY dbo.CalculateSimilarity(STRING_AGG(COALESCE(i.ItemName, '') + ': ' + COALESCE(i.ItemDescription, ''), '; '), N'{s.keyword}') desc, COUNT(DISTINCT a.id) DESC; ";
             }
 
