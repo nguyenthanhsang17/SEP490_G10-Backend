@@ -6,8 +6,9 @@ namespace VJN.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        public readonly VJNDBContext _context;     
-        public UserRepository(VJNDBContext context) {
+        public readonly VJNDBContext _context;
+        public UserRepository(VJNDBContext context)
+        {
             _context = context;
         }
 
@@ -17,7 +18,7 @@ namespace VJN.Repositories
             try
             {
                 user = await _context.Users.Where(u => u.UserId == userid).SingleOrDefaultAsync();
-                if(user == null)
+                if (user == null)
                 {
                     return 0;
                 }
@@ -28,7 +29,7 @@ namespace VJN.Repositories
                     _context.SaveChanges();
                     return 1;
                 }
-                
+
             }
             catch (Exception ex)
             {
@@ -41,14 +42,18 @@ namespace VJN.Repositories
             User user = null;
             try
             {
-                user = await _context.Users.Where(u=>u.Email.Equals(Email)).SingleOrDefaultAsync();
-                if(user == null)
+                user = await _context.Users.Where(u => u.Email.Equals(Email)).SingleOrDefaultAsync();
+                if (user == null)
                 {
                     return 0;
-                }else {
+                }
+                else
+                {
                     return user.UserId;
                 }
-            }catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 throw new Exception(ex.Message);
             }
         }
@@ -58,8 +63,9 @@ namespace VJN.Repositories
             User user = null;
             try
             {
-                user = await _context.Users.Include(u => u.Role).Include(u=>u.AvatarNavigation).Include(u=>u.CurrentJobNavigation).Where(u=>u.UserId==id).SingleOrDefaultAsync();
-            }catch (Exception ex)
+                user = await _context.Users.Include(u => u.Role).Include(u => u.AvatarNavigation).Include(u => u.CurrentJobNavigation).Where(u => u.UserId == id).SingleOrDefaultAsync();
+            }
+            catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
@@ -74,18 +80,18 @@ namespace VJN.Repositories
 
         public async Task<User> Login(string Username, string Password)
         {
-            var user =await _context.Users.Where(u=>u.Email.Equals(Username)&&u.Password.Equals(Password)).Include(u=>u.Role).SingleOrDefaultAsync();
+            var user = await _context.Users.Where(u => u.Email.Equals(Username) && u.Password.Equals(Password)).Include(u => u.Role).SingleOrDefaultAsync();
             return user;
         }
 
         public async Task<int> UpdateOtpUser(int userid, string otp)
         {
-            
+
             User user = null;
             try
             {
                 user = await _context.Users.FindAsync(userid);
-                if(user == null)
+                if (user == null)
                 {
                     return 0;
                 }
@@ -117,7 +123,7 @@ namespace VJN.Repositories
             User user = null;
             try
             {
-                user = await _context.Users.Where(u=>u.Email.Equals(email)).SingleOrDefaultAsync();
+                user = await _context.Users.Where(u => u.Email.Equals(email)).SingleOrDefaultAsync();
                 return user;
             }
             catch (Exception ex)
@@ -128,7 +134,7 @@ namespace VJN.Repositories
 
         public async Task<int> CreateUser(User user)
         {
-            if(user == null)
+            if (user == null)
             {
                 return 0;
             }
@@ -139,7 +145,9 @@ namespace VJN.Repositories
                     _context.Users.Add(user);
                     await _context.SaveChangesAsync();
                     return 1;
-                }catch (Exception ex) {
+                }
+                catch (Exception ex)
+                {
                     throw new Exception(ex.Message);
                 }
 
@@ -151,15 +159,15 @@ namespace VJN.Repositories
             User user = null;
             try
             {
-                user = await _context.Users.Where(u=>u.UserId==uid).SingleOrDefaultAsync();
-                if(user == null)
+                user = await _context.Users.Where(u => u.UserId == uid).SingleOrDefaultAsync();
+                if (user == null)
                 {
                     return 0;
                 }
                 user.Status = status;
                 _context.Entry(user).State = EntityState.Modified;
-                int i= await _context.SaveChangesAsync();
-                return i>=1?1:0;
+                int i = await _context.SaveChangesAsync();
+                return i >= 1 ? 1 : 0;
             }
             catch (Exception ex)
             {
@@ -220,7 +228,8 @@ namespace VJN.Repositories
                 int i = await _context.SaveChangesAsync();
                 return i >= 1;
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
 
                 throw new Exception(ex.Message);
             }
@@ -228,7 +237,7 @@ namespace VJN.Repositories
 
         public async Task<bool> UpdatePassword(int userid, string password)
         {
-            User user = await _context.Users.Where(u=>u.UserId==userid).SingleOrDefaultAsync();
+            User user = await _context.Users.Where(u => u.UserId == userid).SingleOrDefaultAsync();
             if (user != null)
             {
                 var diffTime = DateTime.Now - user.SendCodeTime;
@@ -266,9 +275,10 @@ namespace VJN.Repositories
             User u = null;
             try
             {
-                u = await _context.Users.Where(u=>u.VerifyCode.Equals(otp)).SingleOrDefaultAsync();
+                u = await _context.Users.Where(u => u.VerifyCode.Equals(otp)).SingleOrDefaultAsync();
                 return u;
-            }catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 throw new Exception(ex.Message);
             }
@@ -276,7 +286,7 @@ namespace VJN.Repositories
 
         public async Task InsertOTP(int userid, string otp)
         {
-            var user = await _context.Users.Where(u=>u.UserId==userid).SingleOrDefaultAsync();
+            var user = await _context.Users.Where(u => u.UserId == userid).SingleOrDefaultAsync();
             user.VerifyCode = otp;
             user.SendCodeTime = DateTime.Now;
             _context.Entry(user).State = EntityState.Modified;
@@ -285,8 +295,38 @@ namespace VJN.Repositories
 
         public async Task<IEnumerable<User>> GetAllUserWithoutAdmin()
         {
-            var users = await _context.Users.Include(u => u.Role).Include(u => u.AvatarNavigation).Include(u => u.CurrentJobNavigation).Where(u=>u.RoleId!=4).ToListAsync();
+            var users = await _context.Users.Include(u => u.Role).Include(u => u.AvatarNavigation).Include(u => u.CurrentJobNavigation).Where(u => u.RoleId != 4).ToListAsync();
             return users;
+        }
+
+        public async Task<int> LoginWithGG(User model)
+        {
+
+            _context.Users.Add(model);
+            await _context.SaveChangesAsync();
+            return model.UserId;
+        }
+
+        public async Task<int> CreateUserLoginWithGG(User user)
+        {
+            if (user == null)
+            {
+                return 0;
+            }
+            else
+            {
+                try
+                {
+                    _context.Users.Add(user);
+                    await _context.SaveChangesAsync();
+                    return user.UserId;
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(ex.Message);
+                }
+
+            }
         }
     }
 }
