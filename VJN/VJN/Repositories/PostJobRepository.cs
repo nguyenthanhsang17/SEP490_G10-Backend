@@ -259,12 +259,16 @@ namespace VJN.Repositories
                 sql = sql + " GROUP BY p.Post_Id, p.JobTitle, p.JobDescription, p.salary_types_id, p.Salary, p.NumberPeople, p.Address, p.latitude, p.longitude, p.AuthorId, p.CreateDate, p.ExpirationDate, p.Status, p.censor_Id, p.censor_Date, p.Reason, p.IsUrgentRecruitment, p.JobCategory_Id, p.time ";
                 if (s.SortNumberApplied > 0)
                 {
-                    sql = sql + " order by COUNT(aj.id) ";
+                    sql = sql + " order by COUNT(aj.id), p.CreateDate desc ";
                 }
                 else
                 {
-                    sql = sql + " order by COUNT(aj.id) desc ";
+                    sql = sql + " order by COUNT(aj.id) desc, p.CreateDate desc ";
                 }
+            }
+            else
+            {
+                sql = sql + "order by p.CreateDate desc";
             }
             Console.WriteLine(sql);
 
