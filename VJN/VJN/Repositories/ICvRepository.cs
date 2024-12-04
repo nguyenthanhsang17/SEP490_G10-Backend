@@ -7,8 +7,8 @@ namespace VJN.Repositories
         public Task<IEnumerable<Cv>> GetCvByUserID(int user);
         public  Task<IEnumerable<Cv>> GetCvAllcv();
         public Task<bool> UpdateCV(List<Cv> cvs, int userid);
-        public Task<bool> CreateCv(Cv cv);
-        public Task<bool> UpdateCv(Cv cv);
+        public Task<int> CreateCv(Cv cv);
+        public Task<int> UpdateCv(Cv cv);
         public Task<bool> DeleteCv(int cvid);
     }
 }
