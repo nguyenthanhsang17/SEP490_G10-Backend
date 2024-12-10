@@ -14,7 +14,7 @@ namespace VJN.Repositories
 
         public async Task<IEnumerable<Blog>> GetAllBlog()
         {
-           var blog =await  _context.Blogs.Include(bl=>bl.ThumbnailNavigation).Include(bl=>bl.Author).ToListAsync();
+            var blog = await _context.Blogs.Include(bl => bl.ThumbnailNavigation).Include(bl => bl.Author).Where(bl=>bl.Status==1).ToListAsync();
             return blog;
         }
 
