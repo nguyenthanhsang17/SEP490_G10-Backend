@@ -23,7 +23,7 @@ namespace VJN.Controllers
         private readonly IMediaItemService _mediaItemService;
         private readonly ImagekitClient _imagekitClient;
         private readonly IBlogService _blogService;
-        public BlogsController(VJNDBContext context,  IMediaItemService mediaItemService, IBlogService blogService, ImagekitClient imagekitClient)
+        public BlogsController(VJNDBContext context, IMediaItemService mediaItemService, IBlogService blogService, ImagekitClient imagekitClient)
         {
             _context = context;
             _mediaItemService = mediaItemService;
@@ -41,8 +41,8 @@ namespace VJN.Controllers
             }
 
             var blogs = await _context.Blogs
-                        .Include(b => b.Author) 
-                        .Include(b => b.ThumbnailNavigation) 
+                        .Include(b => b.Author)
+                        .Include(b => b.ThumbnailNavigation)
                         .ToListAsync();
 
             var blogDTOs = blogs.Select(blog => new BlogDTO
@@ -117,8 +117,8 @@ namespace VJN.Controllers
         [HttpGet("GetAllBlog/{pagenumber}")]
         public async Task<ActionResult<PagedResult<BlogDTO>>> GetAllBlog(int pagenumber)
         {
-            var blog =  await _blogService.GetAllBlog(pagenumber);
-            return Ok(blog);    
+            var blog = await _blogService.GetAllBlog(pagenumber);
+            return Ok(blog);
         }
 
 
@@ -127,13 +127,13 @@ namespace VJN.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<BlogDTO>> GetBlog(int id)
         {
-          if (_context.Blogs == null)
-          {
-              return NotFound();
-          }
+            if (_context.Blogs == null)
+            {
+                return NotFound();
+            }
             var blog = await _context.Blogs.
                        Include(b => b.Author).
-                       Include(b=>b.ThumbnailNavigation).
+                       Include(b => b.ThumbnailNavigation).
                        FirstOrDefaultAsync(b => b.BlogId == id);
 
             if (blog == null)
@@ -154,7 +154,7 @@ namespace VJN.Controllers
         }
 
         [HttpPost("createblog")]
-        public async Task<IActionResult> PutBlog( [FromForm] BlogUpdateDTO blog)
+        public async Task<IActionResult> PutBlog([FromForm] BlogUpdateDTO blog)
         {
             if (blog == null)
             {
@@ -199,7 +199,7 @@ namespace VJN.Controllers
                     }
                 }
                 var re = await _blogService.CreateBlog(blog.BlogTitle, blog.BlogDescription, thumbnailid, int.Parse(userId));
-                if ( re)
+                if (re)
                 {
                     return Ok(new { Message = "Tạo bài viết thành công" });
                 }
@@ -230,19 +230,19 @@ namespace VJN.Controllers
 
             return userIdClaim.Value;
         }
-            [HttpGet("GetDetailBlog/{id}")]
-            public async Task<ActionResult<BlogDTO>> GetDetailBlog(int id)
-            {
-                var blog = await _blogService.GetBlogDetail(id);
-                return Ok(blog);
-            }
+        [HttpGet("GetDetailBlog/{id}")]
+        public async Task<ActionResult<BlogDTO>> GetDetailBlog(int id)
+        {
+            var blog = await _blogService.GetBlogDetail(id);
+            return Ok(blog);
+        }
 
-            [HttpPut("show")]
+        [HttpPut("show")]
         public async Task<IActionResult> ShowBlog(int blogId)
         {
             int status = 0;
             var re = await _blogService.ChangeStatusBlog(blogId, status);
-            if (re) 
+            if (re)
             {
                 return Ok(new { Message = "hiển thị bài viết thành công" });
             }
