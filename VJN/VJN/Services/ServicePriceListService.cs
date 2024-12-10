@@ -48,5 +48,11 @@ namespace VJN.Services
             var pricesDTO = _mapper.Map<IEnumerable<ServicePriceListDTO>>(spl);
             return pricesDTO;
         }
+
+        public async Task<int> RemoveServicePricedList(int id)
+        {
+            var i = await _servicePriceListRepository.RemoveServicePricedList(id);
+            return i;
+        }
     }
 }

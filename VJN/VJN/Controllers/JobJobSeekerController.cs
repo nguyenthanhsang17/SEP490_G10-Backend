@@ -136,7 +136,7 @@ namespace VJN.Controllers
             if (!check)
             {
                 Console.WriteLine("sang estssaasd");
-                return Ok(new {Message="Bạn không dc phép truy cập hãy mua gói"});
+                return Ok(new {Message= "Bạn không được phép truy cập hãy mua gói" });
             }
             var page = await _seekerService.GetAllJobSeeker(s, userid);
             return Ok(page);

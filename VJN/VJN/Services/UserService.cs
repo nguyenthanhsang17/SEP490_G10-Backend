@@ -12,25 +12,29 @@ namespace VJN.Services
     {
         public readonly IUserRepository _userRepository;
         public readonly IRegisterEmployerRepository _registerEmployer;
+        public readonly IMediaItemRepository _mediaItemRepository;
         private readonly IMapper _mapper;
 
-        public UserService(IUserRepository userRepository, IMapper mapper, IRegisterEmployerRepository registerEmployer) {
+        public UserService(IUserRepository userRepository, IMapper mapper, IRegisterEmployerRepository registerEmployer, IMediaItemRepository mediaItemRepository = null)
+        {
             _userRepository = userRepository;
             _mapper = mapper;
             _registerEmployer = registerEmployer;
+            _mediaItemRepository = mediaItemRepository;
         }
 
         public async Task<int> ChangePassword(string OldPassword, string NewPassword, string ConfirmPassword, int userid)
         {
             var user = await _userRepository.findById(userid);
-            if(user == null)
+            if (user == null)
             {
                 return 0;
             }
-            if(user.Password != OldPassword) {
+            if (user.Password != OldPassword)
+            {
                 return -1;
             }
-            if(NewPassword != ConfirmPassword)
+            if (NewPassword != ConfirmPassword)
             {
                 return -2;
             }
@@ -40,7 +44,7 @@ namespace VJN.Services
 
         public async Task<bool> CheckEmailExits(string Email)
         {
-            var id  = await _userRepository.GetUserIdEmailExits(Email);
+            var id = await _userRepository.GetUserIdEmailExits(Email);
             if (id == 0)
             {
                 return false;
@@ -58,7 +62,7 @@ namespace VJN.Services
 
         public async Task<int> CreateUser(UserCreateDTO userdto, string otp)
         {
-            if(userdto == null)
+            if (userdto == null)
             {
                 return 0;
             }
@@ -125,12 +129,12 @@ namespace VJN.Services
         public async Task<int> UpdateOtpUser(string email, string otp)
         {
             var id = await _userRepository.GetUserIdEmailExits(email);
-            if(id == 0)
+            if (id == 0)
             {
                 return 0;
             }
             var resuklt = await _userRepository.UpdateOtpUser(id, otp);
-            return resuklt==1?1:0;
+            return resuklt == 1 ? 1 : 0;
 
         }
 
@@ -143,7 +147,7 @@ namespace VJN.Services
         public async Task<bool> UpdateProfile(int v, UserUpdateDTO model, int avatarID)
         {
             var user = _mapper.Map<User>(model);
-            if(avatarID != 0)
+            if (avatarID != 0)
             {
                 user.Avatar = avatarID;
             }
@@ -182,12 +186,16 @@ namespace VJN.Services
         public async Task<bool> Verifycode(string Email, string Otp)
         {
             var user = await _userRepository.GetUserByEmail(Email);
-            var diffTime = DateTime.Now - user.SendCodeTime;
-            if(diffTime.HasValue && Math.Abs(diffTime.Value.TotalMinutes) >= 5)
+            if (user == null)
             {
                 return false;
             }
-            else if(!user.VerifyCode.Equals(Otp))
+            var diffTime = DateTime.Now - user.SendCodeTime;
+            if (diffTime.HasValue && Math.Abs(diffTime.Value.TotalMinutes) >= 5)
+            {
+                return false;
+            }
+            else if (!user.VerifyCode.Equals(Otp))
             {
                 return false;
             }
@@ -223,6 +231,54 @@ namespace VJN.Services
         public async Task InsertOTP(int userid, string otp)
         {
             await _userRepository.InsertOTP(userid, otp);
+        }
+
+        public async Task<IEnumerable<UserDTO>> GetAllUserWithoutAdmin()
+        {
+            var users = await _userRepository.GetAllUserWithoutAdmin();
+            var user = _mapper.Map<IEnumerable<UserDTO>>(users);
+            return user;
+        }
+
+        public async Task<UserDTO> LoginWithGG(UserLoginWithGG model)
+        {
+            if (model == null)
+            {
+                return null;
+            }
+            var sang = await _userRepository.CheckEmailExits(model.Email);
+            if (sang)
+            {
+                var userlogin = await _userRepository.GetUserByEmail(model.Email);
+                var UserDTO = _mapper.Map<UserDTO>(userlogin);
+                return UserDTO;
+            }
+            else
+            {
+                var media = new MediaItem()
+                {
+                    Url = model.Avatar,
+                    Status = true
+                };
+
+                var mediaID = await _mediaItemRepository.CreateMediaItem(media);
+
+                var user = new User()
+                {
+                    Email = model.Email,
+                    FullName = model.FullName,
+                    Password = "123123",
+                    Avatar = mediaID,
+                    Status = 0,
+                    RoleId = 1
+                };
+
+                var i = await _userRepository.CreateUserLoginWithGG(user);
+
+                var userd = await _userRepository.findById(i);
+                var UserDTO = _mapper.Map<UserDTO>(userd);
+                return UserDTO;
+            }
         }
     }
 }
