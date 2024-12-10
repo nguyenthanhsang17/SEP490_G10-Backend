@@ -75,7 +75,7 @@ namespace VJN.Repositories
             return true;
         }
 
-        public async Task<bool> CreateCv(Cv cv)
+        public async Task<int> CreateCv(Cv cv)
         {
             var newCv = new Cv
             {
@@ -99,10 +99,10 @@ namespace VJN.Repositories
                 await _context.SaveChangesAsync();
             }
 
-            return true;
+            return newCv.CvId;
         }
 
-        public async Task<bool> UpdateCv(Cv cv)
+        public async Task<int> UpdateCv(Cv cv)
         {
             // Tìm CV hiện tại trong DB
             var existingCv = await _context.Cvs
@@ -110,7 +110,7 @@ namespace VJN.Repositories
                 .FirstOrDefaultAsync(c => c.CvId == cv.CvId);
 
             if (existingCv == null)
-                return false;
+                return cv.CvId;
 
             // Kiểm tra sự thay đổi
             bool hasChanges = false;
@@ -145,7 +145,7 @@ namespace VJN.Repositories
             }
             if (!hasChanges)
             {
-                return true;
+                return cv.CvId;
             }
 
             using (var transaction = await _context.Database.BeginTransactionAsync())
@@ -184,13 +184,13 @@ namespace VJN.Repositories
                     // Commit transaction
                     await transaction.CommitAsync();
 
-                    return true;
+                    return newCv.CvId;
                 }
                 catch (Exception ex)
                 {
                     // Rollback transaction nếu có lỗi
                     await transaction.RollbackAsync();
-                    return false;
+                    return cv.CvId;
                 }
             }
         }

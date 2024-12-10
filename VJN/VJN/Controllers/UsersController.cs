@@ -107,10 +107,10 @@ namespace VJN.Controllers
         }
 
         [HttpGet("GetAllUsers")]
-        public async Task<ActionResult<PagedResult<UserDTO>>> GetAllUsers([FromQuery] int pageNumber = 1,[FromQuery] int pageSize = 10,[FromQuery] string? name = null,[FromQuery] int? role = null,[FromQuery] int? status = null)
+        public async Task<ActionResult<PagedResult<UserDTO>>> GetAllUsers([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] string? name = null, [FromQuery] int? role = null, [FromQuery] int? status = null)
         {
             // Lấy danh sách tất cả người dùng từ service
-            var users = await _userService.getAllUser();
+            var users = await _userService.GetAllUserWithoutAdmin();
 
             if (users == null || !users.Any())
             {
@@ -504,7 +504,7 @@ namespace VJN.Controllers
         }
 
         [HttpGet("ViewRegisterEmployerList")]
-        public async Task<PagedResult<RegisterEmployerDTOforDetail>> ViewRegisterEmployerList(int status,string? searchFullName = null,string? sortOrder = "asc",int pageNumber = 1,int pageSize = 10)
+        public async Task<PagedResult<RegisterEmployerDTOforDetail>> ViewRegisterEmployerList(int status, string? searchFullName = null, string? sortOrder = "asc", int pageNumber = 1, int pageSize = 10)
         {
 
             var res = await _registerEmployerService.getRegisterEmployerByStatus(status);
@@ -543,6 +543,7 @@ namespace VJN.Controllers
             });
 
 
+
             var pagedResult = result.GetPaged(pageNumber, pageSize);
 
             return pagedResult;
@@ -565,8 +566,8 @@ namespace VJN.Controllers
                 BussinessName = re.BussinessName,
                 BussinessAddress = re.BussinessAddress,
                 CreateDate = re.CreateDate,
-                Status= re.Status,
-                reason=re.Reason,
+                Status = re.Status,
+                reason = re.Reason,
                 User = re.User != null ? new UserDTOinRegisterEmployer
                 {
                     UserId = re.User.UserId,
@@ -649,15 +650,67 @@ namespace VJN.Controllers
                 "Trân trọng,\n" +
                 "Đội ngũ hỗ trợ";
                 title = "Tài khoản của bạn đã bị cấm!";
-
             }
-            var result = await _userService.Ban_Unbanuser(id,ban);
-            if (result==1)
+            var result = await _userService.Ban_Unbanuser(id, ban);
+            if (result == 1)
             {
                 await _emailService.SendEmailAsync(user.Email, title, body);
                 return Ok(new { message = msg });
             }
             return BadRequest(new { message = "Không tìm thấy người dùng hoặc có lỗi xảy ra." });
+        }
+
+        [HttpPost("LoginWithgg2")]
+        public async Task<IActionResult> LoginWithgg2([FromBody] UserLoginWithGG model)
+        {
+
+            var st = await _userService.LoginWithGG(model);
+
+            var check = await _userService.CheckEmailExits(model.Email);
+
+            if (st.Status == 3)
+            {
+                return Unauthorized(new { Message = "Tài khoản của bạn hiện đang bị khóa" });
+            }
+            if (st.Status == 0)
+            {
+
+                if (!check)
+                {
+                    var otp = _generator.GenerateOTP();
+                    _userService.InsertOTP(st.UserId, otp);
+
+                    string html = _emailService.GetEmailHTML("Bạn đã đăng nhâp vào QuickJob", $"Mã OTP của bạn để hoàn tất đăng ký", $"Để hoàn tất quá trình xác thực, vui lòng sử dụng mã OTP (One-Time Password) dưới đây: Mã OTP của bạn: {otp} Mã OTP này có hiệu lực trong 5 phút. Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này. Để đảm bảo an toàn cho tài khoản của bạn, đừng chia sẻ mã OTP này với bất kỳ ai.Cảm ơn bạn!");
+                    await _emailService.SendEmailAsyncWithHTML(st.Email, "Mã OTP của bạn để hoàn tất đăng ký", html);
+                    return Unauthorized(new { Message = "Tài khoản của bạn hiện chưa được xác thực." });
+                }
+                else
+                {
+                    var otp = _generator.GenerateOTP();
+                    _userService.InsertOTP(st.UserId, otp);
+
+                    string html = _emailService.GetEmailHTML("Bạn đã quay trở lại QuickJob", $"Mã OTP của bạn để hoàn tất đăng ký", $"Để hoàn tất quá trình xác thực, vui lòng sử dụng mã OTP (One-Time Password) dưới đây: Mã OTP của bạn: {otp} Mã OTP này có hiệu lực trong 5 phút. Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này. Để đảm bảo an toàn cho tài khoản của bạn, đừng chia sẻ mã OTP này với bất kỳ ai.Cảm ơn bạn!");
+                    await _emailService.SendEmailAsyncWithHTML(st.Email, "Mã OTP của bạn để hoàn tất đăng ký", html);
+                    return Unauthorized(new { Message = "Tài khoản của bạn hiện chưa được xác thực." });
+                }
+            }
+            bool haveProfile = false;
+            if (st.Age.HasValue)
+            {
+                haveProfile = true;
+            }
+            var token = _jwtTokenGenerator.GenerateJwtToken(st);
+            return Ok(new
+            {
+                Message = "Đăng nhập thành công",
+                token,
+                st.UserId,
+                st.FullName,
+                st.RoleId,
+                st.Status,
+                st.AvatarURL,
+                haveProfile,
+            });
         }
 
     }

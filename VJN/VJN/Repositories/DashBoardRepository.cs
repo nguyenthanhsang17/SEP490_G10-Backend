@@ -31,7 +31,7 @@ namespace VJN.Repositories
 
         public async Task<IEnumerable<ServicePriceList>> GetAllIdPrice()
         {
-            var ids  = await _context.ServicePriceLists.ToListAsync();
+            var ids = await _context.ServicePriceLists.ToListAsync();
             return ids;
         }
 
@@ -95,7 +95,7 @@ namespace VJN.Repositories
                 .AddDays(-1);
 
             var salesCount = await _context.ServicePriceLogs
-                .Where(log => log.ServicePriceId == id && log.RegisterDate>= currentDate && log.RegisterDate<= endDate)
+                .Where(log => log.ServicePriceId == id && log.RegisterDate >= currentDate && log.RegisterDate <= endDate)
                 .CountAsync();
             var result = salesCount * price;
             return result.Value;
@@ -103,13 +103,30 @@ namespace VJN.Repositories
 
         public async Task<int> GetTotalPackagesSold()
         {
-            var number = await _context.ServicePriceLogs.CountAsync();
+            int currentYear = DateTime.Now.Year;
+
+            // Ngày đầu tiên và ngày cuối cùng của năm hiện tại
+            DateTime startOfYear = new DateTime(currentYear, 1, 1);
+            DateTime endOfYear = new DateTime(currentYear, 12, 31, 23, 59, 59);
+
+            var number = await _context.ServicePriceLogs.Where(log => log.RegisterDate.HasValue &&
+                      log.RegisterDate.Value >= startOfYear &&
+                      log.RegisterDate.Value <= endOfYear).CountAsync();
             return number;
         }
 
         public async Task<decimal> GetTotalRevenue()
         {
+            int currentYear = DateTime.Now.Year;
+
+            // Ngày đầu tiên và ngày cuối cùng của năm hiện tại
+            DateTime startOfYear = new DateTime(currentYear, 1, 1);
+            DateTime endOfYear = new DateTime(currentYear, 12, 31, 23, 59, 59);
+
             var totalRevenue = await _context.ServicePriceLogs
+                .Where(log => log.RegisterDate.HasValue &&
+                      log.RegisterDate.Value >= startOfYear &&
+                      log.RegisterDate.Value <= endOfYear)
                 .Join(_context.ServicePriceLists,
                     log => log.ServicePriceId,
                     price => price.ServicePriceId,
