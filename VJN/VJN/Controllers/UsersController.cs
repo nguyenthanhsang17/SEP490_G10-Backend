@@ -591,8 +591,8 @@ namespace VJN.Controllers
             if (result)
             {
                 var rg = await _registerEmployerService.getRegisterEmployerByID(id);
-                var user = await _userService.findById((int)rg.UserId);
-                string html = _emailService.GetEmailHTML("Chúc mừng bạn đã trở thành nhà tuyển dụng ", $"Đơn đăng ký trở thành nhà tuyển dụng của bạn đã được xác nhận ", $"Rất nhiều ứng viên đang chờ ban . Hãy bắt đầu tạo một công việc mới ngay thôi ");
+                var user = await _userService.findById((int)rg.UserId); 
+                string html = _emailService.GetEmailHTML("Chúc mừng bạn đã trở thành nhà tuyển dụng ", $"Đơn đăng ký trở thành nhà tuyển dụng của bạn đã được xác nhận ", $"Hãy đăng nhập lại để trải nghiệm tính năng dành cho nhà tuyển dụng. Rất nhiều ứng viên đang chờ ban . Hãy bắt đầu tạo một công việc mới ngay thôi ");
                 await _emailService.SendEmailAsyncWithHTML(user.Email, "Bạn đã trở thành nhà tuyển dụng", html);
                 return Ok(new { message = "Đã chấp thuận nhà tuyển dụng." });
             }
