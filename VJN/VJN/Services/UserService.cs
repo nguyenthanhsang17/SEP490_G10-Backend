@@ -280,5 +280,21 @@ namespace VJN.Services
                 return UserDTO;
             }
         }
+
+        public async Task<int> CreateStaff(CreateStaffAccountDTO md)
+        {
+            if(md == null)
+            {
+                return 0;
+            }
+            var user1 = await _userRepository.GetUserByEmail(md.Email);
+            if(user1 != null)
+            {
+                return -1;
+            }
+            var user = _mapper.Map<User>(md);
+            int i = await _userRepository.CreateUser(user);
+            return i;
+        }
     }
 }

@@ -64,7 +64,7 @@ namespace VJN.Controllers
 
 
         [HttpGet("GetallHistoryPayment")]
-        public async Task<ActionResult<PagedResult<PaymentHistory>>> GetAllHistoryPayment(int? uid,
+        public async Task<ActionResult<PagedResult<PaymentHistory>>> GetAllHistoryPayment(int? uid, [FromQuery] string? username="",
         int pageNumber = 1,int pageSize = 10,int daysFilter = 0, // 0: Lấy tất cả
         int? servicePriceId = null) 
         {
@@ -91,6 +91,7 @@ namespace VJN.Controllers
                 return BadRequest(new { Message = "Không có giao dịch khớp với điều kiện" });
             }
 
+
             foreach (var item in phe)
             {
                 int prid = (int)item.ServicePriceId;
@@ -98,6 +99,14 @@ namespace VJN.Controllers
                 int useid = (int)item.UserId;
                 item.user = await _userService.GetUserDetail(useid);
             }
+            Console.WriteLine(phe.Count());
+
+            if (!string.IsNullOrWhiteSpace(username))
+            {
+                phe = phe.Where(x => x.user.FullName.Contains(username, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+            Console.WriteLine(phe.Count());
+
             phe = phe.OrderByDescending(x => x.RegisterDate).ToList();
             if (uid.HasValue)
             {

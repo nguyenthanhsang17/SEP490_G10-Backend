@@ -113,7 +113,7 @@ namespace VJN.Controllers
                         CVname=cvname,
                     });
                 }
-
+                appliedJobList.Reverse();
                 // Áp dụng phân trang bằng PaginationHelper
                 var pagedResult = appliedJobList.GetPaged(pageNumber, pageSize);
 

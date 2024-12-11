@@ -302,8 +302,7 @@ namespace VJN.Controllers
 
             var user = await _context.Users.FindAsync(postJob.AuthorId);
 
-            string body = $"Chào {user.FullName},\n\n" +
-                "Bài đăng của bạn đã được duyệt thành công!\n\n" +
+            string body =
                 "Chi tiết bài đăng:\n" +
                 $"Tiêu đề: {postJob.JobTitle}\n" +
                 $"Mô tả: {postJob.JobDescription}\n" +
@@ -313,7 +312,9 @@ namespace VJN.Controllers
                 "Trân trọng,\n" +
                 "Đội ngũ hỗ trợ";
 
-            await _emailService.SendEmailAsync(user.Email, "Bài đăng của bạn đã được duyệt", body);
+            var html = _emailService.GetEmailHTML("Bài đăng của bạn đã được duyệt", $"Chào {user.FullName}", body);
+
+            await _emailService.SendEmailAsyncWithHTML(user.Email, "Bài đăng của bạn đã được duyệt",    html);
 
             return Ok(new { Message = "Bài đăng đã được duyệt thành công", ExpirationDate = postJob.ExpirationDate });
         }
@@ -358,8 +359,7 @@ namespace VJN.Controllers
             await _context.SaveChangesAsync();
 
 
-            string body = $"Chào {user.FullName},\n\n" +
-                  "Bài đăng của bạn đã bị từ chối!\n\n" +
+            string body =
                   "Chi tiết bài đăng:\n" +
                   $"Tiêu đề: {postJob.JobTitle}\n" +
                   $"Mô tả: {postJob.JobDescription}\n" +
@@ -369,7 +369,9 @@ namespace VJN.Controllers
                   "Nếu có thắc mắc gì hãy liên hệ ngay với chúng tôi.\n\n" +
                   "Trân trọng,\n" +
                   "Đội ngũ hỗ trợ";
-            await _emailService.SendEmailAsync(user.Email, "Bài đăng của bạn đã bị từ chối", body);
+            var html = _emailService.GetEmailHTML("Bài đăng của bạn đã bị từ chối!", $"Chào {user.FullName}", body);
+
+            await _emailService.SendEmailAsyncWithHTML(user.Email, "Bài đăng của bạn đã bị từ chối", html);
             return Ok(new { Message = "Từ chối bài đăng  thành công" });
 
         }
@@ -395,8 +397,7 @@ namespace VJN.Controllers
 
             await _context.SaveChangesAsync();
             var user = await _context.Users.FindAsync(postJob.AuthorId);
-            string body = $"Chào {user.FullName},\n\n" +
-                  "Bài đăng của bạn đã bị cấm !\n\n" +
+            string body =
                   "Chi tiết bài đăng:\n" +
                   $"Tiêu đề: {postJob.JobTitle}\n" +
                   $"Mô tả: {postJob.JobDescription}\n" +
@@ -406,7 +407,10 @@ namespace VJN.Controllers
                   "Nếu có thắc mắc hãy liên hệ ngay với chúng tôi.\n\n" +
                   "Trân trọng,\n" +
                   "Đội ngũ hỗ trợ";
-            await _emailService.SendEmailAsync(user.Email, "Bài đăng của bạn đã bị cấm", body);
+
+            var html = _emailService.GetEmailHTML("Bài đăng của bạn đã bị cấm", $"Chào {user.FullName}", body);
+
+            await _emailService.SendEmailAsyncWithHTML(user.Email, "Bài đăng của bạn đã bị cấm", html);
             return Ok(new { Message = "Bài đăng đã bị cấm " });
 
 

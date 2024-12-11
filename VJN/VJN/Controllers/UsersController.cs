@@ -83,6 +83,7 @@ namespace VJN.Controllers
             {
                 haveProfile = true;
             }
+
             var token = _jwtTokenGenerator.GenerateJwtToken(st);
             return Ok(new
             {
@@ -250,9 +251,19 @@ namespace VJN.Controllers
             }
             else
             {
-                string html = _emailService.GetEmailHTML("QuickJob", "Mã OTP của bạn để hoàn tất đăng ký", $"Cảm ơn bạn đã đăng ký tài khoản tại VJN. Để hoàn tất quá trình xác thực, vui lòng sử dụng mã OTP (One-Time Password) dưới đây: Mã OTP của bạn: {otp} Mã OTP này có hiệu lực trong 5 phút.Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này. Để đảm bảo an toàn cho tài khoản của bạn, đừng chia sẻ mã OTP này với bất kỳ ai.");
+                string body = $"" +
+                "Để hoàn tất quá trình xác thực, vui lòng sử dụng mã OTP (One-Time Password) dưới đây.\n\n" +
+                $"Mã OTP của bạn: {otp}\n" +
+                "Mã OTP này có hiệu lực trong 5 phút.\n" +
+                "Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này. " +
+                "Để đảm bảo an toàn cho tài khoản của bạn, đừng chia sẻ mã OTP này với bất kỳ ai.\n" +
+                "Trân trọng,\n" +
+                "Đội ngũ hỗ trợ";
 
-                await _emailService.SendEmailAsync(model.Email, "Mã OTP của bạn để hoàn tất đăng ký", html);
+                var html = _emailService.GetEmailHTML("Cảm ơn bạn đã đăng ký tài khoản tại VJN", "Cảm ơn bạn đã đăng ký tài khoản tại VJN", body);
+                    
+
+                await _emailService.SendEmailAsyncWithHTML(model.Email, "Mã OTP của bạn để hoàn tất đăng ký!", body);
                 return Ok(new { Message = "Succesfully" });
             }
         }
@@ -333,6 +344,8 @@ namespace VJN.Controllers
                 var i = await _userService.CreateUser(userCreateDTO, "");
                 if (i == 3)
                 {
+                    //var html = _emailService.GetEmailHTML("")
+
                     _emailService.SendEmailAsync(Email, "Bạn đã đăng ký Việc Nhanh - Nền tảng tuyển dụng và tìm việc bán thời gian trực tuyến", "Mật khẩu mặc định của bạn là 123123");
                     return Ok(new { Message = "Succesfully" });
                 }
@@ -585,7 +598,7 @@ namespace VJN.Controllers
             if (result)
             {
                 var rg = await _registerEmployerService.getRegisterEmployerByID(id);
-                var user = await _userService.findById((int)rg.UserId); 
+                var user = await _userService.findById((int)rg.UserId);
                 string html = _emailService.GetEmailHTML("Chúc mừng bạn đã trở thành nhà tuyển dụng ", $"Đơn đăng ký trở thành nhà tuyển dụng của bạn đã được xác nhận ", $"Hãy đăng nhập lại để trải nghiệm tính năng dành cho nhà tuyển dụng. Rất nhiều ứng viên đang chờ ban . Hãy bắt đầu tạo một công việc mới ngay thôi ");
                 await _emailService.SendEmailAsyncWithHTML(user.Email, "Bạn đã trở thành nhà tuyển dụng", html);
                 return Ok(new { message = "Đã chấp thuận nhà tuyển dụng." });
@@ -622,25 +635,38 @@ namespace VJN.Controllers
                 return BadRequest(new { message = "Vui lòng nhập lý do cấm." });
             }
             string msg = "Đã cấm người dùng.";
+            string body = "";
+            string title = "";
+            var user = await _userService.findById(id);
             if (!ban)
             {
-                msg = "đã gỡ cấm người dùng ";
+                msg = "Đã gỡ cấm người dùng ";
 
-                var user = await _userService.findById(id);
-                string html = _emailService.GetEmailHTML("Tài khoản của bạn đã được gỡ cấm ", $"Lưu ý chấp hành nghiêm chỉnh các quy tắc của chúng tôi ", $" Chúc bạn ngày mới tốt lạnh");
-                await _emailService.SendEmailAsyncWithHTML(user.Email, "Tài khoản của bạn đã được gỡ cấm", html);
+                body = $"Chào {user.FullName},\n\n" +
+                "Tài khoản của bạn đã được gỡ cấm !\n\n" +
+                "Lưu ý chấp hành nghiêm chỉnh các quy tắc của chúng tôi.\n" +
+                "Chúc bạn ngày mới tốt lành.\n\n" +
+                "Trân trọng,\n" +
+                "Đội ngũ hỗ trợ";
+                title = "Tài khoản của bạn đã được gỡ cấm!";
             }
             else
             {
-
-                var user = await _userService.findById(id);
-                string html = _emailService.GetEmailHTML("Tài khoản của bạn đã bị cấm ", $"Lý do cấm {reason} ", $" Nếu có bất kỳ thắc mắc nào hãy liên hệ với chúng tôi ");
-                await _emailService.SendEmailAsyncWithHTML(user.Email, "Tài khoản của bạn đã Bị cấm ", html);
+                msg = "Đã cấm người dùng ";
+                body = $"Chào {user.FullName},\n\n" +
+                "Lý do : " + reason + " \n\n" +
+                "Tài khoản của bạn đã bị gỡ do vi phạm chính sách !\n\n" +
+                "Nếu có bất kỳ thắc mắc gì , hãy liên hệ với chúng tôi.\n" +
+                "Trân trọng,\n" +
+                "Đội ngũ hỗ trợ";
+                title = "Tài khoản của bạn đã bị cấm!";
 
             }
             var result = await _userService.Ban_Unbanuser(id, ban);
+            var html = _emailService.GetEmailHTML(msg, title, body);
             if (result == 1)
             {
+                await _emailService.SendEmailAsyncWithHTML(user.Email, title, html);
                 return Ok(new { message = msg });
             }
             return BadRequest(new { message = "Không tìm thấy người dùng hoặc có lỗi xảy ra." });
@@ -697,6 +723,30 @@ namespace VJN.Controllers
                 st.AvatarURL,
                 haveProfile,
             });
+        }
+
+        [HttpPost("CreateStaffAccount")]
+        public async Task<IActionResult> CreateStaffAccount([FromBody] CreateStaffAccountDTO model)
+        {
+            var i = await _userService.CreateStaff(model);
+            if (i !=0 &&i!=-1)
+            {
+                string body = $" " +
+                "Đăng nhập bằng mail hiện tại và Mật khẩu của bạn là " + model.Password + ". " +
+                "Để đảm bảo an toàn cho tài khoản của bạn, đừng chia sẻ thông tin này với bất kỳ ai.\n" +
+                "Trân trọng,\n" +
+                "Đội ngũ hỗ trợ";
+
+                string html = _emailService.GetEmailHTML("bạn đã trở thành nhân viên hệ thống của VJN!", "Bạn đã đc cấp tài khoản nhân viên hệ thống của VJN!", body);
+
+                //await _emailService.SendEmailAsync(model.Email, "bạn đã trở thành nhân viên hệ thống của VJN!", body);
+                await _emailService.SendEmailAsyncWithHTML(model.Email, "bạn đã trở thành nhân viên hệ thống của VJN!", html);
+                return Ok(new { Message = "tao thanh cong" });
+            }
+            return Ok(new { Message = "Email đã tồn tại" });
+
+
+
         }
 
     }
