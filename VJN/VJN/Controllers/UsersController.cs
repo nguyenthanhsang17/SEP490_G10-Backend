@@ -250,9 +250,15 @@ namespace VJN.Controllers
             }
             else
             {
-                string html = _emailService.GetEmailHTML("QuickJob", "Mã OTP của bạn để hoàn tất đăng ký", $"Cảm ơn bạn đã đăng ký tài khoản tại VJN. Để hoàn tất quá trình xác thực, vui lòng sử dụng mã OTP (One-Time Password) dưới đây: Mã OTP của bạn: {otp} Mã OTP này có hiệu lực trong 5 phút.Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này. Để đảm bảo an toàn cho tài khoản của bạn, đừng chia sẻ mã OTP này với bất kỳ ai.");
-
-                await _emailService.SendEmailAsync(model.Email, "Mã OTP của bạn để hoàn tất đăng ký", html);
+                string body = $"Cảm ơn bạn đã đăng ký tài khoản tại VJN,\n\n" +
+                "Để hoàn tất quá trình xác thực, vui lòng sử dụng mã OTP (One-Time Password) dưới đây.\n\n" +
+                "Mã OTP của bạn: {otp}\n" +
+                "Mã OTP này có hiệu lực trong 5 phút.\n" +
+                "Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này. " +
+                "Để đảm bảo an toàn cho tài khoản của bạn, đừng chia sẻ mã OTP này với bất kỳ ai.\n" +
+                "Trân trọng,\n" +
+                "Đội ngũ hỗ trợ";
+                await _emailService.SendEmailAsync(model.Email, "Mã OTP của bạn để hoàn tất đăng ký!", body);
                 return Ok(new { Message = "Succesfully" });
             }
         }
@@ -622,25 +628,33 @@ namespace VJN.Controllers
                 return BadRequest(new { message = "Vui lòng nhập lý do cấm." });
             }
             string msg = "Đã cấm người dùng.";
+            string body = "";
+            string title = "";
+            var user = await _userService.findById(id);
             if (!ban)
             {
                 msg = "đã gỡ cấm người dùng ";
-
-                var user = await _userService.findById(id);
-                string html = _emailService.GetEmailHTML("Tài khoản của bạn đã được gỡ cấm ", $"Lưu ý chấp hành nghiêm chỉnh các quy tắc của chúng tôi ", $" Chúc bạn ngày mới tốt lạnh");
-                await _emailService.SendEmailAsyncWithHTML(user.Email, "Tài khoản của bạn đã được gỡ cấm", html);
+                body = $"Chào {user.FullName},\n\n" +
+                "Tài khoản của bạn đã được gỡ cấm !\n\n" +
+                "Lưu ý chấp hành nghiêm chỉnh các quy tắc của chúng tôi.\n" +
+                "Chúc bạn ngày mới tốt lành.\n\n" +
+                "Trân trọng,\n" +
+                "Đội ngũ hỗ trợ";
+                title = "Tài khoản của bạn đã được gỡ cấm!";
             }
-            else
-            {
-
-                var user = await _userService.findById(id);
-                string html = _emailService.GetEmailHTML("Tài khoản của bạn đã bị cấm ", $"Lý do cấm {reason} ", $" Nếu có bất kỳ thắc mắc nào hãy liên hệ với chúng tôi ");
-                await _emailService.SendEmailAsyncWithHTML(user.Email, "Tài khoản của bạn đã Bị cấm ", html);
-
+            else {
+                msg = "đã  cấm người dùng ";
+                body = $"Chào {user.FullName},\n\n" +
+                "Tài khoản của bạn đã bị gỡ do vi phạm chính sách !\n\n" +
+                "Nếu có bất kỳ thắc mắc gì , hãy liên hệ với chúng tôi.\n" +
+                "Trân trọng,\n" +
+                "Đội ngũ hỗ trợ";
+                title = "Tài khoản của bạn đã bị cấm!";
             }
             var result = await _userService.Ban_Unbanuser(id, ban);
             if (result == 1)
             {
+                await _emailService.SendEmailAsync(user.Email, title, body);
                 return Ok(new { message = msg });
             }
             return BadRequest(new { message = "Không tìm thấy người dùng hoặc có lỗi xảy ra." });

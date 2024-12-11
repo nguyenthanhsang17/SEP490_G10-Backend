@@ -112,8 +112,9 @@ namespace VJN.Controllers
                         JobCategory = jobcategoryname,
                         CVname=cvname,
                     });
-                }
 
+                }
+                appliedJobList.Reverse();
                 // Áp dụng phân trang bằng PaginationHelper
                 var pagedResult = appliedJobList.GetPaged(pageNumber, pageSize);
 
