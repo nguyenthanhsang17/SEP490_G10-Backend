@@ -18,15 +18,17 @@ namespace VJN.Controllers
         private readonly IPostJobService _postJobService;
         private readonly IUserService _userService;
         private readonly VJNDBContext _context;
-        private readonly IMapper _mapper;
+        private readonly IMapper _mapper; 
         private readonly IEmailService _emailService;
-        public JobEmployerController(IApplyJobService applyJoBService, IPostJobService postJobService, IUserService userService, VJNDBContext context, IMapper mapper )
+        public JobEmployerController(IApplyJobService applyJoBService, IPostJobService postJobService, IUserService userService, VJNDBContext context, IMapper mapper, IEmailService emailService)
+
         {
             _applyJoBService = applyJoBService;
             _postJobService = postJobService;
             _userService = userService;
             _context = context;
             _mapper = mapper;
+            _emailService = emailService;
         }
 
         // GET: api/JobEmployer/GetAllJobseekerApply/{post_ID}
@@ -156,14 +158,15 @@ namespace VJN.Controllers
         [HttpGet("ChangeStatusApplyJob")]
         public async Task<bool> ChangeStatusOfJobseekerApply(int Applyjob_Id,int newStatus)
         {
-            var apply =  await _context.ApplyJobs.FindAsync(Applyjob_Id);
+            var apply = await _context.ApplyJobs.FindAsync(Applyjob_Id);
+
             var user = await _context.Users.FindAsync(apply.JobSeekerId);
             var postJob = await _context.PostJobs.FindAsync(apply.PostId);
             string stt = "";
             if (newStatus == 1)
             {
-                string body = $"Chào {user.FullName},\n\n" +
-                "Đơn xin việc của bạn đã bị từ chối!\n\n" +
+                string body = 
+
                 "Chi tiết công việc đã ứng tuyển:\n" +
                 $"Tiêu đề: {postJob.JobTitle}\n" +
                 $"Mô tả: {postJob.JobDescription}\n" +
@@ -171,12 +174,15 @@ namespace VJN.Controllers
                 "Chúc bạn sớm kiếm được công việc mong muốn.\n\n" +
                 "Trân trọng,\n" +
                 "Đội ngũ hỗ trợ";
-                await _emailService.SendEmailAsync(user.Email, "Đơn xin việc của bạn đã bị từ chối!", body);
+
+                var heml = _emailService.GetEmailHTML("Đơn xin việc của bạn đã bị từ chối!", $"Chào {user.FullName},\n\n", body);
+
+                await _emailService.SendEmailAsyncWithHTML(user.Email, "Đơn xin việc của bạn đã bị từ chối!", heml);
             }
-            else if (newStatus == 3) 
+            else if (newStatus == 3)
             {
-                string body = $"Chào {user.FullName},\n\n" +
-                "Nhà tuyển dụng đã xem hồ sơ của bạn!\n\n" +
+                string body =
+
                 "Chi tiết công việc đã ứng tuyển:\n" +
                 $"Tiêu đề: {postJob.JobTitle}\n" +
                 $"Mô tả: {postJob.JobDescription}\n" +
@@ -184,24 +190,28 @@ namespace VJN.Controllers
                 "Chúc bạn sớm được nhận được việc làm .\n\n" +
                 "Trân trọng,\n" +
                 "Đội ngũ hỗ trợ";
-                await _emailService.SendEmailAsync(user.Email, "Nhà tuyển dụng đã xem hồ sơ của bạn!", body);
+
+                var heml = _emailService.GetEmailHTML("Nhà tuyển dụng đã xem hồ sơ của bạn!", $"Chào {user.FullName},\n\n", body);
+                await _emailService.SendEmailAsyncWithHTML(user.Email, "Nhà tuyển dụng đã xem hồ sơ của bạn!", heml);
             }
             else if (newStatus == 4)
             {
-                string body = $"Chào {user.FullName},\n\n" +
-                "Nhà tuyển dụng đã nhận bạn !\n\n" +
+                string body =
+
                 "Chi tiết công việc đã ứng tuyển:\n" +
                 $"Tiêu đề: {postJob.JobTitle}\n" +
                 $"Mô tả: {postJob.JobDescription}\n" +
                 "Chúc bạn làm việc vui vẻ.\n\n" +
                 "Trân trọng,\n" +
                 "Đội ngũ hỗ trợ";
-                await _emailService.SendEmailAsync(user.Email, "Bạn đã được nhận vào làm!", body);
+
+                var heml = _emailService.GetEmailHTML("Nhà tuyển dụng đã nhận bạn !", $"Chào {user.FullName},\n\n", body);
+                await _emailService.SendEmailAsyncWithHTML(user.Email, "Bạn đã được nhận vào làm!", heml);
             }
             else if (newStatus == 5)
             {
-                string body = $"Chào {user.FullName},\n\n" +
-                "Nhà tuyển dụng đã từ chối bạn !\n\n" +
+                string body =
+
                 "Sau khi xem đơn xin việc thì nhà tuyển dụng đã từ chối bạn.\n" +
                 "Chi tiết công việc đã ứng tuyển:\n" +
                 $"Tiêu đề: {postJob.JobTitle}\n" +
@@ -209,11 +219,15 @@ namespace VJN.Controllers
                 "Đừng nản lòng , bạn vẫn có thể ứng tuyển vào các công việc khác.\n\n" +
                 "Trân trọng,\n" +
                 "Đội ngũ hỗ trợ";
-                await _emailService.SendEmailAsync(user.Email, "Bạn đã được nhận vào làm!", body);
+
+
+                var heml = _emailService.GetEmailHTML("Nhà tuyển dụng đã từ chối bạn !", $"Chào {user.FullName},\n\n", body);
+                await _emailService.SendEmailAsyncWithHTML(user.Email, "Bạn đã được nhận vào làm!", heml);
             }
 
 
             return await _applyJoBService.ChangeStatusOfJobseekerApply(Applyjob_Id, newStatus);
+
         }
     }
 }

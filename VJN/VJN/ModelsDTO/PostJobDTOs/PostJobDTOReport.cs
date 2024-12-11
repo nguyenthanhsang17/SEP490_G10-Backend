@@ -1,4 +1,6 @@
 ﻿using VJN.Models;
+using VJN.ModelsDTO.JobPostDateDTOs;
+using VJN.ModelsDTO.SlotDTOs;
 
 namespace VJN.ModelsDTO.PostJobDTOs
 {
@@ -24,8 +26,8 @@ namespace VJN.ModelsDTO.PostJobDTOs
         public  SalaryType? SalaryTypes { get; set; }
         public ICollection<BanLogPostJob> BanLogPostJobs { get; set; }
         public ICollection<ImagePostJob> ImagePostJobs { get; set; }
-        public ICollection<JobPostDate> JobPostDates { get; set; }
-        public  ICollection<Slot> Slots { get; set; }
+        public IEnumerable<JobPostDateDTO> JobPostDates { get; set; }
+        public IEnumerable<SlotDTO> Slots { get; set; }
 
         
     }

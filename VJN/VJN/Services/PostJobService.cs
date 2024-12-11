@@ -302,6 +302,34 @@ namespace VJN.Services
                 })
                 .FirstOrDefaultAsync();
 
+
+            var slot = await _slotRepository.GetSlotByPostjobId(postJobDTO.PostId);
+            if (slot != null && slot.Count() > 0)
+            {
+                var slotDTO = _mapper.Map<IEnumerable<SlotDTO>>(slot);
+
+                foreach (SlotDTO dTO in slotDTO)
+                {
+                    var Js = await _slotRepository.GetJobScheduleBySlotID(dTO.SlotId);
+                    var jsdto = _mapper.Map<IEnumerable<JobScheduleDTO>>(Js);
+                    foreach (JobScheduleDTO dTO1 in jsdto)
+                    {
+                        var wh = await _slotRepository.GetWorkingHoursByJobSchedule(dTO1.ScheduleId);
+                        var whDTO = _mapper.Map<IEnumerable<WorkingHourDTO>>(wh);
+                        var whDTO2 = whDTO.OrderBy(wh => wh.StartTime);
+                        dTO1.workingHourDTOs = whDTO2;
+                    }
+                    dTO.jobScheduleDTOs = jsdto;
+                }
+                postJobDTO.Slots = slotDTO;
+            }
+            var jobPostDate = await _jobPostDateRepository.GetPostJobByPostID(postJobDTO.PostId);
+            if (jobPostDate != null)
+            {
+                var pjdto = _mapper.Map<IEnumerable<JobPostDateDTO>>(jobPostDate);
+                var pjdto2 = pjdto.OrderBy(pj => pj.EventDate).ThenBy(pj => pj.StartTime);
+                postJobDTO.JobPostDates = pjdto2;
+            }
             return postJobDTO;
         }
 

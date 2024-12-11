@@ -28,9 +28,9 @@ namespace VJN.Map
         public MapperConfig()
         {
             //Mapper for user
-            CreateMap<User, UserDTO>().ForMember(dest => dest.RoleName, opt=>opt.MapFrom(src=>src.Role.RoleName))
-                                      .ForMember(dest=> dest.AvatarURL, opt=>opt.MapFrom(src=>src.AvatarNavigation.Url))
-                                      .ForMember(dest=> dest.JobName, opt=>opt.MapFrom(src=>src.CurrentJobNavigation.JobName));
+            CreateMap<User, UserDTO>().ForMember(dest => dest.RoleName, opt => opt.MapFrom(src => src.Role.RoleName))
+                                      .ForMember(dest => dest.AvatarURL, opt => opt.MapFrom(src => src.AvatarNavigation.Url))
+                                      .ForMember(dest => dest.JobName, opt => opt.MapFrom(src => src.CurrentJobNavigation.JobName));
             CreateMap<UserCreateDTO, User>().ForMember(dest => dest.RoleId, opt => opt.MapFrom(src => 1))
                                             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => 0))
                                             .ForMember(dest => dest.Avatar, opt => opt.MapFrom(src => 4));
@@ -48,12 +48,12 @@ namespace VJN.Map
             CreateMap<User, UserDTOdetail>().ForMember(dest => dest.AvatarURL, opt => opt.MapFrom(src => src.AvatarNavigation.Url));
 
             CreateMap<User, EmployerDTO>().ForMember(dest => dest.PostJobAuthors, opt => opt.Ignore())
-                                          .ForMember(dest=>dest.avatarURL, opt=>opt.MapFrom(src=>src.AvatarNavigation.Url)); 
+                                          .ForMember(dest => dest.avatarURL, opt => opt.MapFrom(src => src.AvatarNavigation.Url));
 
             //Mapper for user
             //Mapper for Blog
-            CreateMap<Blog, BlogDTO>().ForMember(dest=> dest.Thumbnail, opt => opt.MapFrom(src => src.ThumbnailNavigation.Url))
-                                      .ForMember(dest=> dest.AuthorName, opt => opt.MapFrom(src => src.Author.FullName));
+            CreateMap<Blog, BlogDTO>().ForMember(dest => dest.Thumbnail, opt => opt.MapFrom(src => src.ThumbnailNavigation.Url))
+                                      .ForMember(dest => dest.AuthorName, opt => opt.MapFrom(src => src.Author.FullName));
             //Mapper for Blog
 
             //Maper for Media
@@ -71,7 +71,7 @@ namespace VJN.Map
                                             .ForMember(dest => dest.JobCategoryName, opt => opt.MapFrom(src => src.JobCategory.JobCategoryName))
                                             .ForMember(dest => dest.SalaryTypeName, opt => opt.MapFrom(src => src.SalaryTypes.TypeName));
             CreateMap<Report, ReportDTO>().ForMember(dest => dest.jobseekerName, opt => opt.MapFrom(src => src.JobSeeker.FullName));
-            CreateMap<PostJobCreateDTO, PostJob>().ForMember(dest=>dest.CreateDate, opt=>opt.MapFrom(src=> DateTime.Now)).ForMember(dest => dest.JobPostDates, opt => opt.Ignore()); ;
+            CreateMap<PostJobCreateDTO, PostJob>().ForMember(dest => dest.CreateDate, opt => opt.MapFrom(src => DateTime.Now)).ForMember(dest => dest.JobPostDates, opt => opt.Ignore()); ;
             CreateMap<Cv, CvDTODetail>();
             CreateMap<ItemOfCv, ItemOfcvDTOforView>();
 
@@ -81,8 +81,8 @@ namespace VJN.Map
             CreateMap<WorkingHour, WorkingHourDTO>();
 
 
-            CreateMap<ApplyJobCreateDTO, ApplyJob>().ForMember(dest=>dest.ApplyDate, otp=>otp.MapFrom(src=>DateTime.Now))
-                                                    .ForMember(dest=>dest.Status, otp=>otp.MapFrom(src=>0));
+            CreateMap<ApplyJobCreateDTO, ApplyJob>().ForMember(dest => dest.ApplyDate, otp => otp.MapFrom(src => DateTime.Now))
+                                                    .ForMember(dest => dest.Status, otp => otp.MapFrom(src => 0));
 
             CreateMap<FavoriteListCreateDTO, FavoriteList>();
 
@@ -95,9 +95,9 @@ namespace VJN.Map
                                                   .ForMember(dest => dest.CurrentJob, otp => otp.MapFrom(src => src.CurrentJobNavigation.JobName))
                                                   .ForMember(dest => dest.NumberApplied, otp => otp.MapFrom(src => src.ApplyJobs.Count))
                                                   .ForMember(dest => dest.NumberAppliedAccept, otp => otp.MapFrom(src => src.ApplyJobs != null ? src.ApplyJobs.Count(aj => aj.Status == 3 || aj.Status == 4) : 0));
-            
+
             CreateMap<JobPostDate, JobPostDateDTO>();
-            CreateMap<PostJobDetailUpdate, PostJob>().ForMember(dest => dest.JobPostDates, opt => opt.Ignore()); 
+            CreateMap<PostJobDetailUpdate, PostJob>().ForMember(dest => dest.JobPostDates, opt => opt.Ignore());
 
             CreateMap<ServicePriceLog, PaymentHistory>().ForMember(dest => dest.ServicePriceName, opt => opt.MapFrom(src => src.ServicePrice.ServicePriceName));
             CreateMap<ServicePriceList, ServicePriceListDTO>();
@@ -106,6 +106,10 @@ namespace VJN.Map
             CreateMap<SendChat, Chat>().ForMember(dest => dest.SendTime, otp => otp.MapFrom(src => DateTime.Now));
             CreateMap<ServicePriceLogForCreateDTO, ServicePriceLog>().ForMember(dest => dest.RegisterDate, otp => otp.MapFrom(src => DateTime.Now));
             CreateMap<Service, ServiceDTO>();
+
+            CreateMap<CreateStaffAccountDTO, User>().ForMember(dest => dest.Status, otp => otp.MapFrom(src => 1)).
+                ForMember(dest => dest.Avatar, otp => otp.MapFrom(src => 1))
+                .ForMember(dest => dest.RoleId, otp => otp.MapFrom(src => 3));
         }
     }
 }

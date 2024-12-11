@@ -26,5 +26,7 @@ namespace VJN.Services
         public Task<IEnumerable<UserDTO>> GetAllUserWithoutAdmin();
 
         public Task<UserDTO> LoginWithGG(UserLoginWithGG model);
+
+        public Task<int> CreateStaff(CreateStaffAccountDTO md);
     }
 }
