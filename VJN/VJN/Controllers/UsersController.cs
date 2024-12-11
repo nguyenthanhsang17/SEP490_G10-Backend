@@ -264,6 +264,7 @@ namespace VJN.Controllers
                     
 
                 await _emailService.SendEmailAsyncWithHTML(model.Email, "Mã OTP của bạn để hoàn tất đăng ký!", body);
+
                 return Ok(new { Message = "Succesfully" });
             }
         }
@@ -642,6 +643,7 @@ namespace VJN.Controllers
             {
                 msg = "Đã gỡ cấm người dùng ";
 
+
                 body = $"Chào {user.FullName},\n\n" +
                 "Tài khoản của bạn đã được gỡ cấm !\n\n" +
                 "Lưu ý chấp hành nghiêm chỉnh các quy tắc của chúng tôi.\n" +
@@ -667,6 +669,7 @@ namespace VJN.Controllers
             if (result == 1)
             {
                 await _emailService.SendEmailAsyncWithHTML(user.Email, title, html);
+
                 return Ok(new { message = msg });
             }
             return BadRequest(new { message = "Không tìm thấy người dùng hoặc có lỗi xảy ra." });

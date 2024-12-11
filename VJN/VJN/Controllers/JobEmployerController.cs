@@ -21,6 +21,7 @@ namespace VJN.Controllers
         private readonly IMapper _mapper; 
         private readonly IEmailService _emailService;
         public JobEmployerController(IApplyJobService applyJoBService, IPostJobService postJobService, IUserService userService, VJNDBContext context, IMapper mapper, IEmailService emailService)
+
         {
             _applyJoBService = applyJoBService;
             _postJobService = postJobService;
@@ -140,12 +141,12 @@ namespace VJN.Controllers
                     jobseeker.Description,
                     jobseeker.Address,
                     jobseeker.Gender,
-                    Cvs = cvsfilter, // Trả về danh sách CV đã được lọc
-                    applyID = applyId, // Gán giá trị cho thuộc tính mới
+                    Cvs = cvsfilter, 
+                    applyID = applyId, 
                     status = status,
                 };
 
-                return Ok(result); // Trả về kết quả với mã 200
+                return Ok(result); 
             }
             catch (Exception ex)
             {
@@ -158,12 +159,14 @@ namespace VJN.Controllers
         public async Task<bool> ChangeStatusOfJobseekerApply(int Applyjob_Id,int newStatus)
         {
             var apply = await _context.ApplyJobs.FindAsync(Applyjob_Id);
+
             var user = await _context.Users.FindAsync(apply.JobSeekerId);
             var postJob = await _context.PostJobs.FindAsync(apply.PostId);
             string stt = "";
             if (newStatus == 1)
             {
                 string body = 
+
                 "Chi tiết công việc đã ứng tuyển:\n" +
                 $"Tiêu đề: {postJob.JobTitle}\n" +
                 $"Mô tả: {postJob.JobDescription}\n" +
@@ -179,6 +182,7 @@ namespace VJN.Controllers
             else if (newStatus == 3)
             {
                 string body =
+
                 "Chi tiết công việc đã ứng tuyển:\n" +
                 $"Tiêu đề: {postJob.JobTitle}\n" +
                 $"Mô tả: {postJob.JobDescription}\n" +
@@ -193,6 +197,7 @@ namespace VJN.Controllers
             else if (newStatus == 4)
             {
                 string body =
+
                 "Chi tiết công việc đã ứng tuyển:\n" +
                 $"Tiêu đề: {postJob.JobTitle}\n" +
                 $"Mô tả: {postJob.JobDescription}\n" +
@@ -206,6 +211,7 @@ namespace VJN.Controllers
             else if (newStatus == 5)
             {
                 string body =
+
                 "Sau khi xem đơn xin việc thì nhà tuyển dụng đã từ chối bạn.\n" +
                 "Chi tiết công việc đã ứng tuyển:\n" +
                 $"Tiêu đề: {postJob.JobTitle}\n" +
@@ -214,9 +220,11 @@ namespace VJN.Controllers
                 "Trân trọng,\n" +
                 "Đội ngũ hỗ trợ";
 
+
                 var heml = _emailService.GetEmailHTML("Nhà tuyển dụng đã từ chối bạn !", $"Chào {user.FullName},\n\n", body);
                 await _emailService.SendEmailAsyncWithHTML(user.Email, "Bạn đã được nhận vào làm!", heml);
             }
+
 
             return await _applyJoBService.ChangeStatusOfJobseekerApply(Applyjob_Id, newStatus);
 
