@@ -222,7 +222,7 @@ namespace VJN.Controllers
 
 
                 var heml = _emailService.GetEmailHTML("Nhà tuyển dụng đã từ chối bạn !", $"Chào {user.FullName},\n\n", body);
-                await _emailService.SendEmailAsyncWithHTML(user.Email, "Bạn đã được nhận vào làm!", heml);
+                await _emailService.SendEmailAsyncWithHTML(user.Email, "Nhà tuyển dụng đã từ chối bạn !", heml);
             }
 
 

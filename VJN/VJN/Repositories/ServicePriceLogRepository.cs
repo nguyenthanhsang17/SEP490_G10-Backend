@@ -92,11 +92,11 @@ namespace VJN.Repositories
             Service servicePriceLog;
             if (check)
             {
-                servicePriceLog = await _context.Services.Where(sp => sp.UserId == userid && sp.NumberPostsUrgentRecruitment > 0).SingleOrDefaultAsync();
+                servicePriceLog = await _context.Services.Where(sp => sp.UserId == userid && sp.NumberPostsUrgentRecruitment >= time).SingleOrDefaultAsync();
             }
             else
             {
-                servicePriceLog = await _context.Services.Where(sp => sp.UserId == userid).SingleOrDefaultAsync();
+                servicePriceLog = await _context.Services.Where(sp => sp.UserId == userid && sp.NumberPosts >= time).SingleOrDefaultAsync();
             }
 
             if (servicePriceLog != null)
