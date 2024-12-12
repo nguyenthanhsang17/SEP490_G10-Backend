@@ -294,10 +294,10 @@ namespace VJN.Controllers
             }
 
             postJob.CensorDate = DateTime.Now;
-            postJob.ExpirationDate = DateTime.Now.AddDays((int)postJob.Time * 14);
+            postJob.ExpirationDate = DateTime.Now.AddMonths((int)postJob.Time);
             postJob.CensorId = staffID;
 
-            _context.PostJobs.Update(postJob);
+            _context.Entry(postJob).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
             var user = await _context.Users.FindAsync(postJob.AuthorId);
@@ -345,17 +345,21 @@ namespace VJN.Controllers
             postJob.CensorDate = DateTime.Now;
             postJob.CensorId = staffID;
             postJob.Reason = reasonRejecr;
-            _context.PostJobs.Update(postJob);
+            _context.Entry(postJob).State = EntityState.Modified;
 
             var user = await _context.Users.FindAsync(postJob.AuthorId);
 
             var serviec = await _context.Services.Where(s => s.UserId == user.UserId).FirstOrDefaultAsync();
-            serviec.NumberPosts = serviec.NumberPosts + postJob.Time;
-            if ((bool)postJob.IsUrgentRecruitment)
+
+            if ((bool)postJob.IsUrgentRecruitment.Value)
             {
-                serviec.NumberPostsUrgentRecruitment = serviec.NumberPostsUrgentRecruitment + 1;
+                serviec.NumberPostsUrgentRecruitment = serviec.NumberPostsUrgentRecruitment + postJob.Time;
             }
-            _context.Services.Update(serviec);
+            else
+            {
+                serviec.NumberPosts = serviec.NumberPosts + postJob.Time;
+            }
+            _context.Entry(serviec).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
 
