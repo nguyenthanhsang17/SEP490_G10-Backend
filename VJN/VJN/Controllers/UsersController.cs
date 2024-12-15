@@ -754,12 +754,13 @@ namespace VJN.Controllers
         public async Task<IActionResult> CreateStaffAccount([FromBody] CreateStaffAccountDTO model)
         {
             string hashedPassword = _passwordHasher.HashPassword(null, model.Password);
+            var sang = model.Password;
             model.Password = hashedPassword;
             var i = await _userService.CreateStaff(model);
             if (i != 0 && i != -1)
             {
                 string body = $" " +
-                "Đăng nhập bằng mail hiện tại và Mật khẩu của bạn là " + model.Password + ". " +
+                "Đăng nhập bằng mail hiện tại và Mật khẩu của bạn là " + sang + ". " +
                 "Để đảm bảo an toàn cho tài khoản của bạn, đừng chia sẻ thông tin này với bất kỳ ai.\n" +
                 "Trân trọng,\n" +
                 "Đội ngũ hỗ trợ";
