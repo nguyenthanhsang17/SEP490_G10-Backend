@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Internal;
+using NuGet.Protocol.Plugins;
 using VJN.Authenticate;
 using VJN.Models;
 using VJN.ModelsDTO.UserDTOs;
@@ -30,7 +32,11 @@ namespace VJN.Services
             {
                 return 0;
             }
-            if (user.Password != OldPassword)
+
+            PasswordHasher<string> _passwordHasher = new PasswordHasher<string>();
+            var passwordVerificationResult = _passwordHasher.VerifyHashedPassword(null, user.Password, OldPassword);
+
+            if (passwordVerificationResult == PasswordVerificationResult.Failed)
             {
                 return -1;
             }
@@ -38,6 +44,9 @@ namespace VJN.Services
             {
                 return -2;
             }
+            string hashedPassword = _passwordHasher.HashPassword(null, NewPassword);
+            NewPassword = hashedPassword;
+
             int result = await _userRepository.ChangePassword(NewPassword, userid);
             return result;
         }
@@ -77,6 +86,8 @@ namespace VJN.Services
             }
             else
             {
+                PasswordHasher<string> _passwordHasher =  new PasswordHasher<string>();
+                userdto.Password = _passwordHasher.HashPassword(null, userdto.Password);
                 var user = _mapper.Map<User>(userdto);
                 user.VerifyCode = otp;
                 user.SendCodeTime = DateTime.Now;
@@ -213,6 +224,12 @@ namespace VJN.Services
             {
                 return false;
             }
+
+            var diffTime = DateTime.Now - u.SendCodeTime;
+            if (diffTime.HasValue && Math.Abs(diffTime.Value.TotalMinutes) >= 5)
+            {
+                return false;
+            }
             else
             {
                 int i = await _userRepository.UpdateStatus(u.UserId, 1);
@@ -262,12 +279,13 @@ namespace VJN.Services
                 };
 
                 var mediaID = await _mediaItemRepository.CreateMediaItem(media);
-
+                var passwordHasher = new PasswordHasher<string>(); 
+                string hashedPassword = passwordHasher.HashPassword(null, "123123");
                 var user = new User()
                 {
                     Email = model.Email,
                     FullName = model.FullName,
-                    Password = "123123",
+                    Password = hashedPassword,
                     Avatar = mediaID,
                     Status = 0,
                     RoleId = 1
@@ -295,6 +313,12 @@ namespace VJN.Services
             var user = _mapper.Map<User>(md);
             int i = await _userRepository.CreateUser(user);
             return i;
+        }
+
+        public async Task<string> GetPassword(int uid)
+        {
+            var str = await _userRepository.GetPassword(uid);
+            return str;
         }
     }
 }

@@ -26,7 +26,7 @@ namespace VJN.Repositories
 
         public async Task<IEnumerable<Blog>> getThreeBlogNews()
         {
-            var latestBlogs = await _context.Blogs.Include(bl=>bl.ThumbnailNavigation)
+            var latestBlogs = await _context.Blogs.Where(bl=>bl.Status==1).Include(bl=>bl.ThumbnailNavigation)
             .OrderByDescending(b => b.CreateDate)
             .Take(3)
             .ToListAsync();

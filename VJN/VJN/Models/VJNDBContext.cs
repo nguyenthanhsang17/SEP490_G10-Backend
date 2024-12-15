@@ -46,7 +46,6 @@ namespace VJN.Models
         public virtual DbSet<WishJob> WishJobs { get; set; } = null!;
         public virtual DbSet<WorkingHour> WorkingHours { get; set; } = null!;
 
-
         private string getConnectionString()
         {
             string connectionString;
@@ -591,9 +590,7 @@ namespace VJN.Models
 
                 entity.Property(e => e.FullName).HasMaxLength(100);
 
-                entity.Property(e => e.Password)
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
+                entity.Property(e => e.Password).IsUnicode(false);
 
                 entity.Property(e => e.Phonenumber)
                     .HasMaxLength(10)

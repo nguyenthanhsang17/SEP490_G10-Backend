@@ -19,19 +19,23 @@ namespace VJN.Controllers
     public class ApplyJobsController : ControllerBase
     {
         private readonly IApplyJobService _jobService;
+        private readonly IEmailService _emailService;
+        private readonly VJNDBContext _context;
 
-        public ApplyJobsController(IApplyJobService jobService)
+        public ApplyJobsController(IApplyJobService jobService, IEmailService emailService, VJNDBContext context)
         {
             _jobService = jobService;
+            _emailService = emailService;
+            _context = context;
         }
 
         [Authorize]
         [HttpPut("CancelApplyJob")]
         public async Task<IActionResult> CancelApplyJob(int postjob)
         {
-            string  userid_str = GetUserIdFromToken();
+            string userid_str = GetUserIdFromToken();
             var c = await _jobService.CancelApplyJob(postjob, int.Parse(userid_str));
-            return c?Ok(c):BadRequest(c);
+            return c ? Ok(c) : BadRequest(c);
         }
 
         [Authorize]
@@ -39,14 +43,23 @@ namespace VJN.Controllers
         public async Task<IActionResult> ApplyJob([FromBody] ApplyJobCreateDTO applyJobCreateDTO)
         {
             string userid_str = GetUserIdFromToken();
-            var uid= int.Parse(userid_str);
+            var uid = int.Parse(userid_str);
             var c = await _jobService.ApplyJob(applyJobCreateDTO, uid);
+
+            var user = await _context.Users.Where(u => u.UserId == uid).SingleOrDefaultAsync();
+            var postjob = await _context.PostJobs.Where(p => p.PostId == applyJobCreateDTO.PostId).SingleOrDefaultAsync();
+            if (c)
+            {
+                var html = _emailService.GetEmailHTML("Bạn đã ứng tuyển công việc thành công", "Chào" + user.FullName, $"Chi tiết bài đăng,  Tiêu đề: {postjob.JobTitle}, Mô tả: {postjob.JobDescription} Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi. Trân trọng, Đội ngũ hỗ trợ");
+
+                await _emailService.SendEmailAsyncWithHTML(user.Email, "Bạn đã ứng tuyển công việc thành công", html);
+            }
             return c ? Ok(c) : BadRequest(c);
         }
 
         [Authorize]
         [HttpGet("GetApplied")]
-        public async Task<IActionResult> GetApplied( int jobid)
+        public async Task<IActionResult> GetApplied(int jobid)
         {
             try
             {
@@ -59,7 +72,7 @@ namespace VJN.Controllers
                 }
                 else
                 {
-                    return NotFound("Không tìm thấy ứng tuyển phù hợp."); 
+                    return NotFound("Không tìm thấy ứng tuyển phù hợp.");
                 }
             }
             catch (Exception ex)
@@ -75,26 +88,55 @@ namespace VJN.Controllers
             int? rs = -1;
             string userid_str = GetUserIdFromToken();
             var uid = int.Parse(userid_str);
-            var appliedJobs = await _jobService.GetApplyJobsByUserIdAndPostId(uid,(int) applyJobCreateDTO.PostId);
+            var appliedJobs = await _jobService.GetApplyJobsByUserIdAndPostId(uid, (int)applyJobCreateDTO.PostId);
+            var c1 = await _context.ApplyJobs.Where(ap => ap.JobSeekerId == uid && ap.PostId == applyJobCreateDTO.PostId).OrderByDescending(ap => ap.ApplyDate).FirstOrDefaultAsync();
+
             if (appliedJobs != null && appliedJobs.Any())
             {
-                foreach (var item in appliedJobs)
+
+                if (c1.Status == 1)
                 {
-                    if (item.Status == 1)
-                    {
-                        rs = item.PostId;
-                        var c = await _jobService.ApplyJob(applyJobCreateDTO, uid);
-                        return c ? Ok(c) : BadRequest(c);
-                    }
-                    if (item.Status == 0)
-                    {
-                        rs = item.PostId;
-                        var c = await _jobService.ReApplyJob(item.Id,(int) applyJobCreateDTO.CvId);
-                    }
+                    rs = c1.PostId;
+                    var c = await _jobService.ApplyJob(applyJobCreateDTO, uid);
+                    return c ? Ok(c) : BadRequest(c);
                 }
+                if (c1.Status == 0)
+                {
+                    rs = c1.PostId;
+                    var c = await _jobService.ReApplyJob(c1.Id, (int)applyJobCreateDTO.CvId);
+                }
+
+
+                var user = await _context.Users.Where(u => u.UserId == uid).SingleOrDefaultAsync();
+                var postjob = await _context.PostJobs.Where(p => p.PostId == applyJobCreateDTO.PostId).SingleOrDefaultAsync();
+
+
+                var html = _emailService.GetEmailHTML("Bạn đã ứng tuyển lại công việc thành công", "Chào" + user.FullName, $"Chi tiết bài đăng,  Tiêu đề: {postjob.JobTitle}, Mô tả: {postjob.JobDescription} Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi. Trân trọng, Đội ngũ hỗ trợ");
+
+                await _emailService.SendEmailAsyncWithHTML(user.Email, "Bạn đã ứng tuyển lại công việc thành công", html);
+
+
                 return Ok(rs);
             }
-            return  BadRequest("Ứng tuyển lại thất bại");
+            return BadRequest("Ứng tuyển lại thất bại");
+        }
+        [HttpGet("Sangtestcode")]
+        public async Task<IActionResult> Sangtestcode()
+        {
+            int i1 = 19;
+            int i2 = 3;
+            var c = await _context.ApplyJobs.Where(ap => ap.JobSeekerId == i1 && ap.PostId == 3).OrderByDescending(ap => ap.ApplyDate).FirstOrDefaultAsync();
+            return Ok(c.Status);
+        }
+
+        [Authorize]
+        [HttpGet("checkReapply")]
+        public async Task<ActionResult<bool>> checkReapply([FromQuery] int postId)
+        {
+            string userid_str = GetUserIdFromToken();
+            var uid = int.Parse(userid_str);
+            var a = await _jobService.checkReapply(uid, postId);
+            return Ok(a);
         }
 
 

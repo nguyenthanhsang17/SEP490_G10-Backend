@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.IdentityModel.Tokens.Jwt;
 using VJN.Models;
 using VJN.ModelsDTO.ApplyJobDTOs;
 using VJN.ModelsDTO.CvDTOs;
@@ -108,6 +109,10 @@ namespace VJN.Controllers
         [HttpGet("GetDetailJobseekerApply/{JobSeekerApply_ID}/{applyId}")]
         public async Task<ActionResult<object>> GetDetailJobSeekerApply(int JobSeekerApply_ID, int applyId)
         {
+            var userid_str = GetUserIdFromToken();
+            int id = int.Parse(userid_str);
+            bool check = await _context.FavoriteLists.Where(ap=>ap.JobSeekerId== JobSeekerApply_ID&&ap.EmployerId==id).AnyAsync();
+
             try
             {
                 var applyjob = await _context.ApplyJobs.FindAsync(applyId);
@@ -144,6 +149,7 @@ namespace VJN.Controllers
                     Cvs = cvsfilter, 
                     applyID = applyId, 
                     status = status,
+                    isFavorite = check==true?1:0,
                 };
 
                 return Ok(result); 
@@ -228,6 +234,32 @@ namespace VJN.Controllers
 
             return await _applyJoBService.ChangeStatusOfJobseekerApply(Applyjob_Id, newStatus);
 
+        }
+        private string GetUserIdFromToken()
+        {
+            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            Console.WriteLine(token);
+            if (string.IsNullOrEmpty(token))
+            {
+                throw new Exception("Missing token in Authorization header.");
+            }
+
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+            /// check tên claim
+            //foreach (var claim in jwtToken.Claims)
+            //{
+            //    Console.WriteLine($"Claim Type: {claim.Type}, Claim Value: {claim.Value}");
+            //}
+            /// check tên claim
+            var userIdClaim = jwtToken.Claims.FirstOrDefault(claim => claim.Type == "nameid");
+
+            if (userIdClaim == null)
+            {
+                throw new Exception("User ID not found in token.");
+            }
+
+            return userIdClaim.Value;
         }
     }
 }
