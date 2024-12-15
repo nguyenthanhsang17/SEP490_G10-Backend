@@ -176,6 +176,7 @@ namespace VJN.Services
             {
                 postdto.Owner = 0;
             }
+            postdto.statusAuthor = post.Author.Status.Value;
             return postdto;
         }
 
