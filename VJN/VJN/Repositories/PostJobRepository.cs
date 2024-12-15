@@ -115,13 +115,14 @@ namespace VJN.Repositories
         public async Task<string> getThumnailJob(int id)
         {
             var urls = await _context.ImagePostJobs.Where(im => im.PostId == id).ToListAsync();
+            Console.WriteLine(urls.Count);
             if (urls.Count == 0)
             {
                 return "";
             }
             var idurl = urls.FirstOrDefault().ImageId;
-
-            var image = await _context.MediaItems.Where(mi => mi.Id == id).SingleOrDefaultAsync();
+            Console.WriteLine(idurl);
+            var image = await _context.MediaItems.Where(mi => mi.Id == idurl).SingleOrDefaultAsync();
 
             return image.Url;
         }

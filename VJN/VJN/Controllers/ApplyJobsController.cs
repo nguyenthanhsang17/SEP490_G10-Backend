@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using Microsoft.EntityFrameworkCore;
 using VJN.Models;
 using VJN.ModelsDTO.ApplyJobDTOs;
@@ -42,6 +43,7 @@ namespace VJN.Controllers
         [HttpPost("ApplyJob")]
         public async Task<IActionResult> ApplyJob([FromBody] ApplyJobCreateDTO applyJobCreateDTO)
         {
+
             string userid_str = GetUserIdFromToken();
             var uid = int.Parse(userid_str);
             var c = await _jobService.ApplyJob(applyJobCreateDTO, uid);
@@ -55,6 +57,22 @@ namespace VJN.Controllers
                 await _emailService.SendEmailAsyncWithHTML(user.Email, "Bạn đã ứng tuyển công việc thành công", html);
             }
             return c ? Ok(c) : BadRequest(c);
+        }
+
+        [HttpGet("CheckPostJob")]
+        public async Task<IActionResult> CheckPostJob([FromQuery] int postid)
+        {
+            var hung = await _context.PostJobs.Where(p => p.PostId == postid).SingleOrDefaultAsync();
+
+            if (hung.Status == 6)
+            {
+                return Ok(6);
+            }
+            if (hung.ExpirationDate.Value< DateTime.Now)
+            {
+                return Ok(7);
+            }
+            return Ok(1);
         }
 
         [Authorize]

@@ -37,5 +37,7 @@ namespace VJN.ModelsDTO.PostJobDTOs
         public int? Time { get; set; }
         public string? Reason { get; set; }
         public int Owner { get; set; }
+
+        public int statusAuthor {  get; set; }
     }
 }
