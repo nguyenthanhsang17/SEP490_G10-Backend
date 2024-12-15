@@ -285,7 +285,7 @@ namespace VJN.Controllers
                 var html = _emailService.GetEmailHTML("Cảm ơn bạn đã đăng ký tài khoản tại VJN", "Cảm ơn bạn đã đăng ký tài khoản tại VJN", body);
 
 
-                await _emailService.SendEmailAsyncWithHTML(model.Email, "Mã OTP của bạn để hoàn tất đăng ký!", body);
+                await _emailService.SendEmailAsyncWithHTML(model.Email, "Mã OTP của bạn để hoàn tất đăng ký!", html);
 
                 return Ok(new { Message = "Succesfully" });
             }
