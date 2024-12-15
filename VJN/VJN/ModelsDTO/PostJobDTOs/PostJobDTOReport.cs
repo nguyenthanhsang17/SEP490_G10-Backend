@@ -20,6 +20,8 @@ namespace VJN.ModelsDTO.PostJobDTOs
         public int? JobCategoryId { get; set; }
         public string reason { get; set; }
 
+        public int? Time { get; set; }
+
         public  UserDTOs.UserDTOReport? Author { get; set; }
         public UserDTOs.UserDTOReport? Censor { get; set; }
         public  JobCategory? JobCategory { get; set; }

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Imagekit.Sdk;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NuGet.Protocol.Plugins;
@@ -37,6 +38,8 @@ namespace VJN.Controllers
         private readonly IRegisterEmployerMediaService _registerEmployerMediaService;
         private readonly IRegisterEmployerService _registerEmployerService;
 
+        private readonly PasswordHasher<string> _passwordHasher;
+
         public UsersController(IUserService userService, JwtTokenGenerator jwtTokenGenerator, IEmailService emailService, OTPGenerator generator, IGoogleService googleService, IMediaItemService mediaItemService, IRegisterEmployerMediaService registerEmployerMediaService, IRegisterEmployerService registerEmployerService)
         {
             _userService = userService;
@@ -48,6 +51,8 @@ namespace VJN.Controllers
             _imagekitClient = new ImagekitClient("public_Q+yi7A0O9A+joyXIoqM4TpVqOrQ=", "private_e2V3fNLKwK0pGwSrEmFH+iKQtks=", "https://ik.imagekit.io/ryf3sqxfn");
             _registerEmployerMediaService = registerEmployerMediaService;
             _registerEmployerService = registerEmployerService;
+
+            _passwordHasher = new PasswordHasher<string>();
         }
 
         [HttpPost("Login")]
@@ -58,42 +63,56 @@ namespace VJN.Controllers
                 return BadRequest(new { Message = "Không được để trống, người dùng cần nhập đầy đủ username và password" });
             }
 
-            var st = await _userService.Login(model.UserName, model.Password);
+            var st1 = await _userService.GetUserByEmail(model.UserName);
 
-            if (st == null)
+            if( st1 == null)
+            {
+                return Unauthorized(new { Message = "Email không hợp lệ" });
+            }
+
+            var pss_str = await _userService.GetPassword(st1.UserId);
+            var passwordVerificationResult = _passwordHasher.VerifyHashedPassword(null, pss_str, model.Password);
+
+            if (passwordVerificationResult == PasswordVerificationResult.Failed)
+            {
+                return Unauthorized(new { Message = "Mật khẩu không hợp lệ" });
+            }
+
+
+            if (st1 == null)
             {
                 return Unauthorized(new { Message = "Username và password không hợp lệ" });
             }
 
-            if (st.Status == 3)
+            if (st1.Status == 3)
             {
                 return Unauthorized(new { Message = "Tài khoản của bạn hiện đang bị khóa" });
             }
-            if (st.Status == 0)
+            if (st1.Status == 0)
             {
                 var otp = _generator.GenerateOTP();
-                _userService.InsertOTP(st.UserId, otp);
+                _userService.InsertOTP(st1.UserId, otp);
 
                 string html = _emailService.GetEmailHTML("Bạn đã quay trở lại QuickJob", $"Mã OTP của bạn để hoàn tất đăng ký", $"Để hoàn tất quá trình xác thực, vui lòng sử dụng mã OTP (One-Time Password) dưới đây: Mã OTP của bạn: {otp} Mã OTP này có hiệu lực trong 5 phút. Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này. Để đảm bảo an toàn cho tài khoản của bạn, đừng chia sẻ mã OTP này với bất kỳ ai.Cảm ơn bạn!");
-                await _emailService.SendEmailAsyncWithHTML(st.Email, "Mã OTP của bạn để hoàn tất đăng ký", html);
+                await _emailService.SendEmailAsyncWithHTML(st1.Email, "Mã OTP của bạn để hoàn tất đăng ký", html);
                 return Unauthorized(new { Message = "Tài khoản của bạn hiện chưa được xác thực." });
             }
             bool haveProfile = false;
-            if (st.Age.HasValue)
+            if (st1.Age.HasValue)
             {
                 haveProfile = true;
             }
 
-            var token = _jwtTokenGenerator.GenerateJwtToken(st);
+            var token = _jwtTokenGenerator.GenerateJwtToken(st1);
             return Ok(new
             {
                 Message = "Đăng nhập thành công",
                 token,
-                st.UserId,
-                st.FullName,
-                st.RoleId,
-                st.Status,
-                st.AvatarURL,
+                st1.UserId,
+                st1.FullName,
+                st1.RoleId,
+                st1.Status,
+                st1.AvatarURL,
                 haveProfile,
             });
         }
@@ -178,6 +197,7 @@ namespace VJN.Controllers
                 }
 
                 var userId = GetUserIdFromToken();
+                
 
                 var result = await _userService.ChangePassword(model.OldPassword, model.NewPassword, model.ConfirmPassword, int.Parse(userId));
 
@@ -214,6 +234,8 @@ namespace VJN.Controllers
                     return BadRequest(new { Message = "mật khẩu mới và mật khẩu xác nhận không giống nhau" });
                 }
                 var user = await _userService.GetUserByEmail(model.ToEmail);
+                string hashedPassword = _passwordHasher.HashPassword(null, model.Password);
+                model.Password = hashedPassword;
                 var c = await _userService.UpdatePassword(user.UserId, model.Password);
 
                 if (c)
@@ -251,7 +273,7 @@ namespace VJN.Controllers
             }
             else
             {
-                string body = $"" +
+                string body =
                 "Để hoàn tất quá trình xác thực, vui lòng sử dụng mã OTP (One-Time Password) dưới đây.\n\n" +
                 $"Mã OTP của bạn: {otp}\n" +
                 "Mã OTP này có hiệu lực trong 5 phút.\n" +
@@ -261,7 +283,7 @@ namespace VJN.Controllers
                 "Đội ngũ hỗ trợ";
 
                 var html = _emailService.GetEmailHTML("Cảm ơn bạn đã đăng ký tài khoản tại VJN", "Cảm ơn bạn đã đăng ký tài khoản tại VJN", body);
-                    
+
 
                 await _emailService.SendEmailAsyncWithHTML(model.Email, "Mã OTP của bạn để hoàn tất đăng ký!", body);
 
@@ -678,10 +700,10 @@ namespace VJN.Controllers
         [HttpPost("LoginWithgg2")]
         public async Task<IActionResult> LoginWithgg2([FromBody] UserLoginWithGG model)
         {
-
+            var check = await _userService.CheckEmailExits(model.Email);
             var st = await _userService.LoginWithGG(model);
 
-            var check = await _userService.CheckEmailExits(model.Email);
+
 
             if (st.Status == 3)
             {
@@ -695,7 +717,7 @@ namespace VJN.Controllers
                     var otp = _generator.GenerateOTP();
                     _userService.InsertOTP(st.UserId, otp);
 
-                    string html = _emailService.GetEmailHTML("Bạn đã đăng nhâp vào QuickJob", $"Mã OTP của bạn để hoàn tất đăng ký", $"Để hoàn tất quá trình xác thực, vui lòng sử dụng mã OTP (One-Time Password) dưới đây: Mã OTP của bạn: {otp} Mã OTP này có hiệu lực trong 5 phút. Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này. Để đảm bảo an toàn cho tài khoản của bạn, đừng chia sẻ mã OTP này với bất kỳ ai.Cảm ơn bạn!");
+                    string html = _emailService.GetEmailHTML("Bạn đã đăng nhâp vào QuickJob", $"Mã OTP của bạn để hoàn tất đăng ký", $"Để hoàn tất quá trình xác thực và mật khẩu mặc định là 123123, vui lòng sử dụng mã OTP (One-Time Password) dưới đây: Mã OTP của bạn: {otp} Mã OTP này có hiệu lực trong 5 phút. Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này. Để đảm bảo an toàn cho tài khoản của bạn, đừng chia sẻ mã OTP này với bất kỳ ai.Cảm ơn bạn!");
                     await _emailService.SendEmailAsyncWithHTML(st.Email, "Mã OTP của bạn để hoàn tất đăng ký", html);
                     return Unauthorized(new { Message = "Tài khoản của bạn hiện chưa được xác thực." });
                 }
@@ -731,8 +753,10 @@ namespace VJN.Controllers
         [HttpPost("CreateStaffAccount")]
         public async Task<IActionResult> CreateStaffAccount([FromBody] CreateStaffAccountDTO model)
         {
+            string hashedPassword = _passwordHasher.HashPassword(null, model.Password);
+            model.Password = hashedPassword;
             var i = await _userService.CreateStaff(model);
-            if (i !=0 &&i!=-1)
+            if (i != 0 && i != -1)
             {
                 string body = $" " +
                 "Đăng nhập bằng mail hiện tại và Mật khẩu của bạn là " + model.Password + ". " +
@@ -750,6 +774,21 @@ namespace VJN.Controllers
 
 
 
+        }
+
+        [HttpGet("MahoaMK")]
+        public async Task<IActionResult> MahoaMK([FromQuery] string mk)
+        {
+            string hashedPassword = _passwordHasher.HashPassword(null, mk);
+            return Ok(hashedPassword);
+        }
+
+        [HttpGet("MahoaMK2")]
+        public async Task<IActionResult> MahoaMK2([FromQuery] string mk)
+        {
+            var passwordVerificationResult = _passwordHasher.VerifyHashedPassword(null, mk, "thanhham");
+
+            return Ok(passwordVerificationResult);
         }
 
     }

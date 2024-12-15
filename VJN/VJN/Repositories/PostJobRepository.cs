@@ -22,7 +22,7 @@ namespace VJN.Repositories
 
         public async Task<IEnumerable<PostJob>> GetPorpularJob()
         {
-            var jobTopIds = await _context.PostJobs.GroupBy(pj => pj.PostId).Select(g => new
+            var jobTopIds = await _context.PostJobs.Where(p=>p.Status==2&&p.ExpirationDate>=DateTime.Now).GroupBy(pj => pj.PostId).Select(g => new
             {
                 PostId = g.Key,
                 ApplicantCount = _context.ApplyJobs.Count(aj => aj.PostId == g.Key)
@@ -479,9 +479,9 @@ DistanceCalculation AS (
     FROM PostJob pj
     WHERE pj.ExpirationDate >= GETDATE()
 )
-SELECT *
+SELECT top 10 *
 FROM (
-    SELECT top 10
+    SELECT 
         pj.*,
         COALESCE(cr.RankCategory, 0) AS CategoryPriority,
         COALESCE(cs.CVScore, 0) AS CVMatch,

@@ -328,5 +328,11 @@ namespace VJN.Repositories
 
             }
         }
+
+        public async Task<string> GetPassword(int uid)
+        {
+            var st = await _context.Users.Where(u=>u.UserId==uid).SingleOrDefaultAsync();
+            return st.Password;
+        }
     }
 }

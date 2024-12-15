@@ -25,5 +25,7 @@ namespace VJN.Repositories
         public Task<IEnumerable<User>> GetAllUserWithoutAdmin();
         public Task<int> LoginWithGG(User model);
         public Task<int> CreateUserLoginWithGG(User user);
+
+        public Task<string> GetPassword(int uid);
     }
 }

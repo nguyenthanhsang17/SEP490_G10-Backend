@@ -40,7 +40,8 @@ namespace VJN.Controllers
         private readonly IReportMediaServices _reportMediaService;
         private readonly IServicePriceLogService _priceLogService;
         private readonly IEmailService _emailService;
-        public PostJobsController(IPostJobService postJobService, ISlotService slotService, IMediaItemService mediaItemService, IImagePostJobService imagepostJobService, IJobPostDateService jobPostDateService, IReportMediaServices reportMediaService, IServicePriceLogService priceLogService, VJNDBContext context, IEmailService emailService)
+        private readonly IUserService _userService;
+        public PostJobsController(IPostJobService postJobService, ISlotService slotService, IMediaItemService mediaItemService, IImagePostJobService imagepostJobService, IJobPostDateService jobPostDateService, IReportMediaServices reportMediaService, IServicePriceLogService priceLogService, VJNDBContext context, IEmailService emailService, IUserService userService)
 
         {
             _postJobService = postJobService;
@@ -53,6 +54,7 @@ namespace VJN.Controllers
             _priceLogService = priceLogService;
             _context = context;
             _emailService = emailService;
+            _userService = userService;
         }
 
 
@@ -195,7 +197,7 @@ namespace VJN.Controllers
                     {
                         return BadRequest(new { Message = "Bạn đã hết số lượt đăng bài" });
                     }
-                    
+
                 }
             }
             var id = await _postJobService.CreatePostJob(postJobCreateDTO, uid);
@@ -215,7 +217,7 @@ namespace VJN.Controllers
                 }
                 var c = await _jobPostDateService.CreateJobPostDate(postJobCreateDTO.jobPostDates);
             }
-            
+
             if (id <= 0)
             {
                 return BadRequest(new { Message = "Lỗi Tạo Công Việc" });
@@ -314,7 +316,7 @@ namespace VJN.Controllers
 
             var html = _emailService.GetEmailHTML("Bài đăng của bạn đã được duyệt", $"Chào {user.FullName}", body);
 
-            await _emailService.SendEmailAsyncWithHTML(user.Email, "Bài đăng của bạn đã được duyệt",    html);
+            await _emailService.SendEmailAsyncWithHTML(user.Email, "Bài đăng của bạn đã được duyệt", html);
 
             return Ok(new { Message = "Bài đăng đã được duyệt thành công", ExpirationDate = postJob.ExpirationDate });
         }
@@ -396,26 +398,68 @@ namespace VJN.Controllers
                 return NotFound(new { Message = "Không tìm thấy bài đăng" });
             }
 
-            postJob.Reason=reasonBan;
+            postJob.Reason = reasonBan;
             _context.PostJobs.Update(postJob);
 
             await _context.SaveChangesAsync();
             var user = await _context.Users.FindAsync(postJob.AuthorId);
-            string body =
-                  "Chi tiết bài đăng:\n" +
-                  $"Tiêu đề: {postJob.JobTitle}\n" +
-                  $"Mô tả: {postJob.JobDescription}\n" +
-                  "Trạng thái: Bị Cấm\n\n" +
-                  $"Lý do : {reasonBan}.\n\n" +
-                  "Hãy xem lại điều khoản về bài đăng.\n\n" +
-                  "Nếu có thắc mắc hãy liên hệ ngay với chúng tôi.\n\n" +
-                  "Trân trọng,\n" +
-                  "Đội ngũ hỗ trợ";
+            var numberpost = await _context.PostJobs.Where(p => p.AuthorId == user.UserId && p.Status == 6).CountAsync();
+            if (numberpost < 3)
+            {
+                string body =
+                      "Chi tiết bài đăng:\n" +
+                      $"Tiêu đề: {postJob.JobTitle}\n" +
+                      $"Mô tả: {postJob.JobDescription}\n" +
+                      "Trạng thái: Bị Cấm\n\n" +
+                      $"Lý do : {reasonBan}.\n\n" +
+                      "Hãy xem lại điều khoản về bài đăng.\n\n" +
+                      "Nếu có thắc mắc hãy liên hệ ngay với chúng tôi.\n\n" +
+                      "Trân trọng,\n" +
+                      "Đội ngũ hỗ trợ";
 
-            var html = _emailService.GetEmailHTML("Bài đăng của bạn đã bị cấm", $"Chào {user.FullName}", body);
+                var html = _emailService.GetEmailHTML("Bài đăng của bạn đã bị cấm", $"Chào {user.FullName}", body);
 
-            await _emailService.SendEmailAsyncWithHTML(user.Email, "Bài đăng của bạn đã bị cấm", html);
+                await _emailService.SendEmailAsyncWithHTML(user.Email, "Bài đăng của bạn đã bị cấm", html);
+            } else if(numberpost == 3) {
+                string body =
+                      "Chi tiết bài đăng:\n" +
+                      $"Tiêu đề: {postJob.JobTitle}\n" +
+                      $"Mô tả: {postJob.JobDescription}\n" +
+                      "Trạng thái: Bị Cấm\n\n" +
+                      $"Lý do : {reasonBan}.\n\n" +
+                      "Bạn đã bị cấm 3 bài đăng. Nếu bị cấm 1 lần nữa sẽ bị khóa tài khoản\n\n" +
+                      "Nếu có thắc mắc hãy liên hệ ngay với chúng tôi.\n\n" +
+                      "Trân trọng,\n" +
+                      "Đội ngũ hỗ trợ";
+
+                var html = _emailService.GetEmailHTML("Bài đăng của bạn đã bị cấm", $"Chào {user.FullName}", body);
+
+                await _emailService.SendEmailAsyncWithHTML(user.Email, "Bài đăng của bạn đã bị cấm", html);
+
+            }
+            else
+            {
+                var result = await _userService.Ban_Unbanuser(id, true);
+                string body =
+                      $"Lý do : bạn đã bị cấm quá nhiều bài đăng.\n\n" +
+                      "tài khoản của bạn đã bị cấm\n\n" +
+                      "Nếu có thắc mắc hãy liên hệ ngay với chúng tôi.\n\n" +
+                      "Trân trọng,\n" +
+                      "\nĐội ngũ hỗ trợ";
+
+                var html = _emailService.GetEmailHTML("Tài khoản của bạn đã bị cấm", $"Chào {user.FullName}", body);
+
+                await _emailService.SendEmailAsyncWithHTML(user.Email, "Tài khoản của bạn đã bị cấm", html);
+            }
+            
+
+
+
             return Ok(new { Message = "Bài đăng đã bị cấm " });
+
+
+
+
 
 
         }
@@ -522,7 +566,8 @@ namespace VJN.Controllers
             {
                 // Lấy tất cả các bài đăng đã duyệt
                 postJobs = await _postJobService.GetAllPostJobByStatus(status);
-            }else if (status == 3)
+            }
+            else if (status == 3)
             {
                 // Lấy tất cả các bài đăng bị từ chói
                 postJobs = await _postJobService.GetAllPostJobByStatus(status);
@@ -538,7 +583,7 @@ namespace VJN.Controllers
                 postJobs = (await _postJobService.GetAllPostJobByStatus(-1))
                             .Where(item => item.Reports != null && item.Reports.Any());
             }
-            postJobs = postJobs.Where(p=>p.Status != 0).ToList();
+            postJobs = postJobs.Where(p => p.Status != 0).ToList();
             var pagedResult = postJobs.GetPaged(pageNumber, pageSize);
 
             return Ok(pagedResult);

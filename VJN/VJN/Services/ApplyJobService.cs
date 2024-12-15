@@ -34,6 +34,12 @@ namespace VJN.Services
             return await _applyJobRepository.ChangeStatusOfJobseekerApply(applyJobId, newStatus);
         }
 
+        public async Task<bool> checkReapply(int JobSeekerId, int postId)
+        {
+            var c = await _applyJobRepository.checkReapply(JobSeekerId, postId);
+            return c;
+        }
+
         public async Task<IEnumerable<ApplyJob>> getApplyJobByJobSeekerId(int JobSeekerId)
         {
             var applyjobs = await _applyJobRepository.getApplyJobByJobSeekerId(JobSeekerId);

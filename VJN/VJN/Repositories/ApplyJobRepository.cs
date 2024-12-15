@@ -103,7 +103,18 @@ namespace VJN.Repositories
                 .ToListAsync();
             return applyJobs; 
         }
-
-
+         
+        public async Task<bool> checkReapply(int JobSeekerId, int postId)
+        {
+            var ap = await _context.ApplyJobs.Where(a => a.JobSeekerId == JobSeekerId && a.PostId == postId).OrderByDescending(a=>a.ApplyDate).FirstOrDefaultAsync();
+            if (ap.Status == 0 || ap.Status == 1)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

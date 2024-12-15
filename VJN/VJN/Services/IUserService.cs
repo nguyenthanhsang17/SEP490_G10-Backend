@@ -28,5 +28,6 @@ namespace VJN.Services
         public Task<UserDTO> LoginWithGG(UserLoginWithGG model);
 
         public Task<int> CreateStaff(CreateStaffAccountDTO md);
+        public Task<string> GetPassword(int uid);
     }
 }

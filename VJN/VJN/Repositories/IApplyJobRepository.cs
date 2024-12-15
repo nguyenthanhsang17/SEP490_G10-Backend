@@ -18,6 +18,7 @@ namespace VJN.Repositories
         public Task<IEnumerable<ApplyJob>> GetApplyJobsByUserIdAndPostId(int JobSeekerId, int postId);
 
         public  Task<bool> ReApplyJob(int applyjobid, int newCv);
+        public Task<bool> checkReapply(int JobSeekerId, int postId);
     }
 
 }
